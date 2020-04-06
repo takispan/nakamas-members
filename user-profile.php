@@ -53,7 +53,7 @@ get_header(); // Loads the header.php template. ?>
 
 	<section id="content">
 
-		<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
     <div id="post-<?php the_ID(); ?>">
         <div class="entry-content entry">
             <?php the_content(); ?>
