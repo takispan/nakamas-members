@@ -47,7 +47,7 @@ class Nakamas_PageTemplater {
       add_filter( 'template_include', array( $this, 'view_project_template') );
 
       // Add your templates to this array.
-      $this->templates = array( 'user-profile.php' => 'User Profile' );
+      $this->templates = array( 'my-account.php' => 'Nakamas My Account' );
 
     }
 
