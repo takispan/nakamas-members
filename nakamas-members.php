@@ -27,4 +27,6 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 require_once( plugin_dir_path( __FILE__ ) . 'nkms-class-page-template.php' );
 add_action( 'plugins_loaded', array( 'Nakamas_PageTemplater', 'get_instance' ) );
+include('nakamas-functions.php');
+
 ?>
