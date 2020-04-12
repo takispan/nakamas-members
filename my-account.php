@@ -26,21 +26,19 @@ get_header(); // Loads the header.php template. ?>
             </div>
 
             <div id="dashboard" class="tabcontent">
-             <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
+                <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
             </div>
 
             <div id="dance-school" class="tabcontent">
-             <h3>Dance School</h3>
-             <p>Dance School stuff.</p>
+               <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
             </div>
 
             <!-- Tab content -->
             <div id="profile" class="tabcontent">
-             <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
+                <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
             </div>
         <?php endif; ?>
-    </div>
-
+    </div><!-- #nkms-account -->
 </section><!-- #content -->
 
 <?php get_footer(); // Loads the footer.php template. ?>

@@ -50,8 +50,6 @@ class Nakamas_PageTemplater {
       $this->templates = array( 'my-account.php' => 'Nakamas My Account',
                                 'login.php'      => 'Nakamas Login',
                                 'register.php'   => 'Nakamas Registration');
-
-
     }
 
     /**

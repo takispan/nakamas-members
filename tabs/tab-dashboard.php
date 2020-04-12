@@ -6,7 +6,7 @@
  *
  */
 ?>
-<div id="nkms-dashboard">
+<div class="nkms-tabs">
     <?php if ( !is_user_logged_in() ) : ?>
         <p class="warning">
             <?php _e('You must be logged in to view your dashboard.', 'profile'); ?>
@@ -101,4 +101,4 @@
   		</table>
 	<?php endif;
 	endif; ?>
-</div><!-- #nkms-dashboard -->
+</div><!-- .nkms-tabs -->
