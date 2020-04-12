@@ -87,48 +87,44 @@ if ($user_ID)
 
 ?>
 
-<form id="wp_signup_form" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
-    <table class="table">
-        <tr>
-            <td><label for="username">Username</label></td>
-            <td><input type="text" name="username" id="username"></td>
-        </tr>
-        <tr>
-            <td><label for="email">Email address</label></td>
-            <td><input type="text" name="email" id="email"></td>
-        </tr>
-        <tr>
-            <td><label for="password">Password</label></td>
-            <td><input type="password" name="password" id="password"></td>
-        </tr>
-        <tr>
-           <td><label for="password_confirmation">Confirm Password</label></td>
-           <td><input type="password" name="password_confirmation" id="password_confirmation"></td>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <label for="account_role">Choose Account Role</label>
-            <select name="account_role">
-                <option value = "Dancer" selected>Dancer</option>
-                <option value = "Guardian">Guardian</option>
-                <option value = "Teacher">Teacher</option>
-            </select>
-        </tr>
-        <tr>
-            <td><label for="terms">I agree to the Terms of Service</label>
-            <input name="terms" id="terms" type="checkbox" value="Yes"></td>
-        </tr>
-    </table>
-        <input type="submit" id="submitbtn" name="submit" value="Sign Up" />
+<section id="content">
+    <div id="nkms-register">
+        <form id="wp_signup_form" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
+            <table class="table">
+                <tr>
+                    <td><label for="username">Username</label></td>
+                    <td><input type="text" name="username" id="username"></td>
+                </tr>
+                <tr>
+                    <td><label for="email">Email address</label></td>
+                    <td><input type="text" name="email" id="email"></td>
+                </tr>
+                <tr>
+                    <td><label for="password">Password</label></td>
+                    <td><input type="password" name="password" id="password"></td>
+                </tr>
+                <tr>
+                   <td><label for="password_confirmation">Confirm Password</label></td>
+                   <td><input type="password" name="password_confirmation" id="password_confirmation"></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <label for="account_role">Choose Account Role</label>
+                    <select name="account_role">
+                        <option value = "dancer" selected>Dancer</option>
+                        <option value = "guardian">Guardian</option>
+                        <option value = "dance-school">Dance School</option>
+                    </select>
+                </tr>
+                <tr>
+                    <td><label for="terms">I agree to the Terms of Service</label>
+                    <input name="terms" id="terms" type="checkbox" value="Yes"></td>
+                </tr>
+            </table>
+            <input type="submit" id="submitbtn" name="submit" value="Sign Up" />
+        </form>
+    </div><!-- #nkms-account -->
+</section><!-- #content -->
 
-</form>
-
-<?php add_action('wp_enqueue_scripts', 'callback_for_setting_up_scripts');
-function callback_for_setting_up_scripts() {
-    wp_register_style( 'nkms-css', plugins_url( 'CSS/register.css', __FILE__ ), array(), '20200404', 'all' );
-    wp_enqueue_style( 'nkms-css' );
-    //wp_enqueue_script( 'nakamas-members-scripts', plugin_dir_path( __FILE__ ) . 'nakamas-members-script.js', array( 'jquery' ) );
-}
-
-get_footer(); // Loads the footer.php template. ?>
+<?php get_footer(); // Loads the footer.php template. ?>

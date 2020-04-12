@@ -34,28 +34,26 @@ if($_POST)
     //echo "Invalid login details";
 
 }
- ?>
-<h2>Welcome</h2>
-<form id="login-form" name="form" action="<?php echo home_url(); ?>/login/" method="post">
+?>
+<section id="content">
+    <div id="nkms-login">
+        <h2>Welcome</h2>
+        <form id="login-form" name="form" action="<?php echo home_url(); ?>/login/" method="post">
 
-        <table class="table">
-            <tr>
-                <td><label for="username">Username</label></td>
-                <td><input id="username" type="text" placeholder="Username" name="username"></td>
-            </tr>
-            <tr>
-                <td><label for="password">Password</label></td>
-                <td><input id="password" type="password" placeholder="Password" name="password"></td>
-            </tr>
-        </table>
+                <table class="table">
+                    <tr>
+                        <td><label for="username">Username</label></td>
+                        <td><input id="username" type="text" placeholder="Username" name="username"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password">Password</label></td>
+                        <td><input id="password" type="password" placeholder="Password" name="password"></td>
+                    </tr>
+                </table>
 
-        <input id="submit" type="submit" name="submit" value="Login" class="btn btn-primary btn-login">
-</form>
-<?php
-function callback_for_setting_up_scripts() {
-    wp_register_style( 'nkms-css', plugins_url( 'CSS/login.css', __FILE__ ), array(), '20200404', 'all' );
-    wp_enqueue_style( 'nkms-css' );
-    //wp_enqueue_script( 'nakamas-members-scripts', plugin_dir_path( __FILE__ ) . 'nakamas-members-script.js', array( 'jquery' ) );
-}
-add_action('wp_enqueue_scripts', 'callback_for_setting_up_scripts');
-get_footer(); // Loads the footer.php template. ?>
+                <input id="submit" type="submit" name="submit" value="Login" class="btn btn-primary btn-login">
+        </form>
+</div><!-- #nkms-login -->
+</section><!-- #content -->
+
+<?php get_footer(); // Loads the footer.php template. ?>

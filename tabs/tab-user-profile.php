@@ -3,14 +3,8 @@
  * Template Name: User Profile
  *
  * Allow users to update their profiles from Frontend.
- *
+ */
 
- * Get user info. */
-global $current_user, $wp_roles;
-wp_get_current_user();
-
-/* Load the registration file. */
-//require_once( ABSPATH . WPINC . '/registration.php' );
 $error = array();
 /* If profile was saved, update profile. */
 if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) && $_POST['action'] == 'update-user' ) {
@@ -48,59 +42,50 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) && $_POS
         exit;
     }
 }
+?>
 
 
-if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
-<div id="post-<?php the_ID(); ?>">
-    <div class="entry-content entry">
-        <?php the_content(); ?>
-        <?php if ( !is_user_logged_in() ) : ?>
-            <p class="warning">
-                <?php _e('You must be logged in to edit your profile.', 'profile'); ?>
-            </p><!-- .warning -->
-        <?php else : ?>
-        <h3 style="font-weight:300;">Update Information for <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3></br>
-        <?php if (isset($_GET['s'])) { if ( $_GET['updated'] == 'true' ) : ?> <div id="message" class="updated"><p>Your profile has been updated.</p></div> <?php endif; } ?>
-            <?php if ( count($error) > 0 ) echo '<p class="error">' . implode("<br />", $error) . '</p>'; ?>
-            <form method="post" id="adduser" action="<?php the_permalink(); ?>">
-                <p class="form-username">
-                    <label for="first-name"><?php _e('First Name', 'profile'); ?></label>
-                    <input class="text-input" name="first-name" type="text" id="first-name" value="<?php the_author_meta( 'first_name', $current_user->ID ); ?>" />
-                </p><!-- .form-username -->
-                <p class="form-username">
-                    <label for="last-name"><?php _e('Last Name', 'profile'); ?></label>
-                    <input class="text-input" name="last-name" type="text" id="last-name" value="<?php the_author_meta( 'last_name', $current_user->ID ); ?>" />
-                </p><!-- .form-username -->
-                <p class="form-email">
-                    <label for="email"><?php _e('E-mail *', 'profile'); ?></label>
-                    <input class="text-input" name="email" type="text" id="email" value="<?php the_author_meta( 'user_email', $current_user->ID ); ?>" />
-                </p><!-- .form-email -->
-                <p class="form-password">
-                    <label for="pass1"><?php _e('Password *', 'profile'); ?> </label>
-                    <input class="text-input" name="pass1" type="password" id="pass1" />
-                </p><!-- .form-password -->
-                <p class="form-password">
-                    <label for="pass2"><?php _e('Repeat Password *', 'profile'); ?></label>
-                    <input class="text-input" name="pass2" type="password" id="pass2" />
-                </p><!-- .form-password -->
+<div class="nkms-tabs">
+    <?php if ( !is_user_logged_in() ) : ?>
+        <p class="warning">
+            <?php _e('You must be logged in to edit your profile.', 'profile'); ?>
+        </p><!-- .warning -->
+    <?php else : ?>
+    <h3 style="font-weight:300;">Update Information for <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3></br>
+    <?php if (isset($_GET['s'])) { if ( $_GET['updated'] == 'true' ) : ?> <div id="message" class="updated"><p>Your profile has been updated.</p></div> <?php endif; } ?>
+        <?php if ( count($error) > 0 ) echo '<p class="error">' . implode("<br />", $error) . '</p>'; ?>
+        <form method="post" id="adduser" action="<?php the_permalink(); ?>">
+            <p class="form-username">
+                <label for="first-name"><?php _e('First Name', 'profile'); ?></label>
+                <input class="text-input" name="first-name" type="text" id="first-name" value="<?php the_author_meta( 'first_name', $current_user->ID ); ?>" />
+            </p><!-- .form-username -->
+            <p class="form-username">
+                <label for="last-name"><?php _e('Last Name', 'profile'); ?></label>
+                <input class="text-input" name="last-name" type="text" id="last-name" value="<?php the_author_meta( 'last_name', $current_user->ID ); ?>" />
+            </p><!-- .form-username -->
+            <p class="form-email">
+                <label for="email"><?php _e('E-mail *', 'profile'); ?></label>
+                <input class="text-input" name="email" type="text" id="email" value="<?php the_author_meta( 'user_email', $current_user->ID ); ?>" />
+            </p><!-- .form-email -->
+            <p class="form-password">
+                <label for="pass1"><?php _e('Password *', 'profile'); ?> </label>
+                <input class="text-input" name="pass1" type="password" id="pass1" />
+            </p><!-- .form-password -->
+            <p class="form-password">
+                <label for="pass2"><?php _e('Repeat Password *', 'profile'); ?></label>
+                <input class="text-input" name="pass2" type="password" id="pass2" />
+            </p><!-- .form-password -->
 
-                <?php
-                //action hook for plugin and extra fields
-                do_action('edit_user_profile',$current_user);
-                ?>
-                <p class="form-submit">
-                    <?php //echo $referer; ?>
-                    <input name="updateuser" type="submit" id="updateuser" class="submit button" value="<?php _e('Update', 'profile'); ?>" />
-                    <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
-                    <input name="action" type="hidden" id="action" value="update-user" />
-                </p><!-- .form-submit -->
-            </form><!-- #adduser -->
-        <?php endif; ?>
-    </div><!-- .entry-content -->
-</div><!-- .hentry .post -->
-<?php endwhile; ?>
-<?php else: ?>
-    <p class="no-data">
-        <?php _e('Sorry, no page matched your criteria.', 'profile'); ?>
-    </p><!-- .no-data -->
-<?php endif; ?>
+            <?php
+            //action hook for plugin and extra fields
+            do_action('edit_user_profile',$current_user);
+            ?>
+            <p class="form-submit">
+                <?php //echo $referer; ?>
+                <input name="updateuser" type="submit" id="updateuser" class="submit button" value="<?php _e('Update', 'profile'); ?>" />
+                <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
+                <input name="action" type="hidden" id="action" value="update-user" />
+            </p><!-- .form-submit -->
+        </form><!-- #adduser -->
+    <?php endif; ?>
+</div><!-- .nkms-tabs -->
