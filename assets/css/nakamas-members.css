@@ -1,6 +1,6 @@
 /* Tabs */
-#nkms-account {max-width: 1200px; margin: 0 auto; width: 100%; padding: 4rem;}
 .tabcontent {display: none;}
+.nkms-tabs, #nkms-login, #nkms-register {max-width: 1200px; margin: 0 auto; width: 100%; padding: 4rem;}
 
 
 

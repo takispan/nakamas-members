@@ -3,14 +3,8 @@
  * Template Name: User Profile
  *
  * Allow users to update their profiles from Frontend.
- *
+ */
 
- * Get user info. */
-global $current_user, $wp_roles;
-wp_get_current_user();
-
-/* Load the registration file. */
-//require_once( ABSPATH . WPINC . '/registration.php' );
 $error = array();
 /* If profile was saved, update profile. */
 if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) && $_POST['action'] == 'update-user' ) {
@@ -51,7 +45,7 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) && $_POS
 ?>
 
 
-<div id="nkms-userprofile">
+<div class="nkms-tabs">
     <?php if ( !is_user_logged_in() ) : ?>
         <p class="warning">
             <?php _e('You must be logged in to edit your profile.', 'profile'); ?>
@@ -94,4 +88,4 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) && $_POS
             </p><!-- .form-submit -->
         </form><!-- #adduser -->
     <?php endif; ?>
-</div><!-- #nkms-userprofile -->
+</div><!-- .nkms-tabs -->
