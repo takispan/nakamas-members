@@ -7,7 +7,7 @@
  * paying attention to how my_cpt_init() is called in the register_activation_hook callback:
  *
  * Also register custom post types
- */
+ *
 add_action( 'init', 'my_cpt_init' );
 function my_cpt_init() {
     register_post_type( ... );
@@ -25,7 +25,7 @@ function my_rewrite_flush() {
     // You should *NEVER EVER* do this on every page load!!
     flush_rewrite_rules();
 }
-
+*/
 
 // add_action( 'admin_menu', 'add_nakamas_users_options_page' );
 function add_nakamas_users_options_page() {
