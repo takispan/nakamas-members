@@ -197,33 +197,32 @@ add_role('guardian', __(
 add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
 add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
 function nkms_show_extra_profile_fields( $user ) {
-	$suki = get_the_author_meta( 'suki', $user->ID );
-	?>
+	$suki = get_the_author_meta( 'love_suki', $user->ID );	?>
 	<h3><?php esc_html_e( 'Personal Information', 'nkms' ); ?></h3>
 
 	<table class="form-table">
 		<tr>
 			<th><label for="love_suki"><?php esc_html_e( 'Who loves suki', 'nkms' ); ?></label></th>
 			<td>
-					<input type="text" value="<?php echo esc_attr( $suki ); ?>"
-					 class="regular-text" />
+					<input type="text" name="love_suki" value="<?php echo esc_attr( $suki ); ?>" class="regular-text" /><br/>
+					<span class="description"><?php _e("Please enter who loves dis good boi.") ?></span>
 			</td>
 		</tr>
 	</table>
 	<?php
 }
 
-// Validate fields
+/* Validate fields
 add_action( 'user_profile_update_errors', 'nkms_user_profile_update_errors', 10, 3 );
 function nkms_user_profile_update_errors( $errors, $update, $user ) {
 	if ( $update ) {
 		return;
 	}
 
-	if ( empty( $_POST['suki'] ) ) {
-		$errors->add( 'suki_error', __( '<strong>ERROR</strong>: Please enter who loves suki.', 'nkms' ) );
+	if ( empty( $_POST['love_suki'] ) ) {
+		$errors->add( 'love_suki_error', __( '<strong>ERROR</strong>: Please enter who loves suki.', 'nkms' ) );
 	}
-}
+} */
 
 
 // Saving the field
@@ -234,7 +233,7 @@ function nkms_update_profile_fields( $user_id ) {
 		return false;
 	}
 
-	if ( ! empty( $_POST['suki'] ) ) {
-		update_user_meta( $user_id, 'suki', intval( $_POST['suki'] ) );
+	if ( ! empty( $_POST['love_suki'] ) ) {
+		update_user_meta( $user_id, 'love_suki', sanitize_text_field( $_POST['love_suki'] ) );
 	}
 }
