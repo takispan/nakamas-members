@@ -186,3 +186,55 @@ add_role('guardian', __(
 		'read'	=> true, //Allows a user to read
 	)
 );
+
+
+/*
+ * Add user profile fields
+ *
+ * show_user_profile: show on frontend when user editing their own profile
+ * edit_user_profile: show on backend when admin edits other users
+ */
+add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
+add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
+function nkms_show_extra_profile_fields( $user ) {
+	$suki = get_the_author_meta( 'suki', $user->ID );
+	?>
+	<h3><?php esc_html_e( 'Personal Information', 'nkms' ); ?></h3>
+
+	<table class="form-table">
+		<tr>
+			<th><label for="love_suki"><?php esc_html_e( 'Who loves suki', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" value="<?php echo esc_attr( $suki ); ?>"
+					 class="regular-text" />
+			</td>
+		</tr>
+	</table>
+	<?php
+}
+
+// Validate fields
+add_action( 'user_profile_update_errors', 'nkms_user_profile_update_errors', 10, 3 );
+function nkms_user_profile_update_errors( $errors, $update, $user ) {
+	if ( $update ) {
+		return;
+	}
+
+	if ( empty( $_POST['suki'] ) ) {
+		$errors->add( 'suki_error', __( '<strong>ERROR</strong>: Please enter who loves suki.', 'nkms' ) );
+	}
+}
+
+
+// Saving the field
+add_action( 'personal_options_update', 'nkms_update_profile_fields' );
+add_action( 'edit_user_profile_update', 'nkms_update_profile_fields' );
+function nkms_update_profile_fields( $user_id ) {
+	if ( ! current_user_can( 'edit_user', $user_id ) ) {
+		return false;
+	}
+
+	if ( ! empty( $_POST['suki'] ) ) {
+		update_user_meta( $user_id, 'suki', intval( $_POST['suki'] ) );
+	}
+}

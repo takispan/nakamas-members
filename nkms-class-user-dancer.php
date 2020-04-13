@@ -8,7 +8,7 @@
   * A list of groups that the member is part of
   *
 */
-class Dancer extends WP_User {
+class dancer extends WP_User {
   // no constructor so WP_User's constructor is used
 
   private $groups = "IT WORKS";
@@ -20,7 +20,7 @@ class Dancer extends WP_User {
   }
 
   function getGroups() {
-    return this->groups;
+    return $this->$groups;
   }
 }
 ?>

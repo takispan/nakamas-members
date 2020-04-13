@@ -16,8 +16,8 @@
         <div class="soar-mid">
 			<h4><span>Soar</span> membership ID</h4>
 			<h3><?php echo $current_user->ID; ?></h3>
-      <h3><?php echo $current_user->__get(groups); ?></h3>
-      <h3><?php echo $current_user->getGroups(); ?></h3>
+      <h4>Tiny test</h4>
+      <h3><?php echo $current_user->getGroups; ?></h3>
 		</div>
 
 		<h4>Recent orders</h4>
