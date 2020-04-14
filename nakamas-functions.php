@@ -197,12 +197,17 @@ add_role('guardian', __(
 add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
 add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
 function nkms_show_extra_profile_fields( $user ) {
-	// Dancer
+	/* Dancer
+	 *
+	 *
+	 * Create custom fields
+	 */
 	$suki = get_the_author_meta( 'love_suki', $user->ID );
 	$ds_name = get_the_author_meta( 'dance_school_name', $user->ID );
 	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
 	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
-	$ds_dancers_list = get_the_author_meta( 'dance_school_dancers_list', $user->ID );
+	//$ds_dancers_list = get_the_author_meta( 'dance_school_dancers_list', $user->ID );
+	$ds_dancers_list = get_user_meta( $user->ID, dancers_list, array() );
 
 	// Dance School
 
@@ -253,7 +258,10 @@ function nkms_show_extra_profile_fields( $user ) {
 		<tr>
 			<th><label for="dance_school_dancers_list"><?php esc_html_e( 'Dance School List of Dancers', 'nkms' ); ?></label></th>
 			<td>
-					<input type="text" name="dance_school_dancers_list" value="<?php echo esc_attr( $ds_dancers_list ); ?>" class="regular-text" />
+					<input type="text" name="dance_school_dancers_list" value="<?php //echo $ds_dancers_list; ?>" class="not-regular-text" />
+					<?php
+						//$ds_dancers_list;
+					?>
 			</td>
 		</tr>
 	</table>
@@ -294,6 +302,6 @@ function nkms_update_profile_fields( $user_id ) {
 		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
 	}
 	if ( ! empty( $_POST['dance_school_dancers_list'] ) ) {
-		update_user_meta( $user_id, 'dance_school_dancers_list', sanitize_text_field( $_POST['dance_school_dancers_list'] ) );
+		//update_user_meta( $user_id, 'dance_school_dancers_list', sanitize_text_field( $_POST['dance_school_dancers_list'] ) );
 	}
 }
