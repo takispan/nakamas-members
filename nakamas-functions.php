@@ -197,15 +197,63 @@ add_role('guardian', __(
 add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
 add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
 function nkms_show_extra_profile_fields( $user ) {
-	$suki = get_the_author_meta( 'love_suki', $user->ID );	?>
-	<h3><?php esc_html_e( 'Personal Information', 'nkms' ); ?></h3>
+	// Dancer
+	$suki = get_the_author_meta( 'love_suki', $user->ID );
+	$ds_name = get_the_author_meta( 'dance_school_name', $user->ID );
+	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
+	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
+	$ds_dancers_list = get_the_author_meta( 'dance_school_dancers_list', $user->ID );
+
+	// Dance School
+
+	// Dancer
+	?>
+	<!-- Dancer -->
+	<h3><?php esc_html_e( 'Dancer', 'nkms' ); ?></h3>
 
 	<table class="form-table">
 		<tr>
 			<th><label for="love_suki"><?php esc_html_e( 'Who loves suki', 'nkms' ); ?></label></th>
 			<td>
-					<input type="text" name="love_suki" value="<?php echo esc_attr( $suki ); ?>" class="regular-text" /><br/>
-					<span class="description"><?php _e("Please enter who loves dis good boi.") ?></span>
+					<input type="text" name="love_suki" value="<?php echo esc_attr( $suki ); ?>" class="regular-text" />
+					<!--<span class="description"><?php //_e("Please enter who loves dis good boi.") ?></span>-->
+			</td>
+		</tr>
+	</table>
+
+	<!-- Dance School -->
+	<h3><?php esc_html_e( 'Dance School', 'nkms' ); ?></h3>
+
+	<table class="form-table">
+		<tr>
+			<th><label for="love_suki"><?php esc_html_e( 'Who loves suki', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" name="love_suki" value="<?php echo esc_attr( $suki ); ?>" class="regular-text" />
+					<!--<span class="description"><?php //_e("Please enter who loves dis good boi.") ?></span>-->
+			</td>
+		</tr>
+		<tr>
+			<th><label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" name="dance_school_name" value="<?php echo esc_attr( $ds_name ); ?>" class="regular-text" />
+			</td>
+		</tr>
+		<tr>
+			<th><label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" name="dance_school_address" value="<?php echo esc_attr( $ds_address ); ?>" class="regular-text" />
+			</td>
+		</tr>
+		<tr>
+			<th><label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" name="dance_school_phone_number" value="<?php echo esc_attr( $ds_phone_number ); ?>" class="regular-text" />
+			</td>
+		</tr>
+		<tr>
+			<th><label for="dance_school_dancers_list"><?php esc_html_e( 'Dance School List of Dancers', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" name="dance_school_dancers_list" value="<?php echo esc_attr( $ds_dancers_list ); ?>" class="regular-text" />
 			</td>
 		</tr>
 	</table>
@@ -235,5 +283,17 @@ function nkms_update_profile_fields( $user_id ) {
 
 	if ( ! empty( $_POST['love_suki'] ) ) {
 		update_user_meta( $user_id, 'love_suki', sanitize_text_field( $_POST['love_suki'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_name'] ) ) {
+		update_user_meta( $user_id, 'dance_school_name', sanitize_text_field( $_POST['dance_school_name'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_address'] ) ) {
+		update_user_meta( $user_id, 'dance_school_address', sanitize_text_field( $_POST['dance_school_address'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_phone_number'] ) ) {
+		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_dancers_list'] ) ) {
+		update_user_meta( $user_id, 'dance_school_dancers_list', sanitize_text_field( $_POST['dance_school_dancers_list'] ) );
 	}
 }
