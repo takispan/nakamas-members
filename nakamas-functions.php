@@ -273,6 +273,7 @@ function nkms_show_extra_profile_fields( $user) {
 			<td>
 					<select name="dance_school_remove_dancers">
 						<?php
+						echo "<option>Select a dancer</option>";
 						foreach ($ds_dancers_list_array as $key => $value) {
 							$user_info = get_userdata($value);
 							echo "<option>" . $value . "</option>"; //. $user_info->first_name . "</td><td>" . $user_info->last_name . "</td></tr>";
