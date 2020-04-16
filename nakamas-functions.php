@@ -206,7 +206,6 @@ function nkms_show_extra_profile_fields( $user) {
 	$ds_name = get_the_author_meta( 'dance_school_name', $user->ID );
 	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
 	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
-	$ds_add_dancers = get_the_author_meta( 'dance_school_add_dancers', $user->ID );
 	$ds_dancers_list_array = get_user_meta($user->ID, 'dance_school_dancers_list', true);
 	if (!is_array($ds_dancers_list_array)) {
 		$ds_dancers_list_array = [];
@@ -264,9 +263,28 @@ function nkms_show_extra_profile_fields( $user) {
 			</td>
 		</tr>
 		<tr>
+			<th></th>
+			<td>
+					<input type="submit" name="dance_school_add_dancers_submit" value="Add" />
+			</td>
+		</tr>
+		<tr>
 			<th><label for="dance_school_remove_dancers"><?php esc_html_e( 'Remove a dancer', 'nkms' ); ?></label></th>
 			<td>
-					<input type="text" name="dance_school_remove_dancers" value="" class="regular-text" />
+					<select name="dance_school_remove_dancers">
+						<?php
+						foreach ($ds_dancers_list_array as $key => $value) {
+							$user_info = get_userdata($value);
+							echo "<option>" . $value . "</option>"; //. $user_info->first_name . "</td><td>" . $user_info->last_name . "</td></tr>";
+						}
+						?>
+					</select>
+			</td>
+		</tr>
+		<tr>
+			<th></th>
+			<td>
+					<input type="submit" name="dance_school_remove_dancers_submit" value="Remove" />
 			</td>
 		</tr>
 		<tr>
@@ -288,6 +306,9 @@ function nkms_show_extra_profile_fields( $user) {
 							}
 						} else {
 							echo "This Dance School does not have any registered dancers.";
+						}
+						if (!in_array($_POST['dance_school_remove_dancers'], $ds_dancers_list_array)) {
+							echo "The dancer was not part of the list.";
 						} ?>
 						</table>
 
@@ -330,12 +351,7 @@ function nkms_update_profile_fields( $user_id ) {
 		if (!is_array($data_entry)) {
 			$data_entry = [];
 		}
-		if (!in_array($_POST['dance_school_remove_dancers'], $data_entry) {
-			echo "The dancer was not part of the list.";
-		}
-		else {
-			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
-			update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
-		}
+		$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
 	}
 }
