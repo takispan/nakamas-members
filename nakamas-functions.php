@@ -326,6 +326,12 @@ function nkms_update_profile_fields( $user_id ) {
 		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
 	}
 	if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
-		//code to delete entry from table.
+		$data_entry = get_user_meta($user_id, 'dance_school_dancers_list', true);
+		if (!is_array($data_entry)) {
+			$data_entry = [];
+		}
+		//if (!array_contains($data, value)) -> error message to user
+		$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
 	}
 }
