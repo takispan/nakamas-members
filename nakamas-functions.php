@@ -322,7 +322,10 @@ function nkms_update_profile_fields( $user_id ) {
 		if (!is_array($data_entry)) {
 			$data_entry = [];
 		}
-		array_push($data_entry, sanitize_text_field($_POST['dance_school_add_dancers']));
+		$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
+		if (!in_array($entry, $data_entry)) {
+			array_push($data_entry, $entry);
+		}
 		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
 	}
 	if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
@@ -330,12 +333,8 @@ function nkms_update_profile_fields( $user_id ) {
 		if (!is_array($data_entry)) {
 			$data_entry = [];
 		}
-		if (!in_array($_POST['dance_school_remove_dancers'], $data_entry) {
-			echo "The dancer was not part of the list.";
-		}
-		else {
-			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
-			update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
-		}
+		//if (!array_contains($data, value)) -> error message to user
+		$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
 	}
 }
