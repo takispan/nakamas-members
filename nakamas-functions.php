@@ -258,14 +258,22 @@ function nkms_show_extra_profile_fields( $user) {
 			</td>
 		</tr>
 		<tr>
-			<th><label for="dance_school_add_dancers"><?php esc_html_e( 'Dance School List of Dancers', 'nkms' ); ?></label></th>
+			<th><label for="dance_school_add_dancers"><?php esc_html_e( 'Add a dancer', 'nkms' ); ?></label></th>
 			<td>
 					<input type="text" name="dance_school_add_dancers" value="" class="regular-text" />
+			</td>
+		</tr>
+		<tr>
+			<th><label for="dance_school_remove_dancers"><?php esc_html_e( 'Remove a dancer', 'nkms' ); ?></label></th>
+			<td>
+					<input type="text" name="dance_school_remove_dancers" value="" class="regular-text" />
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
 					<?php
 
-						//$ds_dancers_list_input = (isset($_POST['dance_school_add_dancers']) ? $_POST['dance_school_add_dancers'] : null);
-						print_r($ds_dancers_list_array);
-						//print_r($ds_dancers_list_array);
 						if ( ! empty( $ds_dancers_list_array ) ) { ?>
 							<table>
 								<tr>
@@ -273,13 +281,10 @@ function nkms_show_extra_profile_fields( $user) {
 									<th>First Name</th>
 									<th>Last Name</th>
 								</tr>
-								<!-- []
-								[[1,2,3]] -->
 							<?php
 							foreach ($ds_dancers_list_array as $key => $value) {
 								$user_info = get_userdata($value);
 								echo "<tr><td>" . $value . "</td><td>" . $user_info->first_name . "</td><td>" . $user_info->last_name . "</td></tr>";
-								// echo "<tr><td>" . $ds_dancers_list_array[0] . "</td><td>" . $user_info->first_name . "</td><td>" . $user_info->last_name . "</td></tr>";
 							}
 						} else {
 							echo "This Dance School does not have any registered dancers.";
@@ -291,19 +296,6 @@ function nkms_show_extra_profile_fields( $user) {
 	</table>
 	<?php
 }
-
-/* Validate fields
-add_action( 'user_profile_update_errors', 'nkms_user_profile_update_errors', 10, 3 );
-function nkms_user_profile_update_errors( $errors, $update, $user ) {
-	if ( $update ) {
-		return;
-	}
-
-	if ( empty( $_POST['love_suki'] ) ) {
-		$errors->add( 'love_suki_error', __( '<strong>ERROR</strong>: Please enter who loves suki.', 'nkms' ) );
-	}
-} */
-
 
 // Saving the field
 add_action( 'personal_options_update', 'nkms_update_profile_fields' );
@@ -326,12 +318,14 @@ function nkms_update_profile_fields( $user_id ) {
 		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
 	}
 	if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
-		//update_user_meta( $user_id, 'dance_school_dancers_list', sanitize_text_field( $_POST['dance_school_dancers_list'] ) );
 		$data_entry = get_user_meta($user_id, 'dance_school_dancers_list', true);
 		if (!is_array($data_entry)) {
 			$data_entry = [];
 		}
 		array_push($data_entry, sanitize_text_field($_POST['dance_school_add_dancers']));
 		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
+	}
+	if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
+		//code to delete entry from table.
 	}
 }
