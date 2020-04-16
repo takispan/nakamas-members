@@ -206,8 +206,8 @@ function nkms_show_extra_profile_fields( $user ) {
 	$ds_name = get_the_author_meta( 'dance_school_name', $user->ID );
 	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
 	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
-	//$ds_dancers_list = get_the_author_meta( 'dance_school_dancers_list', $user->ID );
-	$ds_dancers_list = get_user_meta( $user->ID, dancers_list, array() );
+	$ds_add_dancers = get_the_author_meta( 'dance_school_add_dancers', $user->ID );
+	$ds_dancers_list_array = array();
 
 	// Dance School
 
@@ -256,12 +256,31 @@ function nkms_show_extra_profile_fields( $user ) {
 			</td>
 		</tr>
 		<tr>
-			<th><label for="dance_school_dancers_list"><?php esc_html_e( 'Dance School List of Dancers', 'nkms' ); ?></label></th>
+			<th><label for="dance_school_add_dancers"><?php esc_html_e( 'Dance School List of Dancers', 'nkms' ); ?></label></th>
 			<td>
-					<input type="text" name="dance_school_dancers_list" value="<?php //echo $ds_dancers_list; ?>" class="not-regular-text" />
+					<input type="text" name="dance_school_add_dancers" value="" class="regular-text" />
 					<?php
-						//$ds_dancers_list;
-					?>
+
+						//$ds_dancers_list_input = (isset($_POST['dance_school_add_dancers']) ? $_POST['dance_school_add_dancers'] : null);
+
+						//print_r($ds_dancers_list_array);
+						if ( ! empty( $ds_dancers_list_array ) ) { ?>
+							<table>
+								<tr>
+									<th>ID</th>
+									<th>First Name</th>
+									<th>Last Name</th>
+								</tr>
+							<?php
+							foreach ($ds_dancers_list_array as $key => $value) {
+								$user_info = get_userdata($value);
+								echo "<tr><td>" . $value . "</td><td>" . $user_info->first_name . "</td><td>" . $user_info->last_name . "</td></tr>";
+							}
+						} else {
+							echo "This Dance School does not have any registered dancers.";
+						} ?>
+						</table>
+
 			</td>
 		</tr>
 	</table>
@@ -301,7 +320,12 @@ function nkms_update_profile_fields( $user_id ) {
 	if ( ! empty( $_POST['dance_school_phone_number'] ) ) {
 		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
 	}
-	if ( ! empty( $_POST['dance_school_dancers_list'] ) ) {
+	if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
 		//update_user_meta( $user_id, 'dance_school_dancers_list', sanitize_text_field( $_POST['dance_school_dancers_list'] ) );
+		//$ds_dancers_list = update_user_meta( $user->ID, 'dancers_list', array() );
+		//array_push()
+		update_user_meta( $user_id, 'dancers_list', $ds_dancers_list_array );
+
+		array_push($ds_dancers_list_array, $_POST['dance_school_add_dancers']);
 	}
 }
