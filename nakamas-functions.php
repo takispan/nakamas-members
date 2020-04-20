@@ -265,7 +265,7 @@ function nkms_show_extra_profile_fields( $user) {
 		<tr>
 			<th></th>
 			<td>
-					<input type="submit" name="dance_school_add_dancers_submit" value="Add" />
+					<input class="button button-primary add-dancer" type="submit" name="dance_school_add_dancers_submit" value="Add" />
 			</td>
 		</tr>
 		<tr>
@@ -285,7 +285,7 @@ function nkms_show_extra_profile_fields( $user) {
 		<tr>
 			<th></th>
 			<td>
-					<input type="submit" name="dance_school_remove_dancers_submit" value="Remove" />
+					<input class="button button-primary remove-dancer" type="submit" name="dance_school_remove_dancers_submit" value="Remove" />
 			</td>
 		</tr>
 		<tr>
@@ -319,6 +319,7 @@ function nkms_show_extra_profile_fields( $user) {
 	<?php
 }
 
+
 // Saving the field
 add_action( 'personal_options_update', 'nkms_update_profile_fields' );
 add_action( 'edit_user_profile_update', 'nkms_update_profile_fields' );
@@ -339,6 +340,73 @@ function nkms_update_profile_fields( $user_id ) {
 	if ( ! empty( $_POST['dance_school_phone_number'] ) ) {
 		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
 	}
+
+	//Button to add dancers from list
+	if (isset($_POST['dance_school_add_dancers_submit'])) {
+		if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
+			$data_entry = get_user_meta($user_id, 'dance_school_dancers_list', true);
+			if (!is_array($data_entry)) {
+				$data_entry = [];
+			}
+			$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
+			if (!in_array($entry, $data_entry)) {
+				array_push($data_entry, $entry);
+			}
+			update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
+		}
+	}
+
+	//Button to remove dancers from list
+	if (isset($_POST['dance_school_remove_dancers_submit'])) {
+		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
+			$data_entry = get_user_meta($user_id, 'dance_school_dancers_list', true);
+			if (!is_array($data_entry)) {
+				$data_entry = [];
+			}
+			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		}
+		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
+	}
+
+}
+
+
+/*
+ * Ajax in WP
+ *
+ *
+add_action( 'admin_footer', 'nkms_javascript' ); // Write our JS below here
+function my_action_javascript() { ?>
+	<script type="text/javascript" >
+	jQuery(document).ready(function($) {
+		jQuery(".add-dancer").click( function(e) {
+			e.preventDefault();
+			add_dancer = jQuery(this).value();
+			remove_dancer = jQuery(this).value();
+			jQuery.ajax({
+				dataType: "json",
+				url: ajaxurl,
+				data: {action: nkms_action, add_dancer: add_dancer, remove_dancer: remove_dancer},
+				success: function(response) {
+					if (response.type == "success") {
+						jQuery(".add-dancer").html(response.add_dancer);
+						jQuery(".remove-dancer").html(response.remove_dancer);
+					}
+					else {
+						alert("Takis this instead bitch");
+					}
+				}
+			});
+		});
+	});
+	</script> <?php
+}
+
+//PHP to handle ajax
+add_action( 'wp_ajax_nkms_action', 'nkms_action' );
+function nkms_action( $user_id ) {
+	global $wpdb; // this is how you get access to the database
+
 	if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
 		$data_entry = get_user_meta($user_id, 'dance_school_dancers_list', true);
 		if (!is_array($data_entry)) {
@@ -358,4 +426,7 @@ function nkms_update_profile_fields( $user_id ) {
 		$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
 		update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
 	}
+
+	wp_die(); // this is required to terminate immediately and return a proper response
 }
+*/
