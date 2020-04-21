@@ -9,18 +9,57 @@
   *
 */
 class dancer extends WP_User {
-  // no constructor so WP_User's constructor is used
+  // no constructor so WP_User's constructor is users
 
-  private $groups = "IT WORKS";
+}
 
-  // magic method to detect $user->my_data
-  function __get( $key ) {
-    // fallback to default WP_User magic method
-    return parent::__get( $key );
+class DanceSchool extends WP_User {
+
+  $ds_dancers_list_array = [];
+
+  $dance_groups = [];
+
+  $da
+
+}
+
+class DanceGroup {
+
+  private $group_name;
+
+  private $size;
+
+  private $main_dancers;
+
+  //$sub_dancers;
+
+  function __construct($group_name, $size) {
+    this->group_name = $group_name;
+    this->$size = $size;
+    this->$main_dancers = [];
+  }
+  public function getSize() {
+    return sizeof($main_dancers);
   }
 
-  function getGroups() {
-    return $this->$groups;
+  public function getDancers() {
+    return $main_dancers;
+  }
+
+  public function addDancer($id) {
+		if (!in_array($id, $main_dancers)) {
+			array_push($id, $main_dancers);
+      return true;
+		}
+    return false;
+  }
+
+  public function removeDancer($id) {
+    if (!in_array($id, $main_dancers)) {
+        return false;
+    }
+    $main_dancers = array_diff($main_dancers, [$id]);
+    return true;
   }
 }
 ?>

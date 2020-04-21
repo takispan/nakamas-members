@@ -15,6 +15,8 @@
         </p><!-- .warning -->
     <?php else : ?>
     <h3 style="font-weight:300;">Add / Remove dancers for <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3></br>
-
+    <?php
+      $ds = new DanceSchool(); 
+    ?>
     <?php endif; ?>
 </div><!-- .nkms-tabs -->
