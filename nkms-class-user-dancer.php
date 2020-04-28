@@ -8,58 +8,94 @@
   * A list of groups that the member is part of
   *
 */
-class dancer extends WP_User {
+class Dancer extends WP_User {
   // no constructor so WP_User's constructor is users
 
 }
 
-class DanceSchool extends WP_User {
-
-  $ds_dancers_list_array = [];
-
-  $dance_groups = [];
-
-  $da
-
-}
-
+/**
+  * DanceGroup Object to represent a dance group
+  *
+  * Attributes:
+  * group_name   = Name
+  * size         = Size (number of Dancers in Group)
+  * type         = Group Type (Duo, Parent/Child, Trio/Quad, Team, Parent Team, Super Crew)
+  * status       = Status (Active, Inactive)
+  * main_dancers = An array with the Dancers in the Group
+  *
+*/
 class DanceGroup {
 
   private $group_name;
 
   private $size;
 
+  private $type;
+
+  private $status = 'Active';
+
   private $main_dancers;
 
   //$sub_dancers;
-
-  function __construct($group_name, $size) {
-    this->group_name = $group_name;
-    this->$size = $size;
-    this->$main_dancers = [];
+  //constructor
+  function __construct($group_name, $group_type) {
+    $this->group_name = $group_name;
+    $this->size = 0;
+    $this->type = $group_type;
+    $this->status = 'Active';
+    $this->main_dancers = [];
   }
+
+  //Get Group Name
+  public function getGroupName() {
+    return $this->group_name;
+  }
+
+  //Get Group Size
   public function getSize() {
     return sizeof($main_dancers);
   }
 
-  public function getDancers() {
-    return $main_dancers;
+  //Get Group Type
+  public function getType() {
+    return $this->type;
   }
 
-  public function addDancer($id) {
-		if (!in_array($id, $main_dancers)) {
-			array_push($id, $main_dancers);
+  //Get Group Status
+  public function getStatus() {
+    return $this->status;
+  }
+
+  //Set Group Status (Active / Inactive)
+  public function setStatus($group_status) {
+    $this->status = $group_status;
+  }
+
+  //Get Dancers in Group
+  public function getDancers() {
+    return $this->main_dancers;
+  }
+
+  //Add a Dancer in Group
+  function addDancer($id) {
+		if (!in_array($id, $this->main_dancers)) {
+			array_push($this->main_dancers, $id);
+      $this->size++;
       return true;
 		}
     return false;
   }
 
-  public function removeDancer($id) {
-    if (!in_array($id, $main_dancers)) {
+  //Remove a Dancer from the Group
+  function removeDancer($id) {
+    if (!in_array($id, $this->main_dancers)) {
         return false;
     }
-    $main_dancers = array_diff($main_dancers, [$id]);
+    $this->main_dancers = array_diff($this->main_dancers, [$id]);
+    $this->size--;
     return true;
   }
+
+
 }
 ?>

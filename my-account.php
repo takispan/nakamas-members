@@ -25,6 +25,7 @@ get_header(); // Loads the header.php template. ?>
                 <button class="tablinks" onclick="openTab(event, 'profile')">Profile</button>
             </div>
 
+            <!-- Tab content -->
             <div id="dashboard" class="tabcontent">
                 <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
             </div>
@@ -33,7 +34,6 @@ get_header(); // Loads the header.php template. ?>
                <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
             </div>
 
-            <!-- Tab content -->
             <div id="profile" class="tabcontent">
                 <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
             </div>
