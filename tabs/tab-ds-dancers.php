@@ -18,12 +18,12 @@ if (!is_array($ds_dancers_list_array)) { $ds_dancers_list_array = []; }
         <tr>
           <th>ID</th>
           <th>Name</th>
-          <!-- <th>Status</th> -->
+          <th>Status</th>
         </tr>
       <?php
     	foreach ($ds_dancers_list_array as $key => $value) {
     		$user_info = get_userdata($value);
-    		echo "<tr><td>" . $value . "</td><td>" . $user_info->first_name . " " . $user_info->last_name . "</td></tr>";
+        echo '<tr><td>' . $value . '</td><td><a href="' .'?d=' . $user_info->ID . '" onclick="dsOpenTab(event, \'ds-dancer-single\')">' . $user_info->first_name . ' ' . $user_info->last_name . '</a></td><td></td></tr>';
     	}
       echo '</table>';
     } else {

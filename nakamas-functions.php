@@ -234,6 +234,12 @@ add_role('guardian', __(
 	)
 );
 
+//Check if a user has a role
+function nkms_has_role($user, $role) {
+	$roles = $user->roles;
+	return in_array($role, (array) $user->roles);
+}
+
 /*
  * Register custom post type Groups
  *

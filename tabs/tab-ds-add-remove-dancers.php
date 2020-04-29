@@ -8,15 +8,18 @@
  //Button to add dancers from input
  if (isset($_POST['dance_school_add_dancers_submit'])) {
    if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
-     $data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
-     if (!is_array($data_entry)) {
-       $data_entry = [];
+     $dancer2add = get_user_by( 'id', $_POST['dance_school_add_dancers'] );
+     if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+       $data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+       if (!is_array($data_entry)) {
+         $data_entry = [];
+       }
+       $entry = sanitize_text_field($_POST['dance_school_add_dancers']);
+       if (!in_array($entry, $data_entry)) {
+         array_push($data_entry, $entry);
+       }
+       update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
      }
-     $entry = sanitize_text_field($_POST['dance_school_add_dancers']);
-     if (!in_array($entry, $data_entry)) {
-       array_push($data_entry, $entry);
-     }
-     update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
    }
  }
 

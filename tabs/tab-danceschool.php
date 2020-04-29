@@ -43,4 +43,9 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
         <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-add-remove-dancers.php'); ?>
     </div>
 
+    <!-- Tab content - Dancer Single -->
+    <div id="ds-dancer-single" class="ds-tabcontent">
+        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-dancer-single.php'); ?>
+    </div>
+
 </div><!-- .nkms-tabs -->
