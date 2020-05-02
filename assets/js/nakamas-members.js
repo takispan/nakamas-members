@@ -53,7 +53,9 @@ jQuery(document).ready(function($) {
 		'vara': nkms_ajax.vara,      // We pass php values differently!
     'varb': nkms_ajax.varb
 	};
-	// We can also pass the url value separately from ajaxurl for front end AJAX implementations
+
+  console.log(data.vara)
+  	// We can also pass the url value separately from ajaxurl for front end AJAX implementations
 	jQuery.post(nkms_ajax.ajax_url, data, function(response) {
 		alert('Got this from the server: ' + response);
 	});

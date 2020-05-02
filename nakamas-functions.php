@@ -144,13 +144,6 @@ function nkms_assets() {
    */
   wp_register_script( 'nkms-js', plugins_url( '/assets/js/nakamas-members.js', __FILE__ ), array( 'jquery' ), '20200406', true );
 
-	$js_values = array(
-		'ajax_url' => admin_url( 'admin-ajax.php' ),
-		'vara' => 'hello there!',
-		'varb' => 'another one'
-	);
-	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
-
   /* Register the style like this for a plugin
    * Parameters
    * Required: handle (name), src (source)
@@ -162,46 +155,55 @@ function nkms_assets() {
   wp_enqueue_script( 'nkms-js' );
   wp_enqueue_style( 'nkms-css' );
   //wp_enqueue_script( 'nakamas-members-scripts', plugin_dir_path( __FILE__ ) . 'nakamas-members-script.js', array( 'jquery' ) );
+	$vara = 'Hello there!';
+	$js_values = array(
+		'ajax_url' => admin_url( 'admin-ajax.php' ),
+		'vara' => $vara,
+		'varb' => 'another one'
+	);
+	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
+}
 
-	/*
-	 * Ajax in WP
-	 *
-	 */
-	add_action( 'wp_ajax_my_action', 'my_action' );
- 	add_action( 'wp_ajax_nopriv_my_action', 'nkms_action' );
- 	function my_action() {
- 		global $wpdb; // this is how you get access to the database
+/*
+ * Ajax in WP
+ *
+ */
+add_action( 'wp_ajax_my_action', 'my_action' );
+add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
+function my_action() {
+	global $wpdb; // this is how you get access to the database
+	$vara = "~";
+	// echo $vara;
+	// echo "Test 2";
+	// echo $vara;
+	//Button to add dancers from list
+	if (isset($_POST['dance_school_add_dancers_submit'])) {
+		if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
+			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+			if (!is_array($data_entry)) {
+				$data_entry = [];
+			}
+			$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
+			if (!in_array($entry, $data_entry)) {
+				array_push($data_entry, $entry);
+			}
+			update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+		}
+	}
 
-		echo $vara;
- 		//Button to add dancers from list
- 		if (isset($_POST['dance_school_add_dancers_submit'])) {
- 			if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
- 				$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
- 				if (!is_array($data_entry)) {
- 					$data_entry = [];
- 				}
- 				$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
- 				if (!in_array($entry, $data_entry)) {
- 					array_push($data_entry, $entry);
- 				}
- 				update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
- 			}
- 		}
-
- 		//Button to remove dancers from list
- 		if (isset($_POST['dance_school_remove_dancers_submit'])) {
- 			if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
- 				$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
- 				if (!is_array($data_entry)) {
- 					$data_entry = [];
- 				}
- 				$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
- 			}
- 			update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
- 		}
-
- 		wp_die(); // this is required to terminate immediately and return a proper response
- 	}
+	//Button to remove dancers from list
+	if (isset($_POST['dance_school_remove_dancers_submit'])) {
+		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
+			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+			if (!is_array($data_entry)) {
+				$data_entry = [];
+			}
+			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		}
+		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+	}
+	wp_die(); // this is required to terminate immediately and return a proper response
+	return;
 }
 
 /*
