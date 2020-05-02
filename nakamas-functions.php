@@ -159,7 +159,8 @@ function nkms_assets() {
 	$js_values = array(
 		'ajax_url' => admin_url( 'admin-ajax.php' ),
 		'vara' => $vara,
-		'varb' => 'another one'
+		'varb' => 'another one',
+		'the_issue_key' => '0422',
 	);
 	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
 }
@@ -172,10 +173,22 @@ add_action( 'wp_ajax_my_action', 'my_action' );
 add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
 function my_action() {
 	global $wpdb; // this is how you get access to the database
-	$vara = "~";
-	// echo $vara;
-	// echo "Test 2";
-	// echo $vara;
+
+	if (isset($_POST['the_issue_key'])) {
+			if ( ! empty( $_POST['the_issue_key'] ) ) {
+				$val = $_POST['the_issue_key'];
+				$test = $_POST['test'];
+				var_dump($test);
+				var_dump($val);
+				echo "Test 2";
+		} else {
+				echo "Is not empty";
+			}
+	} else {
+		echo "Is not set";
+	}
+
+
 	//Button to add dancers from list
 	if (isset($_POST['dance_school_add_dancers_submit'])) {
 		if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
@@ -202,6 +215,13 @@ function my_action() {
 		}
 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
 	}
+
+	//Create the array we send back to javascript here
+	$array_we_send_back = array( 'test' => "Test" );
+
+	//Make sure to json encode the output because that's what it is expecting
+	//echo json_encode( $array_we_send_back );
+
 	wp_die(); // this is required to terminate immediately and return a proper response
 	return;
 }

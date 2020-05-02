@@ -54,9 +54,35 @@ jQuery(document).ready(function($) {
     'varb': nkms_ajax.varb
 	};
 
-  console.log(data.vara)
-  	// We can also pass the url value separately from ajaxurl for front end AJAX implementations
-	jQuery.post(nkms_ajax.ajax_url, data, function(response) {
-		alert('Got this from the server: ' + response);
-	});
+  // We can also pass the url value separately from ajaxurl for front end AJAX implementations
+
+  var postData = {
+      'action': 'my_action',
+      'vara': nkms_ajax.vara,
+      'test': "TinyMarioSaysHello",
+      'the_issue_key': nkms_ajax.the_issue_key,
+  }
+
+  console.log("Test")
+  $.ajax({
+    type: "POST",
+    data: postData,
+    url: nkms_ajax.ajax_url,
+    //This fires when the ajax 'comes back' and it is valid json
+    success: function (response) {
+      console.log("Success");
+      console.log("Response was: " + response);
+      alert( response);
+    }
+    //This fires when the ajax 'comes back' and it isn't valid json
+    }).fail(function (data) {
+        console.log("Failure")
+        console.log(data);
+      });
+
+	// jQuery.post(nkms_ajax.ajax_url, data,
+  //   function(response) {
+	// 	    alert('Got this from the server: ' + response);
+	//      }
+  //    );
 });
