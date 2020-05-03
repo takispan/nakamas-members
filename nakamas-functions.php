@@ -154,12 +154,9 @@ function nkms_assets() {
   // For either a plugin or a theme, you can then enqueue the script/style
   wp_enqueue_script( 'nkms-js' );
   wp_enqueue_style( 'nkms-css' );
-  //wp_enqueue_script( 'nakamas-members-scripts', plugin_dir_path( __FILE__ ) . 'nakamas-members-script.js', array( 'jquery' ) );
-	$vara = 'Hello there!';
+
 	$js_values = array(
 		'ajax_url' => admin_url( 'admin-ajax.php' ),
-		'vara' => $vara,
-		'varb' => 'another one',
 		'the_issue_key' => '0422',
 	);
 	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
@@ -169,62 +166,79 @@ function nkms_assets() {
  * Ajax in WP
  *
  */
-add_action( 'wp_ajax_my_action', 'my_action' );
-add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
-function my_action() {
+add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
+function ds_add_dancer() {
 	global $wpdb; // this is how you get access to the database
 
-	if (isset($_POST['the_issue_key'])) {
-			if ( ! empty( $_POST['the_issue_key'] ) ) {
-				$val = $_POST['the_issue_key'];
-				$test = $_POST['test'];
-				var_dump($test);
-				var_dump($val);
-				echo "Test 2";
-		} else {
-				echo "Is not empty";
-			}
-	} else {
-		echo "Is not set";
-	}
-
-
-	//Button to add dancers from list
-	if (isset($_POST['dance_school_add_dancers_submit'])) {
-		if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
-			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
-			if (!is_array($data_entry)) {
-				$data_entry = [];
-			}
-			$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
-			if (!in_array($entry, $data_entry)) {
-				array_push($data_entry, $entry);
-			}
-			update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+	$dancer_to_add_id = $_POST['dancer'];
+	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+		$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+		if (!is_array($data_entry)) {
+			$data_entry = [];
 		}
-	}
-
-	//Button to remove dancers from list
-	if (isset($_POST['dance_school_remove_dancers_submit'])) {
-		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
-			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
-			if (!is_array($data_entry)) {
-				$data_entry = [];
-			}
-			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
+		if (!in_array($entry, $data_entry)) {
+			array_push($data_entry, $entry);
 		}
 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+		echo "Dancer added.";
+	}
+	else {
+		echo "Invalid Dancer ID";
+		wp_send_json_error();
 	}
 
-	//Create the array we send back to javascript here
-	$array_we_send_back = array( 'test' => "Test" );
-
-	//Make sure to json encode the output because that's what it is expecting
-	//echo json_encode( $array_we_send_back );
-
-	wp_die(); // this is required to terminate immediately and return a proper response
-	return;
+	wp_die();
 }
+
+// add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
+// function ds_single_dancer() {
+// 	global $wpdb; // this is how you get access to the database
+//
+// 	$dancer_id = $_POST['dancer_id'];
+// 	$dancer_single = get_user_by( 'id', $dancer_id );
+// 	echo $dancer_single;
+//
+// 	wp_die();
+// }
+
+// add_action( 'wp_ajax_my_action', 'my_action' );
+// add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
+// function my_action() {
+// 	global $wpdb; // this is how you get access to the database
+//
+// 	if (isset($_POST['the_issue_key'])) {
+// 			if ( ! empty( $_POST['the_issue_key'] ) ) {
+// 				$val = $_POST['the_issue_key'];
+// 				$test = $_POST['test'];
+// 				var_dump($test);
+// 				var_dump($val);
+// 				echo "Test 2";
+// 				echo $_POST[''];
+// 		} else {
+// 				echo "Is not empty";
+// 			}
+// 	} else {
+// 		echo "Is not set";
+// 	}
+// 	//Button to remove dancers from list
+// 	if (isset($_POST['dance_school_remove_dancers_submit'])) {
+// 		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
+// 			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+// 			if (!is_array($data_entry)) {
+// 				$data_entry = [];
+// 			}
+// 			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+// 		}
+// 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+// 	}
+// 	//Create the array we send back to javascript here
+// 	$array_we_send_back = array( 'test' => "Test" );
+// 	//Make sure to json encode the output because that's what it is expecting
+// 	//echo json_encode( $array_we_send_back );
+// 	wp_die(); // this is required to terminate immediately and return a proper response
+// }
 
 /*
  * Create user roles & capabilities

@@ -23,8 +23,8 @@ if (!is_array($ds_dancers_list_array)) { $ds_dancers_list_array = []; }
       <?php
     	foreach ($ds_dancers_list_array as $key => $value) {
     		$user_info = get_userdata($value);
-        echo '<tr><td>' . $value . '</td><td><a href="' .'?d=' . $user_info->ID . '" onclick="dsOpenTab(event, \'ds-dancer-single\')">' . $user_info->first_name . ' ' . $user_info->last_name . '</a></td><td></td></tr>';
-    	}
+        echo '<tr><td>' . $value . '</td><td><button class="single-dancer" data-dancer-id="' . $value . '">' . $user_info->first_name . ' ' . $user_info->last_name . '</button></td><td></td></tr>';
+    	 }
       echo '</table>';
     } else {
     	echo $ds_name . " does not have any registered dancers.";

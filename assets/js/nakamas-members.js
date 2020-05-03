@@ -48,41 +48,80 @@ document.getElementById("dsDefaultOpen").click();
 
 // jQuery
 jQuery(document).ready(function($) {
-  var data = {
-		'action': 'my_action',
-		'vara': nkms_ajax.vara,      // We pass php values differently!
-    'varb': nkms_ajax.varb
-	};
 
-  // We can also pass the url value separately from ajaxurl for front end AJAX implementations
+  // Pass data to populate single dancer tab
+  // $('.single-dancer').on('click', function(e) {
+  //   var dancer_id = $('.single-dancer').attr('data-dancer-id');
+  //   $.ajax({
+  //     _ajax_nonce: nkms_ajax.nonce,
+  //     url: nkms_ajax.ajax_url,
+  //     type: "POST",
+  //     data: {
+  //       action: 'ds_single_dancer',
+  //       dancer_id: dancer_id,
+  //     },
+  //     success: function(response) {
+  //       console.log(response);
+  //       //dsOpenTab(event, 'ds-dancer-single');
+  //     },
+  //     error: function(data) {
+  //       console.log(response);
+  //     }
+  //   });
+  //   $('.ajax')[0].reset();
+  // });
 
-  var postData = {
-      'action': 'my_action',
-      'vara': nkms_ajax.vara,
-      'test': "TinyMarioSaysHello",
-      'the_issue_key': nkms_ajax.the_issue_key,
-  }
+  // Add dancer to dance school list of dancers
+  $('form#add-remove-dancers').on('submit', function(e) {
+    e.preventDefault();
+    //reset info messages
+    $('.success_msg').css('display','none');
+    $('.error_msg').css('display','none');
+    //var url = $(this).attr('action');
+    var dancer_to_add = $('#add_dancer_to_ds').val();
 
-  console.log("Test")
-  $.ajax({
-    type: "POST",
-    data: postData,
-    url: nkms_ajax.ajax_url,
-    //This fires when the ajax 'comes back' and it is valid json
-    success: function (response) {
-      console.log("Success");
-      console.log("Response was: " + response);
-      alert( response);
-    }
-    //This fires when the ajax 'comes back' and it isn't valid json
-    }).fail(function (data) {
-        console.log("Failure")
-        console.log(data);
-      });
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_add_dancer',
+        dancer: dancer_to_add,
+      },
+      success: function(response) {
+        $('.success_msg').css('display','block');
+        console.log(response);
+      },
+      error: function(data) {
+        $('.error_msg').css('display','block');
+        console.log(response);
+      }
+    });
+    $('.ajax')[0].reset();
+  });
 
-	// jQuery.post(nkms_ajax.ajax_url, data,
-  //   function(response) {
-	// 	    alert('Got this from the server: ' + response);
-	//      }
-  //    );
+  //To be replaced
+  // var postData = {
+  //     'action': 'my_action',
+  //     'test': "TinyMarioSaysHello",
+  //     'the_issue_key': nkms_ajax.the_issue_key,
+  //     'ds_add_dancer': $( '#add_dancer_to_ds' ).val()
+  // }
+  //
+  // $.ajax({
+  //   type: "POST",
+  //   data: postData,
+  //   url: nkms_ajax.ajax_url,
+  //   //This fires when the ajax 'comes back' and it is valid json
+  //   success: function (response) {
+  //     console.log("Success");
+  //     console.log("Response was: " + response);
+  //     //alert( response);
+  //   }
+  //   //This fires when the ajax 'comes back' and it isn't valid json
+  //   }).fail(function (data) {
+  //       console.log("Failure")
+  //       console.log(data);
+  //     });
+
 });
