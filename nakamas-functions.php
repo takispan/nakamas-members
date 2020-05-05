@@ -98,9 +98,10 @@ function ds_single_dancer() {
 	global $wpdb; // this is how you get access to the database
 
 	$dancer_id = $_POST['dancer_id'];
-	$dancer_single = get_user_by( 'id', $dancer_id );
-	echo $dancer_single;
-
+	// $dancer_single = get_user_by( 'id', $dancer_id );
+	// //echo $dancer_single;
+  // var_dump($dancer_single);
+  var_dump($dancer_id);
 	wp_die();
 }
 

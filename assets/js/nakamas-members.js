@@ -95,8 +95,8 @@ jQuery(document).ready(function($) {
         dancer_id: dancer_id,
       },
       success: function(response) {
-        console.log(response);
-        dsOpenTab(event, 'ds-dancer-single');
+        console.log("Response: " + response);
+        dsOpenTab(e, 'ds-dancer-single');
       },
       error: function(response) {
         console.log(response);
