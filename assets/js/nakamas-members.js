@@ -54,6 +54,31 @@ document.getElementById("dsDefaultOpen").click();
 // jQuery
 jQuery(document).ready(function($) {
 
+<<<<<<< HEAD
+=======
+  // Pass data to populate single dancer tab
+  // $('.single-dancer').on('click', function(e) {
+  //   var dancer_id = $('.single-dancer').attr('data-dancer-id');
+  //   $.ajax({
+  //     _ajax_nonce: nkms_ajax.nonce,
+  //     url: nkms_ajax.ajax_url,
+  //     type: "POST",
+  //     data: {
+  //       action: 'ds_single_dancer',
+  //       dancer_id: dancer_id,
+  //     },
+  //     success: function(response) {
+  //       console.log(response);
+  //       //dsOpenTab(event, 'ds-dancer-single');
+  //     },
+  //     error: function(data) {
+  //       console.log(response);
+  //     }
+  //   });
+  //   $('.ajax')[0].reset();
+  // });
+
+>>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
   // Add dancer to dance school list of dancers
   $('form#add-remove-dancers').on('submit', function(e) {
     e.preventDefault();
@@ -75,7 +100,11 @@ jQuery(document).ready(function($) {
         $('.success_msg').css('display','block');
         console.log(response);
       },
+<<<<<<< HEAD
       error: function(response) {
+=======
+      error: function(data) {
+>>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
         $('.error_msg').css('display','block');
         console.log(response);
       }
@@ -83,6 +112,7 @@ jQuery(document).ready(function($) {
     $('.ajax')[0].reset();
   });
 
+<<<<<<< HEAD
   // Pass data to populate single dancer tab
   $('.single-dancer').on('click', function(e) {
     var dancer_id = $('.single-dancer').attr('data-dancer-id');
@@ -105,6 +135,8 @@ jQuery(document).ready(function($) {
     $('.ajax')[0].reset();
   });
 
+=======
+>>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
   //To be replaced
   // var postData = {
   //     'action': 'my_action',
@@ -112,7 +144,11 @@ jQuery(document).ready(function($) {
   //     'the_issue_key': nkms_ajax.the_issue_key,
   //     'ds_add_dancer': $( '#add_dancer_to_ds' ).val()
   // }
+<<<<<<< HEAD
 
+=======
+  //
+>>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
   // $.ajax({
   //   type: "POST",
   //   data: postData,
@@ -129,9 +165,12 @@ jQuery(document).ready(function($) {
   //       console.log(data);
   //     });
 
+<<<<<<< HEAD
 	// jQuery.post(nkms_ajax.ajax_url, data,
   //   function(response) {
 	// 	    alert('Got this from the server: ' + response);
 	//      }
   //    );
+=======
+>>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
 });
