@@ -27,106 +27,6 @@ function my_rewrite_flush() {
 }
 */
 
-// add_action( 'admin_menu', 'add_nakamas_users_options_page' );
-function add_nakamas_users_options_page() {
-
-	add_options_page(
-		'nakamas_users Options',
-		'nakamas_users Options',
-		'manage_options',
-		'nakamas_users-options-page',
-		'display_nakamas_users_options_page'
-	);
-
-}
-add_action( 'admin_menu', 'add_nakamas_users_options_page' );
-function display_nakamas_users_options_page() {
-
-	echo '<h2>nakamas_users Options</h2>';
-
-	echo '<form method="post" action="options.php">';
-
-	do_settings_sections( 'nakamas_users-options-page' );
-	settings_fields( 'nakamas_users-settings' );
-
-	submit_button();
-
-	echo '</form>';
-
-}
-
-add_action( 'admin_init', 'nakamas_users_admin_init_one' );
-function nakamas_users_admin_init_one() {
-
-	add_settings_section(
-		'nakamas_users-settings-section-one',
-		'nakamas_users Settings Part One',
-		'display_nakamas_users_settings_message',
-		'nakamas_users-options-page'
-	);
-
-	add_settings_field(
-		'nakamas_users-input-field',
-		'nakamas_users Input Field',
-		'render_nakamas_users_input_field',
-		'nakamas_users-options-page',
-		'nakamas_users-settings-section-one'
-	);
-
-	register_setting(
-		'nakamas_users-settings',
-		'nakamas_users-input-field'
-	);
-
-}
-
-function display_nakamas_users_settings_message() {
-	echo "This displays the settings message.";
-}
-
-function render_nakamas_users_input_field() {
-
-	$input = get_option( 'nakamas_users-input-field' );
-	echo '<input type="text" id="nakamas_users-input-field" name="nakamas_users-input-field" value="' . $input . '" />';
-
-}
-
-add_action( 'admin_init', 'nakamas_users_admin_init_two' );
-function nakamas_users_admin_init_two() {
-
-	add_settings_section(
-		'nakamas_users-settings-section-two',
-		'nakamas_users Settings Part Two',
-		'display_another_nakamas_users_settings_message',
-		'nakamas_users-options-page'
-	);
-
-	add_settings_field(
-		'nakamas_users-input-field-two',
-		'nakamas_users Input Field Two',
-		'render_nakamas_users_input_field_two',
-		'nakamas_users-options-page',
-		'nakamas_users-settings-section-two'
-	);
-
-	register_setting(
-		'nakamas_users-settings',
-		'nakamas_users-input-field-two'
-	);
-
-}
-
-function display_another_nakamas_users_settings_message() {
-	echo "This displays the second settings message.";
-}
-
-function render_nakamas_users_input_field_two() {
-
-	$input = get_option( 'nakamas_users-input-field-two' );
-	echo '<input type="text" id="nakamas_users-input-field-two" name="nakamas_users-input-field-two" value="' . $input . '" />';
-
-}
-
 /*
  * Enqueue scripts & styles
  *
@@ -154,77 +54,92 @@ function nkms_assets() {
   // For either a plugin or a theme, you can then enqueue the script/style
   wp_enqueue_script( 'nkms-js' );
   wp_enqueue_style( 'nkms-css' );
-  //wp_enqueue_script( 'nakamas-members-scripts', plugin_dir_path( __FILE__ ) . 'nakamas-members-script.js', array( 'jquery' ) );
-	$vara = 'Hello there!';
+
 	$js_values = array(
 		'ajax_url' => admin_url( 'admin-ajax.php' ),
-		'vara' => $vara,
-		'varb' => 'another one',
 		'the_issue_key' => '0422',
 	);
 	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
-}
+  }
 
 /*
  * Ajax in WP
  *
  */
-add_action( 'wp_ajax_my_action', 'my_action' );
-add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
-function my_action() {
+//Add dancer to dance school list of dancers
+add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
+function ds_add_dancer() {
 	global $wpdb; // this is how you get access to the database
 
-	if (isset($_POST['the_issue_key'])) {
-			if ( ! empty( $_POST['the_issue_key'] ) ) {
-				$val = $_POST['the_issue_key'];
-				$test = $_POST['test'];
-				var_dump($test);
-				var_dump($val);
-				echo "Test 2";
-		} else {
-				echo "Is not empty";
-			}
-	} else {
-		echo "Is not set";
-	}
-
-
-	//Button to add dancers from list
-	if (isset($_POST['dance_school_add_dancers_submit'])) {
-		if ( ! empty( $_POST['dance_school_add_dancers'] ) ) {
-			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
-			if (!is_array($data_entry)) {
-				$data_entry = [];
-			}
-			$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
-			if (!in_array($entry, $data_entry)) {
-				array_push($data_entry, $entry);
-			}
-			update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+	$dancer_to_add_id = $_POST['dancer'];
+	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+		$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+		if (!is_array($data_entry)) {
+			$data_entry = [];
 		}
-	}
-
-	//Button to remove dancers from list
-	if (isset($_POST['dance_school_remove_dancers_submit'])) {
-		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
-			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
-			if (!is_array($data_entry)) {
-				$data_entry = [];
-			}
-			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+		$entry = sanitize_text_field($dancer2add);
+		if (!in_array($entry, $data_entry)) {
+			array_push($data_entry, $entry);
 		}
 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+		echo "Dancer added.";
 	}
-
-	//Create the array we send back to javascript here
-	$array_we_send_back = array( 'test' => "Test" );
-
-	//Make sure to json encode the output because that's what it is expecting
-	//echo json_encode( $array_we_send_back );
-
-	wp_die(); // this is required to terminate immediately and return a proper response
-	return;
+	else {
+		echo "Invalid Dancer ID";
+		wp_send_json_error();
+	}
+	wp_die();
 }
+
+//Pass dancer id to populate single dancer tab
+add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
+function ds_single_dancer() {
+	global $wpdb; // this is how you get access to the database
+
+	$dancer_id = $_POST['dancer_id'];
+	$dancer_single = get_user_by( 'id', $dancer_id );
+	echo $dancer_single;
+
+	wp_die();
+}
+
+// add_action( 'wp_ajax_my_action', 'my_action' );
+// add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
+// function my_action() {
+// 	global $wpdb; // this is how you get access to the database
+//
+// 	if (isset($_POST['the_issue_key'])) {
+// 			if ( ! empty( $_POST['the_issue_key'] ) ) {
+// 				$val = $_POST['the_issue_key'];
+// 				$test = $_POST['test'];
+// 				var_dump($test);
+// 				var_dump($val);
+// 				echo "Test 2";
+// 				echo $_POST[''];
+// 		} else {
+// 				echo "Is not empty";
+// 			}
+// 	} else {
+// 		echo "Is not set";
+// 	}
+// 	//Button to remove dancers from list
+// 	if (isset($_POST['dance_school_remove_dancers_submit'])) {
+// 		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
+// 			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+// 			if (!is_array($data_entry)) {
+// 				$data_entry = [];
+// 			}
+// 			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
+// 		}
+// 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+// 	}
+// 	//Create the array we send back to javascript here
+// 	$array_we_send_back = array( 'test' => "Test" );
+// 	//Make sure to json encode the output because that's what it is expecting
+// 	//echo json_encode( $array_we_send_back );
+// 	wp_die(); // this is required to terminate immediately and return a proper response
+// }
 
 /*
  * Create user roles & capabilities
