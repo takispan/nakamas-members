@@ -66,10 +66,7 @@ function nkms_assets() {
  * Ajax in WP
  *
  */
-<<<<<<< HEAD
 //Add dancer to dance school list of dancers
-=======
->>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
 add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
 function ds_add_dancer() {
 	global $wpdb; // this is how you get access to the database
@@ -81,23 +78,12 @@ function ds_add_dancer() {
 		if (!is_array($data_entry)) {
 			$data_entry = [];
 		}
-<<<<<<< HEAD
 		$entry = sanitize_text_field($dancer2add);
-=======
-		$entry = sanitize_text_field($_POST['dance_school_add_dancers']);
->>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
 		if (!in_array($entry, $data_entry)) {
 			array_push($data_entry, $entry);
 		}
 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
 		echo "Dancer added.";
-<<<<<<< HEAD
-=======
-	}
-	else {
-		echo "Invalid Dancer ID";
-		wp_send_json_error();
->>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
 	}
 	else {
 		echo "Invalid Dancer ID";
@@ -106,7 +92,6 @@ function ds_add_dancer() {
 	wp_die();
 }
 
-<<<<<<< HEAD
 //Pass dancer id to populate single dancer tab
 add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
@@ -119,22 +104,6 @@ function ds_single_dancer() {
 	wp_die();
 }
 
-=======
-	wp_die();
-}
-
-// add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
-// function ds_single_dancer() {
-// 	global $wpdb; // this is how you get access to the database
-//
-// 	$dancer_id = $_POST['dancer_id'];
-// 	$dancer_single = get_user_by( 'id', $dancer_id );
-// 	echo $dancer_single;
-//
-// 	wp_die();
-// }
-
->>>>>>> 4c0ef90ee475594a5e3973681e1c6d0078e66cbf
 // add_action( 'wp_ajax_my_action', 'my_action' );
 // add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
 // function my_action() {
