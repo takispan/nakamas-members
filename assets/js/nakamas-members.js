@@ -100,4 +100,24 @@ jQuery(document).ready(function($) {
     $('.ajax')[0].reset();
   });
 
+  // Remove dancer from dance school list of dancers
+  $('.remove-dancer').on('click', function(e) {
+    var single_dancer_id = $(this).attr('data-dancer-id');
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_remove_dancer',
+        single_dancer_id: single_dancer_id,
+      },
+      success: function(response) {
+        console.log(response);
+      },
+      error: function(response) {
+        console.log(response);
+      }
+    });
+  });
+
 });

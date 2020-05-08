@@ -114,6 +114,35 @@ function ds_single_dancer() {
 	wp_die();
 }
 
+//Remove dancer from dance school list of dancers
+add_action( 'wp_ajax_ds_remove_dancer', 'ds_remove_dancer' );
+function ds_remove_dancer() {
+	global $wpdb; // this is how you get access to the database
+
+  $user_id = get_current_user_id();
+  echo $user_id;
+	$dancer_to_remove_id = $_POST['single_dancer_id'];
+	$dancer2remove = get_user_by( 'id', $dancer_to_add_id );
+  //$dancers_list = get_user_meta();
+	// if ( inarray( $dancer2remove, 'dancer' ) ) {
+	// 	$data_entry = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
+	// 	if (!is_array($data_entry)) {
+	// 		$data_entry = [];
+	// 	}
+	// 	$entry = $dancer_to_add_id;
+	// 	if (!in_array($entry, $data_entry)) {
+	// 		array_push($data_entry, $entry);
+	// 	}
+	// 	update_user_meta($user_id, 'dance_school_dancers_list', $data_entry);
+	// 	echo "Dancer added.";
+	// }
+	// else {
+	// 	echo "Invalid Dancer ID";
+	// 	//wp_send_json_error();
+	// }
+	wp_die();
+}
+
 /*
  * Create user roles & capabilities
  *
