@@ -27,6 +27,6 @@ $dancer = get_user_by( 'id', $dancer_id );
           <td><?php echo $dancer->first_name . " " . $dancer->last_name ?> </td>
         </tr>
       </table>
-      <button class="change-dancer-status" data-dancer-id="<?php $dancer_id ?>">Change Status</button>
-      <button class="remove-dancer" data-dancer-id="<?php $dancer_id ?>">Remove Dancer</button>
+      <button class="change-dancer-status" data-dancer-id="<?php echo $dancer_id ?>">Change Status</button>
+      <button class="remove-dancer" data-dancer-id="<?php echo $dancer_id ?>">Remove Dancer</button>
 </div><!-- .nkms-tabs -->
