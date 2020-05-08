@@ -101,11 +101,16 @@ add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
 	global $wpdb; // this is how you get access to the database
 
-  $currview = [0,0];
-  $currview[0] = $_POST['single_dancer_id'];
-  echo "NO.";
-  update_user_meta( wp_get_current_user_id(), 'currently_viewing', $currview );
-  echo "Hlel";
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  if (!is_array($currview)) {
+    $currview = [0,0];
+  }
+  if (sizeof($currview) < 2) {
+    array_push($currview, 0);
+  }
+
+  $currview[0] = intval($_POST['single_dancer_id']);
+  update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
 	wp_die();
 }
 

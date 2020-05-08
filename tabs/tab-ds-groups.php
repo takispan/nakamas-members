@@ -11,7 +11,7 @@
 <div class="nkms-tabs">
     <h3 style="font-weight:300;">Dance Groups for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
     <?php
-      $array_dancegroups = get_user_meta($current_user->ID, 'ds_groups_list', true);
+      $array_dancegroups = get_user_meta(get_current_user_id(), 'ds_groups_list', true);
       if (!is_array($array_dancegroups)) {
 				$array_dancegroups = [];
 			}
@@ -52,7 +52,7 @@
            <p class="form-submit">
                <?php //echo $referer; ?>
                <input name="add_group" type="submit" id="add_group" class="submit button" value="Add Group" />
-               <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
+               <?php wp_nonce_field( 'update-user_'. get_current_user_id() ) ?>
            </p><!-- .form-submit -->
        </form>
 
@@ -112,7 +112,7 @@
           <p class="form-submit">
               <?php //echo $referer; ?>
               <input name="add_dancer" type="submit" id="add_dancer" class="submit button" value="Add Dancer" />
-              <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
+              <?php wp_nonce_field( 'update-user_'. get_current_user_id()) ?>
 
           </p><!-- .form-submit -->
       </form>
@@ -126,20 +126,19 @@
        if ( ! empty( $_POST['add-group'] ) ) {
          $team = new DanceGroup($_POST['add-group']);
          array_push($array_dancegroups, $team);
-         update_user_meta($current_user->ID, 'ds_groups_list', $array_dancegroups );
+         update_user_meta(get_current_user_id(), 'ds_groups_list', $array_dancegroups );
          echo 'suki is awesome!';
        }
      }
      if (isset($_POST['add_dancer'])) {
        if ( ! empty( $_POST['add-dancer'] ) && ! empty ($_POST['select-group'] ) ) {
          // $ds->addDancer($_POST['add-dancer']);
-         // update_user_meta($current_user->ID, 'ds_group', $ds );
          foreach ($array_dancegroups as $key => $value) {
            if ( $value->getGroupName() == $_POST['select-group'] ) {
              $value->addDancer($_POST['add-dancer']);
            }
          }
-         update_user_meta($current_user->ID, 'ds_groups_list', $array_dancegroups );
+         update_user_meta(get_current_user_id(), 'ds_groups_list', $array_dancegroups );
          echo 'teeneh is awesome!';
        }
      }
