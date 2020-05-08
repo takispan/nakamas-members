@@ -85,14 +85,14 @@ jQuery(document).ready(function($) {
 
   // Pass data to populate single dancer tab
   $('.single-dancer').on('click', function(e) {
-    var dancer_id = $('.single-dancer').attr('data-dancer-id');
+    var single_dancer_id = $(this).attr('data-dancer-id');
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
       type: "POST",
       data: {
         action: 'ds_single_dancer',
-        dancer_id: dancer_id,
+        single_dancer_id: single_dancer_id,
       },
       success: function(response) {
         console.log("Response: " + response);

@@ -5,10 +5,13 @@
  * Allow users to update their profiles from Frontend.
  */
 
+$currently_viewing = get_user_meta($current_user->ID, 'currently_viewing', true);
 
-//$dancer_id =  $_GET['dancer'];
-//$dancer = ds_single_dancer();
-echo '<p>' . $dancer_id . ' & ' . $dancer . '</p>';
+var_dump($currently_viewing);
+$dancer_id = intval($currently_viewing[0]);
+$dancer = get_user_by( 'id', $dancer_id );
+echo '<p> Variable is:' . $dancer_id . ' & ' . $dancer . '</p>';
+
 ?>
 
 <div class="nkms-tabs">
@@ -17,9 +20,9 @@ echo '<p>' . $dancer_id . ' & ' . $dancer . '</p>';
         <tr>
           <th>ID</th>
           <th>Name</th>
+          <th>Status</th>
         </tr>
         <tr>
-          <!-- <th>Status</th> -->
           <td><?php //echo $dancer->status; ?></td>
           <td></td>
         </tr>

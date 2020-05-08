@@ -92,16 +92,27 @@ function ds_add_dancer() {
 	wp_die();
 }
 
+$nkms_dancer_id;
+
 //Pass dancer id to populate single dancer tab
 add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
 	global $wpdb; // this is how you get access to the database
 
-	$dancer_id = $_POST['dancer_id'];
-	// $dancer_single = get_user_by( 'id', $dancer_id );
-	// //echo $dancer_single;
-  // var_dump($dancer_single);
-  var_dump($dancer_id);
+  $currview = get_user_meta($current_user->ID, 'currently_viewing', true);
+  if (!is_array($currview)) {
+    $currview = [];
+  }
+  $entry = $_POST['single_dancer_id'];
+  $currview[0] = intval($entry);
+  update_user_meta($current_user->ID, 'currently_viewing', $currview);
+  // $wp_session = WP_Session::get_instance();
+	// $wp_session['dancerID'] = $_POST['single_dancer_id'];
+  echo $entry . '<- entry & var dump ->';
+  var_dump($entry);
+  echo $currview[0] . '<- first value of currview & var dump ->';
+  var_dump($currview);
+  //return $dancer_id;
 	wp_die();
 }
 
@@ -223,6 +234,10 @@ function nkms_show_extra_profile_fields( $user ) {
 	$ds_dancers_list_array = get_user_meta($user->ID, 'dance_school_dancers_list', true);
 	if (!is_array($ds_dancers_list_array)) {
 		$ds_dancers_list_array = [];
+	}
+  $currently_viewing = get_user_meta($user->ID, 'currently_viewing', true);
+	if (!is_array($currently_viewing)) {
+		$currently_viewing = [];
 	}
 	// Dance School
 
