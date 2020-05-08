@@ -9,7 +9,7 @@
   *
 */
 class Dancer extends WP_User {
-  // no constructor so WP_User's constructor is users
+  // no constructor so WP_User's constructor is used
 
 }
 
@@ -26,6 +26,9 @@ class Dancer extends WP_User {
 */
 class DanceGroup {
 
+  private $dance_school;
+  private $id;
+
   private $group_name;
 
   private $size;
@@ -38,12 +41,24 @@ class DanceGroup {
 
   //$sub_dancers;
   //constructor
-  function __construct($group_name, $group_type) {
+  function __construct($dance_school, $id, $group_name, $group_type) {
+    $this->dance_school = $dance_school;
+    $this->id = $id;
     $this->group_name = $group_name;
     $this->size = 0;
     $this->type = $group_type;
     $this->status = 'Active';
     $this->main_dancers = [];
+  }
+
+  //Get Dance School associated
+  public function getDanceSchool() {
+    return $this->dance_school;
+  }
+
+  //Get Group ID
+  public function getID() {
+    return $this->id;
   }
 
   //Get Group Name

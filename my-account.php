@@ -21,8 +21,8 @@ get_header(); // Loads the header.php template. ?>
             <!-- Tab links -->
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'dashboard')" id="defaultOpen">Dashboard</button>
-                <button class="tablinks" onclick="openTab(event, 'dance-school')">Dance School</button>
-                <button class="tablinks" onclick="openTab(event, 'profile')">Profile</button>
+                <button class="tablinks" onclick="openTab(event, 'dance-school')" id="danceSchool">Dance School</button>
+                <button class="tablinks" onclick="openTab(event, 'profile')" id="profile">Profile</button>
             </div>
 
             <!-- Tab content -->

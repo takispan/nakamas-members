@@ -13,8 +13,8 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
     <h3 style="font-weight:300;">Dance School Information for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
     <div class="tab">
         <button class="ds-tablinks" onclick="dsOpenTab(event, 'ds-overview')" id="dsDefaultOpen">Overview</button>
-        <button class="ds-tablinks" onclick="dsOpenTab(event, 'ds-dancers')">Dancers</button>
-        <button class="ds-tablinks" onclick="dsOpenTab(event, 'ds-dance-groups')">Dance Groups</button>
+        <button class="ds-tablinks" onclick="dsOpenTab(event, 'ds-dancers')" id="dancers">Dancers</button>
+        <button class="ds-tablinks" onclick="dsOpenTab(event, 'ds-dance-groups')" id="danceGroups">Dance Groups</button>
         <!-- <button class="ds-tablinks" onclick="dsOpenTab(event, 'ds-details')" id="dsDetails">Dance School Details</button> -->
     </div>
 
@@ -33,19 +33,40 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
         <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-groups.php'); ?>
     </div>
 
+    <!-- HIDDEN TABS -->
     <!-- Tab content - Dance School Details -->
     <div id="ds-details" class="ds-tabcontent">
         <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-details.php'); ?>
     </div>
 
-    <!-- Tab content - Add / Remove Dancers -->
-    <div id="ds-add-remove-dancers" class="ds-tabcontent">
-        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-add-remove-dancers.php'); ?>
+    <!-- Tab content - Add Dancers -->
+    <div id="ds-add-dancers" class="ds-tabcontent">
+        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-add-dancers.php'); ?>
     </div>
 
-    <!-- Tab content - Dancer Single -->
+    <!-- Tab content - Dancer Single (Change status & remove)-->
     <div id="ds-dancer-single" class="ds-tabcontent">
         <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-dancer-single.php'); ?>
+    </div>
+
+    <!-- Tab content - Add Group -->
+    <div id="ds-add-groups" class="ds-tabcontent">
+        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-add-groups.php'); ?>
+    </div>
+
+    <!-- Tab content - Group Single (Change status & remove)-->
+    <div id="ds-group-single" class="ds-tabcontent">
+        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-group-single.php'); ?>
+    </div>
+
+    <!-- Tab content - Add dancers to group-->
+    <div id="ds-group-add-dancers" class="ds-tabcontent">
+        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-group-add-dancers.php'); ?>
+    </div>
+
+    <!-- Tab content - Remove dancers from group -->
+    <div id="ds-group-remove-dancers" class="ds-tabcontent">
+        <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-group-remove-dancers.php'); ?>
     </div>
 
 </div><!-- .nkms-tabs -->
