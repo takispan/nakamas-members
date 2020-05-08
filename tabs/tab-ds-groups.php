@@ -26,9 +26,11 @@
           <tr>
             <th>ID</th>
             <th>Group Name</th>
+            <th>Status</th>
           </tr>
         <?php
         foreach ($array_dancegroups as $key => $value) {
+          echo '<tr><td>' . $value . '</td><td><button class="single-group" data-group-id="' . $value . '">' . $user_info->first_name . ' ' . $user_info->last_name . '</button></td><td></td></tr>';
 
           echo "<tr><td>" . $key . "</td><td>" . $value->getGroupName() . "</td></tr>";
         }
