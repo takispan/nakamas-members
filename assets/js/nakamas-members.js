@@ -42,11 +42,6 @@ function dsOpenTab(evt, dsTabName) {
 
 }
 
-// function singleDancer(e) {
-//   console.log(e.getAttribute('data-dancer-id'));
-//
-// }
-
 // Default tab
 document.getElementById("defaultOpen").click();
 document.getElementById("dsDefaultOpen").click();
@@ -105,33 +100,4 @@ jQuery(document).ready(function($) {
     $('.ajax')[0].reset();
   });
 
-  //To be replaced
-  // var postData = {
-  //     'action': 'my_action',
-  //     'test': "TinyMarioSaysHello",
-  //     'the_issue_key': nkms_ajax.the_issue_key,
-  //     'ds_add_dancer': $( '#add_dancer_to_ds' ).val()
-  // }
-
-  // $.ajax({
-  //   type: "POST",
-  //   data: postData,
-  //   url: nkms_ajax.ajax_url,
-  //   //This fires when the ajax 'comes back' and it is valid json
-  //   success: function (response) {
-  //     console.log("Success");
-  //     console.log("Response was: " + response);
-  //     //alert( response);
-  //   }
-  //   //This fires when the ajax 'comes back' and it isn't valid json
-  //   }).fail(function (data) {
-  //       console.log("Failure")
-  //       console.log(data);
-  //     });
-
-	// jQuery.post(nkms_ajax.ajax_url, data,
-  //   function(response) {
-	// 	    alert('Got this from the server: ' + response);
-	//      }
-  //    );
 });

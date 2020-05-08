@@ -69,7 +69,7 @@ else {
     <form id="wp_signup_form" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
       <p>
         <label for="username">Username</label>
-        <input type="text" name="username" id="username">
+        <input type="text" name="username" id="username" value="<?php echo ( isset( $_POST['lname'] ) ? $last_name : null ) ?>">
       </p>
       <p>
         <label for="email">Email address</label>

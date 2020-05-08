@@ -71,10 +71,11 @@ add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
 function ds_add_dancer() {
 	global $wpdb; // this is how you get access to the database
 
+  //$user_id = wp_get_current_user_id();
 	$dancer_to_add_id = $_POST['dancer'];
 	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
 	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
-		$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
+		$data_entry = get_user_meta(wp_get_current_user_id(), 'dance_school_dancers_list', true);
 		if (!is_array($data_entry)) {
 			$data_entry = [];
 		}
@@ -82,12 +83,12 @@ function ds_add_dancer() {
 		if (!in_array($entry, $data_entry)) {
 			array_push($data_entry, $entry);
 		}
-		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
+		update_user_meta(wp_get_current_user_id(), 'dance_school_dancers_list', $data_entry);
 		echo "Dancer added.";
 	}
 	else {
 		echo "Invalid Dancer ID";
-		wp_send_json_error();
+		//wp_send_json_error();
 	}
 	wp_die();
 }
@@ -99,21 +100,12 @@ add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
 	global $wpdb; // this is how you get access to the database
 
-  $currview = get_user_meta($current_user->ID, 'currently_viewing', true);
-  if (!is_array($currview)) {
-    $currview = [];
-  }
+  $user_id = wp_get_current_user_id();
   $entry = $_POST['single_dancer_id'];
   $currview[0] = intval($entry);
-  if ( update_user_meta($current_user->ID, 'currently_viewing', $currview) != FALSE ) {
-    update_user_meta($current_user->ID, 'currently_viewing', $currview);
-    wp_send_json_sucess();
-  }
-  else {
-    wp_send_json_error();
-  }
-  // $wp_session = WP_Session::get_instance();
-	// $wp_session['dancerID'] = $_POST['single_dancer_id'];
+  update_user_meta(user_id, 'currently_viewing', $currview);
+
+
   echo $entry . '<- entry & var dump ->';
   var_dump($entry);
   echo $currview[0] . '<- first value of currview & var dump ->';
@@ -121,43 +113,6 @@ function ds_single_dancer() {
   //return $dancer_id;
 	wp_die();
 }
-
-// add_action( 'wp_ajax_my_action', 'my_action' );
-// add_action( 'wp_ajax_nopriv_my_action','my_action' ); // should be nkms_action later
-// function my_action() {
-// 	global $wpdb; // this is how you get access to the database
-//
-// 	if (isset($_POST['the_issue_key'])) {
-// 			if ( ! empty( $_POST['the_issue_key'] ) ) {
-// 				$val = $_POST['the_issue_key'];
-// 				$test = $_POST['test'];
-// 				var_dump($test);
-// 				var_dump($val);
-// 				echo "Test 2";
-// 				echo $_POST[''];
-// 		} else {
-// 				echo "Is not empty";
-// 			}
-// 	} else {
-// 		echo "Is not set";
-// 	}
-// 	//Button to remove dancers from list
-// 	if (isset($_POST['dance_school_remove_dancers_submit'])) {
-// 		if ( ! empty( $_POST['dance_school_remove_dancers'] ) ) {
-// 			$data_entry = get_user_meta($current_user->ID, 'dance_school_dancers_list', true);
-// 			if (!is_array($data_entry)) {
-// 				$data_entry = [];
-// 			}
-// 			$data_entry = array_diff($data_entry, [sanitize_text_field($_POST['dance_school_remove_dancers'])]);
-// 		}
-// 		update_user_meta($current_user->ID, 'dance_school_dancers_list', $data_entry);
-// 	}
-// 	//Create the array we send back to javascript here
-// 	$array_we_send_back = array( 'test' => "Test" );
-// 	//Make sure to json encode the output because that's what it is expecting
-// 	//echo json_encode( $array_we_send_back );
-// 	wp_die(); // this is required to terminate immediately and return a proper response
-// }
 
 /*
  * Create user roles & capabilities
@@ -240,10 +195,6 @@ function nkms_show_extra_profile_fields( $user ) {
 	$ds_dancers_list_array = get_user_meta($user->ID, 'dance_school_dancers_list', true);
 	if (!is_array($ds_dancers_list_array)) {
 		$ds_dancers_list_array = [];
-	}
-  $currently_viewing = get_user_meta($user->ID, 'currently_viewing', true);
-	if (!is_array($currently_viewing)) {
-		$currently_viewing = [];
 	}
 	// Dance School
 

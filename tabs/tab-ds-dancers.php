@@ -28,6 +28,7 @@ if (!is_array($ds_dancers_list_array)) { $ds_dancers_list_array = []; }
       echo '</table>';
     } else {
     	echo "<p>" . $ds_name . " does not have any registered dancers.</p>";
+      echo "<p>Add one by clicking the button below.</p>";
     }
     ?>
     <button onclick="dsOpenTab(event, 'ds-add-remove-dancers')">Add Dancers</button>
