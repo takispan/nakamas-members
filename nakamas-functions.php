@@ -94,6 +94,29 @@ function ds_add_dancer() {
 	wp_die();
 }
 
+<<<<<<< Updated upstream
+=======
+$nkms_dancer_id;
+
+add_action( 'wp_ajax_ds_change_status', 'ds_change_status');
+function ds_change_status() {
+  global $wpdb;
+
+  $dancer_id = $_POST['single_dancer_id'];
+  $status = get_user_meta($dancer_id, 'active', true);
+  echo "Status is of value: " . $status;
+  if ($status != 1 && $status != 0) {
+    echo "Was not bool so changed";
+    $status = 1;
+  }
+  $status = abs($status - 1);
+  update_user_meta($dancer_id, 'active', $status);
+  echo "Dancer ID: " . $dancer_id;
+  echo "Type of status: " . gettype($status);
+  echo "Set active to: " . $status;
+  wp_die();
+}
+>>>>>>> Stashed changes
 //Pass dancer id to populate single dancer tab
 add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {

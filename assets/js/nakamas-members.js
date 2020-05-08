@@ -120,4 +120,26 @@ jQuery(document).ready(function($) {
     });
   });
 
+  // Remove dancer from dance school list of dancers
+  $('.change-dancer-status').on('click', function(e) {
+    var single_dancer_id = $(this).attr('data-dancer-id');
+    console.log(single_dancer_id);
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_change_status',
+        single_dancer_id: single_dancer_id,
+      },
+      success: function(response) {
+        console.log(response);
+      },
+      error: function(response) {
+        console.log(response);
+      }
+    });
+  });
+
 });

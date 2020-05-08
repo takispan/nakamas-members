@@ -25,6 +25,11 @@ $dancer = get_user_by( 'id', $dancer_id );
         <tr>
           <td><?php echo $dancer_id ?></td>
           <td><?php echo $dancer->first_name . " " . $dancer->last_name ?> </td>
+          <td><?php $active_status = "Active";
+                  if (!get_user_meta($dancer_id, 'active', true)) {
+                    $active_status = "Inactive";
+                  }
+                  echo $active_status ?> </td>
         </tr>
       </table>
       <button class="change-dancer-status" data-dancer-id="<?php echo $dancer_id ?>">Change Status</button>
