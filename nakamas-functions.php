@@ -94,8 +94,6 @@ function ds_add_dancer() {
 	wp_die();
 }
 
-<<<<<<< Updated upstream
-=======
 $nkms_dancer_id;
 
 add_action( 'wp_ajax_ds_change_status', 'ds_change_status');
@@ -116,7 +114,6 @@ function ds_change_status() {
   echo "Set active to: " . $status;
   wp_die();
 }
->>>>>>> Stashed changes
 //Pass dancer id to populate single dancer tab
 add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
