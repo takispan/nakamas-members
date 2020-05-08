@@ -23,8 +23,8 @@ $dancer = get_user_by( 'id', $dancer_id );
           <th>Status</th>
         </tr>
         <tr>
-          <td><?php echo $dancer->status; ?></td>
-          <td></td>
+          <td><?php echo $dancer_id ?></td>
+          <td><?php echo $dancer->first_name . " " . $dancer->last_name ?> </td>
         </tr>
       </table>
 
