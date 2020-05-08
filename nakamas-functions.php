@@ -105,7 +105,13 @@ function ds_single_dancer() {
   }
   $entry = $_POST['single_dancer_id'];
   $currview[0] = intval($entry);
-  update_user_meta($current_user->ID, 'currently_viewing', $currview);
+  if ( update_user_meta($current_user->ID, 'currently_viewing', $currview) != FALSE ) {
+    update_user_meta($current_user->ID, 'currently_viewing', $currview);
+    wp_send_json_sucess();
+  }
+  else {
+    wp_send_json_error();
+  }
   // $wp_session = WP_Session::get_instance();
 	// $wp_session['dancerID'] = $_POST['single_dancer_id'];
   echo $entry . '<- entry & var dump ->';
