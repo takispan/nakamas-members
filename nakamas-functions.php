@@ -137,18 +137,16 @@ function ds_remove_dancer() {
 	global $wpdb; // this is how you get access to the database
 
   $user_id = get_current_user_id();
-  echo $user_id;
 	$dancer_to_remove_id = intval($_POST['single_dancer_id']);
-  echo $dancer_to_remove_id;
   $dancers_list = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
   if ( in_array( $dancer_to_remove_id, $dancers_list) ) {
-    $data_entry = array_diff( $dancer_list, [$dancer_to_remove_id] );
+    $data_entry = array_diff( $dancers_list, [$dancer_to_remove_id] );
     update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $data_entry);
   	echo "Dancer removed.";
   }
   else {
     echo "Error occured.";
-    //wp_send_json_error();
+    wp_send_json_error();
 	}
 	wp_die();
 }
@@ -205,36 +203,69 @@ function ds_add_group_dancer() {
 	global $wpdb; // this is how you get access to the database
   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
   $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+  $group_id = $currview[1];
+  $group = $groups_list[$group_id];
+	$dancer_to_add_id = intval($_POST['dancer']);
+	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+		$data_entry = $group->addDancer($dancer_to_add_id);
+		if ( $data_entry ) {
+      $groups_list[$group_id] = $group;
+      update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+			echo 'Dancer added.';
+		}
+    else {
+      echo 'An error occured, dancer not added.';
+    }
+	}
+	else {
+		echo "Invalid Dancer ID";
+		wp_send_json_error();
+	}
+	wp_die();
+}
+
+//Remove dancer from group
+add_action( 'wp_ajax_ds_remove_group_dancer', 'ds_remove_group_dancer' );
+function ds_remove_group_dancer() {
+	global $wpdb; // this is how you get access to the database
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
 
   $group_id = $currview[1];
   $group = $groups_list[$group_id];
   var_dump($group);
   echo $group->getGroupName();
 
-	$dancer_to_add_id = intval($_POST['dancer']);
-	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
-  $data_entry = $group->addDancer($dancer_to_add_id);
-  if ( $data_entry ) {
-    $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+	$dancer_to_remove_id = intval($_POST['dancer']);
+  $data_entry = $group->removeDancer($dancer_to_remove_id);
+	if ( $data_entry ) {
     $groups_list[$group_id] = $group;
-    echo 'Dancer added.';
-  }
-	// if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
-	// 	$data_entry = $group->addDancer($dancer_to_add_id);
-	// 	if ( $data_entry ) {
-  //     $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-  //     $groups_list[$group_id] = $group;
-	// 		echo 'Dancer added.';
-	// 	}
-  //   else {
-  //     echo 'An error occured, dancer not added.';
-  //   }
-	// }
-	else {
-		echo "Invalid Dancer ID";
-		//wp_send_json_error();
+    update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+		echo 'Dancer removed.';
 	}
+  else {
+    echo 'An error occured, dancer was not removed.';
+  }
 	wp_die();
+}
+
+//Change dancer status
+add_action( 'wp_ajax_ds_group_change_status', 'ds_group_change_status');
+function ds_group_change_status() {
+  global $wpdb;
+  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+
+  $group_id = $_POST['group_id'];
+  $group = $groups_list[$group_id];
+  $status = $group->getStatus();
+  ( $status == 'Active' ) ? $status = 'Inactive' : $status = 'Active';
+  $group->setStatus($status);
+
+  $groups_list[$group_id] = $group;
+  update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+  echo "Group status set to " . $status;
+  wp_die();
 }
 
 /*
@@ -272,41 +303,6 @@ function nkms_has_role($user, $role) {
 	$roles = $user->roles;
 	return in_array($role, (array) $user->roles);
 }
-
-//Find group based on user & group id
-function nkms_getGroup_byID($user_id, $group_id) {
-  $groups_list = get_user_meta($user_id, 'dance_school_groups_list', true);
-  foreach ($groups_list as $key => $value) {
-    if ( $value->getID === $group_id ) {
-      return $groups_list[$key];
-      break;
-    }
-  }
-}
-
-/*
- * Register custom post type Groups
- *
- */
-// function nkms_custom_post_type() {
-//     register_post_type('nkms_groups',
-//         array(
-//             'labels'      => array(
-//                 'name'          => __('Groups', 'nkms'),
-//                 'singular_name' => __('Group', 'nkms'),
-// 								'add_new_item'  => __( 'Add New Group', 'nkms' ),
-// 				        'new_item'      => __( 'New Group', 'nkms' ),
-// 				        'edit_item'     => __( 'Edit Group', 'nkms' ),
-// 				        'view_item'     => __( 'View Group', 'nkms' ),
-//             ),
-//                 'public'       => true,
-//                 'has_archive'  => false,
-// 								'hierarchical' => false,
-// 								'menu_icon'		 => 'dashicons-buddicons-buddypress-logo',
-//         )
-//     );
-// }
-// add_action('init', 'nkms_custom_post_type');
 
 /*
  * Add user profile fields
@@ -385,11 +381,12 @@ function nkms_update_profile_fields( $user_id ) {
 		update_user_meta( $user_id, 'dance_school_description', sanitize_textarea_field( $_POST['dance_school_description'] ) );
 	}
 
-
-
-
-
 }
+
+/*
+ * REGISTRATION
+ *
+ */
 //also add , $first_name, $last_name
 function registration_validation( $username, $password, $email )  {
   global $reg_errors;
@@ -454,4 +451,42 @@ function complete_registration() {
     $user = wp_insert_user( $userdata );
     echo 'Registration complete. Goto <a href="' . get_site_url() . '/login">login page</a>.';
   }
+}
+
+function custom_registration_function() {
+    if ( isset($_POST['submit'] ) ) {
+        registration_validation(
+        $_POST['username'],
+        $_POST['password'],
+        $_POST['email']
+        // $_POST['fname'],
+        // $_POST['lname']
+        );
+
+        // sanitize user form input. Add $first_name, $last_name
+        global $username, $password, $email;
+        $username   =   sanitize_user( $_POST['username'] );
+        $password   =   esc_attr( $_POST['password'] );
+        $email      =   sanitize_email( $_POST['email'] );
+        // $first_name =   sanitize_text_field( $_POST['fname'] );
+        // $last_name  =   sanitize_text_field( $_POST['lname'] );
+
+        // call @function complete_registration to create the user
+        // only when no WP_error is found
+        complete_registration(
+        $username,
+        $password,
+        $email
+        // $first_name,
+        // $last_name
+        );
+    }
+
+    registration_form(
+        $username,
+        $password,
+        $email
+        //$first_name,
+        //$last_name
+        );
 }

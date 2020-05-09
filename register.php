@@ -15,11 +15,11 @@ else {
 
   if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
     // Check username is present and not already in use
-    $username = $wpdb->escape($_REQUEST['username']);
+    $username = esc_sql(($_REQUEST['username']));
     if ( strpos($username, ' ') !== false ) {
         $errors['username'] = "Sorry, no spaces allowed in usernames";
     }
-    if(emptyempty($username)) {
+    if(empty($username)) {
       $errors['username'] = "Please enter a username";
     }
     elseif( username_exists( $username ) ) {
@@ -69,11 +69,11 @@ else {
     <form id="wp_signup_form" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
       <p>
         <label for="username">Username</label>
-        <input type="text" name="username" id="username" value="<?php echo ( isset( $_POST['username'] ) ? $last_name : null ) ?>">
+        <input type="text" name="username" id="username" value="<?php echo ( isset( $_POST['username'] ) ? $username: null ) ?>">
       </p>
       <p>
         <label for="email">Email address</label>
-        <input type="text" name="email" id="email" value="<?php echo ( isset( $_POST['email'] ) ? $last_name : null ) ?>">
+        <input type="text" name="email" id="email" value="<?php echo ( isset( $_POST['email'] ) ? $email : null ) ?>">
       </p>
       <p>
         <label for="password">Password</label>

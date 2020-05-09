@@ -49,13 +49,23 @@ document.getElementById("dsDefaultOpen").click();
 // jQuery
 jQuery(document).ready(function($) {
 
+  // Tab reload test
+  // var profile = "/profile"
+  // $('#danceGroups').click(function(){
+  //   $('#ds-dance-groups').html(ajax_load).load(profile);
+  // });
+
+  //$('#nkms-tabs').tabs();
+
+  /*
+   * DANCERS
+   */
   // Add dancer to dance school list of dancers
   $('form#add-dancers').on('submit', function(e) {
     e.preventDefault();
     //reset info messages
     $('.success_msg').css('display','none');
     $('.error_msg').css('display','none');
-    //var url = $(this).attr('action');
     var dancer_to_add = $('#add_dancer_to_ds').val();
 
     $.ajax({
@@ -84,6 +94,7 @@ jQuery(document).ready(function($) {
   $('.single-dancer').on('click', function(e) {
     var single_dancer_id = $(this).attr('data-dancer-id');
     console.log(single_dancer_id);
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -107,6 +118,7 @@ jQuery(document).ready(function($) {
   $('.remove-dancer').on('click', function(e) {
     var single_dancer_id = $(this).attr('data-dancer-id');
     console.log(single_dancer_id);
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -148,6 +160,9 @@ jQuery(document).ready(function($) {
     });
   });
 
+  /*
+   * GROUPS
+   */
   // Add group to dance school list of groups
   $('form#add-groups').on('submit', function(e) {
     e.preventDefault();
@@ -170,7 +185,7 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.success_msg').css('display','block');
         console.log(response);
-        //window.location.reload();
+        window.location.reload();
       },
       error: function(response) {
         $('.error_msg').css('display','block');
@@ -209,7 +224,6 @@ jQuery(document).ready(function($) {
     $('.error_msg').css('display','none');
     //var url = $(this).attr('action');
     var group_dancer_to_add = $('#add_dancer_to_group').val();
-
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -221,10 +235,62 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.success_msg').css('display','block');
         console.log(response);
-        //window.location.reload();
+        window.location.reload();
       },
       error: function(response) {
         $('.error_msg').css('display','block');
+        console.log(response);
+      }
+    });
+  });
+
+  // Remove dancer from dance group
+  $('form#remove-group-dancer').on('submit', function(e) {
+    e.preventDefault();
+    //reset info messages
+    $('.success_msg').css('display','none');
+    $('.error_msg').css('display','none');
+    //var url = $(this).attr('action');
+    var group_dancer_to_remove = $('#remove_dancer_from_group option').filter(':selected').val();
+    console.log(group_dancer_to_remove);
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_remove_group_dancer',
+        dancer: group_dancer_to_remove,
+      },
+      success: function(response) {
+        $('.success_msg').css('display','block');
+        console.log(response);
+        window.location.reload();
+      },
+      error: function(response) {
+        $('.error_msg').css('display','block');
+        console.log(response);
+      }
+    });
+  });
+
+  // Change group status
+  $('.change-group-status').on('click', function(e) {
+    var group_id = $(this).attr('data-group-id');
+    console.log(group_id);
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_group_change_status',
+        group_id: group_id,
+      },
+      success: function(response) {
+        console.log(response);
+        window.location.reload();
+      },
+      error: function(response) {
         console.log(response);
       }
     });

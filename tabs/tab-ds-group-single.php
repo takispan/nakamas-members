@@ -37,16 +37,13 @@ $group_dancers = $group->getDancers();
             <th>Name</th>
             <th>Status</th>
           </tr>
-          <tr>
-            <?php
-              foreach ($group_dancers as $key => $value) {
-                echo '<td>' . $value . '</td><td></td><td></td>';
-              }
-            ?>
-            <td><?php //var_dump($group_dancers); ?></td>
-            <td><?php echo $group->getGroupName(); ?> </td>
-            <td><?php echo $group->getStatus(); ?> </td>
-          </tr>
+          <?php
+            foreach ($group_dancers as $key => $value) {
+              $dncr = get_user_by( 'id', $value );
+              ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
+              echo '<tr><td>' . $value . '</td><td>' . $dncr->first_name . ' ' . $dncr->last_name . '</td><td>' . $status . '</td></tr>';
+            }
+          ?>
         </table>
       <?php
       }

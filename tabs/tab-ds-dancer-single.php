@@ -9,9 +9,7 @@ $currently_viewing = get_user_meta(get_current_user_id(), 'currently_viewing', t
 
 $dancer_id = $currently_viewing[0];
 $dancer = get_user_by( 'id', $dancer_id );
-
-$active_status = "Active";
-if (!get_user_meta($dancer_id, 'active', true)) { $active_status = "Inactive"; }
+(!get_user_meta($dancer_id, 'active', true)) ? $active_status = "Inactive" : $active_status = "Active";
 ?>
 
 <div class="nkms-tabs">
