@@ -92,12 +92,6 @@ function ds_add_dancer() {
 	wp_die();
 }
 
-<<<<<<< HEAD
-//Change status
-=======
-$nkms_dancer_id;
-
->>>>>>> 70e5b354c92c3d86c2b3598256cf6ebbb655f073
 add_action( 'wp_ajax_ds_change_status', 'ds_change_status');
 function ds_change_status() {
   global $wpdb;
@@ -116,10 +110,7 @@ function ds_change_status() {
   echo "Set active to: " . $status;
   wp_die();
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 70e5b354c92c3d86c2b3598256cf6ebbb655f073
 //Pass dancer id to populate single dancer tab
 add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
