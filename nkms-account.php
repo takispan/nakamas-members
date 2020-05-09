@@ -21,7 +21,9 @@ get_header(); // Loads the header.php template. ?>
             <!-- Tab links -->
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'dashboard')" id="defaultOpen">Dashboard</button>
-                <button class="tablinks" onclick="openTab(event, 'dance-school')" id="danceSchool">Dance School</button>
+                <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
+                  <button class="tablinks" onclick="openTab(event, 'dance-school')" id="danceSchool">Dance School</button>
+                <?php endif; ?>
                 <button class="tablinks" onclick="openTab(event, 'profile')" id="profileTab">Profile</button>
             </div>
 

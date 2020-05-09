@@ -6,15 +6,15 @@
  */
 
 //FIELDS NOT UPDATING ON FRONTEND - NEED TO FIX
- if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-   do_action( 'personal_options_update', $current_user );
-}
+//  if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+//    do_action( 'personal_options_update', $current_user );
+// }
 
 ?>
 <div class="nkms-tabs">
     <h3 style="font-weight:300;">Details for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
 
-    <form method="post" id="edit-dance-school-details" action="<?php the_permalink(); ?>">
+    <form method="post" id="edit-dance-school-details" action="">
         <div class="nkms-extra-fields">
           <?php
           //display custom fields
@@ -22,7 +22,7 @@
 
 
         <p class="form-submit">
-            <input name="updateuser" type="submit" id="updateuser" class="submit button" value="<?php _e('Update', 'dance-school-update'); ?>" />
+            <input name="update_ds_info" type="submit" id="update_ds_info" class="submit button" value="Update" />
             <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
 
         </p><!-- .form-submit -->

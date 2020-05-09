@@ -18,6 +18,9 @@ if( $_POST ) {
   );
 
   $user_verify = wp_signon( $login_data, false );
+  if ( !is_wp_error($user_verify) ) {
+    wp_redirect(home_url().'/profile');
+  }
 }
 
 get_header(); ?>
@@ -31,7 +34,6 @@ if( $_POST ) {
   }
   else {
     echo "<h4>Login successful! If you're not redirected automatically click <a href='" . home_url().'/profile' . "'>here</a>.</h4>";
-    wp_safe_redirect(home_url().'/profile');
     exit();
   }
 }

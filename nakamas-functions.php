@@ -322,40 +322,41 @@ function nkms_show_extra_profile_fields( $user ) {
 	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
 	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
 	$ds_description = get_the_author_meta( 'dance_school_description', $user->ID );
-	// Dance School
+
+  if ( isset($_POST['update_ds_info']) ) {
+    $ds_name = $_POST['dance_school_name'];
+    $ds_address = $_POST['dance_school_address'];
+    $ds_phone_number = $_POST['dance_school_phone_number'];
+    $ds_description = $_POST['dance_school_description'];
+
+    update_user_meta( $user->ID, 'dance_school_name', $ds_name );
+    update_user_meta( $user->ID, 'dance_school_address', $ds_address );
+    update_user_meta( $user->ID, 'dance_school_phone_number', $ds_phone_number );
+    update_user_meta( $user->ID, 'dance_school_description', $ds_description );
+  }
 
 	// Dancer
 	?>
 
 	<!-- Dance School -->
-	<h3><?php esc_html_e( 'Dance School', 'nkms' ); ?></h3>
+	<h3>Dance School</h3>
 
-	<table class="form-table">
-		<tr>
-			<th><label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label></th>
-			<td>
-					<input type="text" name="dance_school_name" value="<?php echo esc_attr( $ds_name ); ?>" class="regular-text" />
-			</td>
-		</tr>
-		<tr>
-			<th><label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label></th>
-			<td>
-					<input type="text" name="dance_school_address" value="<?php echo esc_attr( $ds_address ); ?>" class="regular-text" />
-			</td>
-		</tr>
-		<tr>
-			<th><label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label></th>
-			<td>
-					<input type="text" name="dance_school_phone_number" value="<?php echo esc_attr( $ds_phone_number ); ?>" class="regular-text" />
-			</td>
-		</tr>
-		<tr>
-			<th><label for="dance_school_description"><?php esc_html_e( 'Dance School Description', 'nkms' ); ?></label></th>
-			<td>
-					<textarea rows="5" name="dance_school_description" class="regular-text"><?php echo esc_attr( $ds_description ); ?></textarea>
-			</td>
-		</tr>
-	</table>
+	<p>
+    <label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label></th>
+    <input type="text" name="dance_school_name" value="<?php echo esc_attr( $ds_name ); ?>" class="regular-text" />
+	</p>
+  <p>
+    <label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label></th>
+    <input type="text" name="dance_school_address" value="<?php echo esc_attr( $ds_address ); ?>" class="regular-text" />
+	</p>
+	<p>
+    <label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label></th>
+    <input type="text" name="dance_school_phone_number" value="<?php echo esc_attr( $ds_phone_number ); ?>" class="regular-text" />
+	</p>
+  <p>
+    <label for="dance_school_description"><?php esc_html_e( 'Dance School Description', 'nkms' ); ?></label></th>
+    <textarea rows="5" name="dance_school_description" class="regular-text"><?php echo esc_html( $ds_description ); ?></textarea>
+	</p>
 	<?php
 }
 
