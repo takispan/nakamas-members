@@ -7,7 +7,7 @@
  * paying attention to how my_cpt_init() is called in the register_activation_hook callback:
  *
  * Also register custom post types
- */
+ *
 add_action( 'init', 'my_cpt_init' );
 function my_cpt_init() {
     register_post_type( ... );
@@ -25,107 +25,7 @@ function my_rewrite_flush() {
     // You should *NEVER EVER* do this on every page load!!
     flush_rewrite_rules();
 }
-
-
-// add_action( 'admin_menu', 'add_nakamas_users_options_page' );
-function add_nakamas_users_options_page() {
-
-	add_options_page(
-		'nakamas_users Options',
-		'nakamas_users Options',
-		'manage_options',
-		'nakamas_users-options-page',
-		'display_nakamas_users_options_page'
-	);
-
-}
-add_action( 'admin_menu', 'add_nakamas_users_options_page' );
-function display_nakamas_users_options_page() {
-
-	echo '<h2>nakamas_users Options</h2>';
-
-	echo '<form method="post" action="options.php">';
-
-	do_settings_sections( 'nakamas_users-options-page' );
-	settings_fields( 'nakamas_users-settings' );
-
-	submit_button();
-
-	echo '</form>';
-
-}
-
-add_action( 'admin_init', 'nakamas_users_admin_init_one' );
-function nakamas_users_admin_init_one() {
-
-	add_settings_section(
-		'nakamas_users-settings-section-one',
-		'nakamas_users Settings Part One',
-		'display_nakamas_users_settings_message',
-		'nakamas_users-options-page'
-	);
-
-	add_settings_field(
-		'nakamas_users-input-field',
-		'nakamas_users Input Field',
-		'render_nakamas_users_input_field',
-		'nakamas_users-options-page',
-		'nakamas_users-settings-section-one'
-	);
-
-	register_setting(
-		'nakamas_users-settings',
-		'nakamas_users-input-field'
-	);
-
-}
-
-function display_nakamas_users_settings_message() {
-	echo "This displays the settings message.";
-}
-
-function render_nakamas_users_input_field() {
-
-	$input = get_option( 'nakamas_users-input-field' );
-	echo '<input type="text" id="nakamas_users-input-field" name="nakamas_users-input-field" value="' . $input . '" />';
-
-}
-
-add_action( 'admin_init', 'nakamas_users_admin_init_two' );
-function nakamas_users_admin_init_two() {
-
-	add_settings_section(
-		'nakamas_users-settings-section-two',
-		'nakamas_users Settings Part Two',
-		'display_another_nakamas_users_settings_message',
-		'nakamas_users-options-page'
-	);
-
-	add_settings_field(
-		'nakamas_users-input-field-two',
-		'nakamas_users Input Field Two',
-		'render_nakamas_users_input_field_two',
-		'nakamas_users-options-page',
-		'nakamas_users-settings-section-two'
-	);
-
-	register_setting(
-		'nakamas_users-settings',
-		'nakamas_users-input-field-two'
-	);
-
-}
-
-function display_another_nakamas_users_settings_message() {
-	echo "This displays the second settings message.";
-}
-
-function render_nakamas_users_input_field_two() {
-
-	$input = get_option( 'nakamas_users-input-field-two' );
-	echo '<input type="text" id="nakamas_users-input-field-two" name="nakamas_users-input-field-two" value="' . $input . '" />';
-
-}
+*/
 
 /*
  * Enqueue scripts & styles
@@ -154,7 +54,218 @@ function nkms_assets() {
   // For either a plugin or a theme, you can then enqueue the script/style
   wp_enqueue_script( 'nkms-js' );
   wp_enqueue_style( 'nkms-css' );
-  //wp_enqueue_script( 'nakamas-members-scripts', plugin_dir_path( __FILE__ ) . 'nakamas-members-script.js', array( 'jquery' ) );
+
+	$js_values = array(
+		'ajax_url' => admin_url( 'admin-ajax.php' ),
+		'the_issue_key' => '0422',
+	);
+	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
+  }
+
+/*
+ * Ajax in WP
+ *
+ */
+//Add dancer to dance school list of dancers
+add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
+function ds_add_dancer() {
+	global $wpdb; // this is how you get access to the database
+
+	$dancer_to_add_id = intval($_POST['dancer']);
+	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+		$data_entry = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
+		if (!is_array($data_entry)) {
+			$data_entry = [];
+		}
+		$entry = $dancer_to_add_id;
+		if (!in_array($entry, $data_entry)) {
+			array_push($data_entry, $entry);
+		}
+		update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $data_entry);
+		echo "Dancer added.";
+	}
+	else {
+		echo "Invalid Dancer ID";
+		//wp_send_json_error();
+	}
+	wp_die();
+}
+
+add_action( 'wp_ajax_ds_change_status', 'ds_change_status');
+function ds_change_status() {
+  global $wpdb;
+
+  $dancer_id = $_POST['single_dancer_id'];
+  $status = get_user_meta($dancer_id, 'active', true);
+  echo "Status is of value: " . $status;
+  if ($status != 1 && $status != 0) {
+    echo "Was not bool so changed";
+    $status = 1;
+  }
+  $status = abs($status - 1);
+  update_user_meta($dancer_id, 'active', $status);
+  echo "Dancer ID: " . $dancer_id;
+  echo "Type of status: " . gettype($status);
+  echo "Set active to: " . $status;
+  wp_die();
+}
+
+//Pass dancer id to populate single dancer tab
+add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
+function ds_single_dancer() {
+	global $wpdb; // this is how you get access to the database
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  if (!is_array($currview)) {
+    $currview = [0,0];
+  }
+  if (sizeof($currview) < 2) {
+    array_push($currview, 0);
+  }
+
+  $currview[0] = intval($_POST['single_dancer_id']);
+  echo $currview[0];
+  echo 'tiny';
+  update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
+  header("Refresh:0");
+	wp_die();
+}
+
+//Remove dancer from dance school list of dancers
+add_action( 'wp_ajax_ds_remove_dancer', 'ds_remove_dancer' );
+function ds_remove_dancer() {
+	global $wpdb; // this is how you get access to the database
+
+  $user_id = get_current_user_id();
+	$dancer_to_remove_id = intval($_POST['single_dancer_id']);
+  $dancers_list = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
+  if ( in_array( $dancer_to_remove_id, $dancers_list) ) {
+    $data_entry = array_diff( $dancers_list, [$dancer_to_remove_id] );
+    update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $data_entry);
+  	echo "Dancer removed.";
+  }
+  else {
+    echo "Error occured.";
+    wp_send_json_error();
+	}
+	wp_die();
+}
+
+//Add group to dance school list of groups
+add_action( 'wp_ajax_ds_add_group', 'ds_add_group' );
+function ds_add_group() {
+	global $wpdb; // this is how you get access to the database
+
+	$group_name = $_POST['group_name'];
+  $group_type = $_POST['group_type'];
+
+  $data_entry = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+  echo $data_entry;
+	if (!is_array($data_entry)) {
+		$data_entry = [];
+    $last = 0;
+	}
+  else {
+    end($data_entry);
+    $last = key($data_entry);
+    $last++;
+  }
+  echo $last;
+  $ds_group2add = new DanceGroup(get_current_user_id(), $last, $group_name, $group_type );
+  $data_entry[$last] = $ds_group2add;
+	update_user_meta(get_current_user_id(), 'dance_school_groups_list', $data_entry);
+	echo "Group added.";
+	wp_die();
+}
+
+//Pass group id to populate single group tab
+add_action( 'wp_ajax_ds_single_group', 'ds_single_group' );
+function ds_single_group() {
+	global $wpdb; // this is how you get access to the database
+
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  if (!is_array($currview)) {
+    $currview = [0,0];
+  }
+  if (sizeof($currview) < 2) {
+    array_push($currview, 0);
+  }
+
+  $currview[1] = intval($_POST['single_group_id']);
+  echo $currview[1];
+  update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
+	wp_die();
+}
+
+//Add dancer to group
+add_action( 'wp_ajax_ds_add_group_dancer', 'ds_add_group_dancer' );
+function ds_add_group_dancer() {
+	global $wpdb; // this is how you get access to the database
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+  $group_id = $currview[1];
+  $group = $groups_list[$group_id];
+	$dancer_to_add_id = intval($_POST['dancer']);
+	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+		$data_entry = $group->addDancer($dancer_to_add_id);
+		if ( $data_entry ) {
+      $groups_list[$group_id] = $group;
+      update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+			echo 'Dancer added.';
+		}
+    else {
+      echo 'An error occured, dancer not added.';
+    }
+	}
+	else {
+		echo "Invalid Dancer ID";
+		wp_send_json_error();
+	}
+	wp_die();
+}
+
+//Remove dancer from group
+add_action( 'wp_ajax_ds_remove_group_dancer', 'ds_remove_group_dancer' );
+function ds_remove_group_dancer() {
+	global $wpdb; // this is how you get access to the database
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+
+  $group_id = $currview[1];
+  $group = $groups_list[$group_id];
+  var_dump($group);
+  echo $group->getGroupName();
+
+	$dancer_to_remove_id = intval($_POST['dancer']);
+  $data_entry = $group->removeDancer($dancer_to_remove_id);
+	if ( $data_entry ) {
+    $groups_list[$group_id] = $group;
+    update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+		echo 'Dancer removed.';
+	}
+  else {
+    echo 'An error occured, dancer was not removed.';
+  }
+	wp_die();
+}
+
+//Change dancer status
+add_action( 'wp_ajax_ds_group_change_status', 'ds_group_change_status');
+function ds_group_change_status() {
+  global $wpdb;
+  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+
+  $group_id = $_POST['group_id'];
+  $group = $groups_list[$group_id];
+  $status = $group->getStatus();
+  ( $status == 'Active' ) ? $status = 'Inactive' : $status = 'Active';
+  $group->setStatus($status);
+
+  $groups_list[$group_id] = $group;
+  update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+  echo "Group status set to " . $status;
+  wp_die();
 }
 
 /*
@@ -186,3 +297,230 @@ add_role('guardian', __(
 		'read'	=> true, //Allows a user to read
 	)
 );
+
+//Check if a user has a role
+function nkms_has_role($user, $role) {
+	$roles = $user->roles;
+	return in_array($role, (array) $user->roles);
+}
+
+/*
+ * Add user profile fields
+ *
+ * show_user_profile: show on frontend when user editing their own profile
+ * edit_user_profile: show on backend when admin edits other users
+ */
+add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
+add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
+function nkms_show_extra_profile_fields( $user ) {
+	/* Dancer
+	 *
+	 *
+	 * Create custom fields
+	 */
+	$ds_name = get_the_author_meta( 'dance_school_name', $user->ID );
+	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
+	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
+	$ds_description = get_the_author_meta( 'dance_school_description', $user->ID );
+
+  if ( isset($_POST['update_ds_info']) ) {
+    $ds_name = $_POST['dance_school_name'];
+    $ds_address = $_POST['dance_school_address'];
+    $ds_phone_number = $_POST['dance_school_phone_number'];
+    $ds_description = $_POST['dance_school_description'];
+
+    update_user_meta( $user->ID, 'dance_school_name', $ds_name );
+    update_user_meta( $user->ID, 'dance_school_address', $ds_address );
+    update_user_meta( $user->ID, 'dance_school_phone_number', $ds_phone_number );
+    update_user_meta( $user->ID, 'dance_school_description', $ds_description );
+  }
+
+	// Dancer
+	?>
+
+	<!-- Dance School -->
+	<h3>Dance School</h3>
+
+	<p>
+    <label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label>
+    <input type="text" name="dance_school_name" value="<?php echo esc_attr( $ds_name ); ?>" class="regular-text" />
+	</p>
+  <p>
+    <label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label>
+    <input type="text" name="dance_school_address" value="<?php echo esc_attr( $ds_address ); ?>" class="regular-text" />
+	</p>
+	<p>
+    <label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label>
+    <input type="text" name="dance_school_phone_number" value="<?php echo esc_attr( $ds_phone_number ); ?>" class="regular-text" />
+	</p>
+  <p>
+    <label for="dance_school_description"><?php esc_html_e( 'Dance School Description', 'nkms' ); ?></label>
+    <textarea rows="5" name="dance_school_description" class="regular-text"><?php echo esc_html( $ds_description ); ?></textarea>
+	</p>
+	<?php
+}
+
+
+// Saving the field
+add_action( 'personal_options_update', 'nkms_update_profile_fields' );
+add_action( 'edit_user_profile_update', 'nkms_update_profile_fields' );
+function nkms_update_profile_fields( $user_id ) {
+	if ( ! current_user_can( 'edit_user', $user_id ) ) {
+		return false;
+	}
+
+	if ( ! empty( $_POST['dance_school_name'] ) ) {
+		update_user_meta( $user_id, 'dance_school_name', sanitize_text_field( $_POST['dance_school_name'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_address'] ) ) {
+		update_user_meta( $user_id, 'dance_school_address', sanitize_text_field( $_POST['dance_school_address'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_phone_number'] ) ) {
+		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
+	}
+	if ( ! empty( $_POST['dance_school_description'] ) ) {
+		update_user_meta( $user_id, 'dance_school_description', sanitize_textarea_field( $_POST['dance_school_description'] ) );
+	}
+
+}
+
+/*
+ * REGISTRATION
+ *
+ */
+function registration_form() {
+
+  echo '
+    <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+      <p>
+        <label for="username">Username</label>
+        <input type="text" name="username" value="">
+      </p>
+
+      <p>
+        <label for="password">Password</label>
+        <input type="password" name="password" value="">
+      </p>
+
+      <p>
+        <label for="email">Email</label>
+        <input type="text" name="email" value="">
+      </p>
+
+      <p>
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" value="">
+      </p>
+
+      <p>
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" value="">
+      </p>
+      <p>
+        <label for="sel_role">Account type</label>
+        <select id="select_role" name="sel_role">
+          <option value="dancer">Dancer</option>
+          <option value="guardian">Guardian/Parent</option>
+          <option value="dance-school">Dance School</option>
+        </select>
+      </p>
+      <p>
+        <input type="submit" name="registration_submit" value="Register"/>
+      </p>
+    </form>
+  ';
+}
+
+function registration_validation( $username, $password, $email, $first_name, $last_name )  {
+  global $reg_errors;
+  $reg_errors = new WP_Error;
+
+  //Check if fields are empty
+  if ( empty( $username ) || empty( $password ) || empty( $email ) || empty( $first_name ) || empty( $last_name ) ) {
+    $reg_errors->add('field', 'All fields are equired.');
+  }
+
+  //Check if username is more than 4 chars.
+  if ( 4 > strlen( $username ) ) {
+    $reg_errors->add( 'username_length', 'Username too short. At least 4 characters required.' );
+  }
+
+  //WP function. Checks if username exists.
+  if ( username_exists( $username ) ) {
+    $reg_errors->add('user_name', 'Sorry, that username already exists!');
+  }
+
+  //WP function. Checks if username is valid
+  if ( ! validate_username( $username ) ) {
+    $reg_errors->add( 'username_invalid', 'Sorry, the username you entered is not valid.' );
+  }
+
+  //Password more than 6 chars
+  if ( 5 > strlen( $password ) ) {
+    $reg_errors->add( 'password', 'Password length must be greater than 5.' );
+  }
+
+  //Check if email is valid
+  if ( !is_email( $email ) ) {
+    $reg_errors->add( 'email_invalid', 'Email is not valid.' );
+  }
+  //Check if email is in use
+  if ( email_exists( $email ) ) {
+    $reg_errors->add( 'email', 'Email Already in use!' );
+  }
+
+  //Loop through errors & display them
+  if ( is_wp_error( $reg_errors ) ) {
+    echo '<div id="nkms-account">';
+    foreach ( $reg_errors->get_error_messages() as $error ) {
+      echo '<strong style="color:red;">' . $error . '</strong><br/>';
+    }
+    echo '<p></p></div>';
+  }
+}
+
+//Complete registration
+function complete_registration() {
+  global $reg_errors, $username, $password, $email, $first_name, $last_name, $role;
+  //if dance school set custom fields to empty array.
+  $empty_array = [];
+  if ( 1 > count( $reg_errors->get_error_messages() ) ) {
+    $userdata = array(
+    'user_login'    =>   $username,
+    'user_email'    =>   $email,
+    'user_pass'     =>   $password,
+    'first_name'    =>   $first_name,
+    'last_name'     =>   $last_name,
+    'role'          =>   $role,
+    );
+    $user = wp_insert_user( $userdata );
+    echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
+  }
+}
+
+function nkms_custom_registration() {
+  if ( isset($_POST['registration_submit'] ) ) {
+    registration_validation(
+    $_POST['username'],
+    $_POST['password'],
+    $_POST['email'],
+    $_POST['first_name'],
+    $_POST['last_name']
+    );
+
+    // sanitize user form input. Add $first_name, $last_name
+    global $username, $password, $email, $first_name, $last_name, $role;
+    $username   =   sanitize_user( $_POST['username'] );
+    $password   =   esc_attr( $_POST['password'] );
+    $email      =   sanitize_email( $_POST['email'] );
+    $first_name =   sanitize_text_field( $_POST['first_name'] );
+    $last_name  =   sanitize_text_field( $_POST['last_name'] );
+    $role       =   $_POST['sel_role'];
+
+    // call @function complete_registration to create the user
+    // only when no WP_error is found
+    complete_registration();
+  }
+
+  registration_form();
+}
