@@ -92,7 +92,7 @@ function ds_add_dancer() {
 	wp_die();
 }
 
-//Change dancer status
+//Change status
 add_action( 'wp_ajax_ds_change_status', 'ds_change_status');
 function ds_change_status() {
   global $wpdb;
