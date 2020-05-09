@@ -46,6 +46,7 @@ function dsOpenTab(evt, dsTabName) {
 document.getElementById("defaultOpen").click();
 document.getElementById("dsDefaultOpen").click();
 
+
 // jQuery
 jQuery(document).ready(function($) {
 
@@ -295,5 +296,44 @@ jQuery(document).ready(function($) {
       }
     });
   });
+
+
+
+  // REGISTRATION
+  // $("#account_role").change(function() {
+  //   //e.preventDefault();
+  //   var select_role = $('#account_role').val();
+  //   console.log(select_role);
+  //   if ( select_role == 'dance-school') {
+  //     $('#ds-reg-fields').css('display','block');
+  //   }
+  //   else {
+  //     $('#ds-reg-fields').show();
+  //   }
+  // });
+  // // Custom registration
+  // $('#submit_registration').on('submit', function() {
+  //   e.preventDefault();
+  //   var select_role = $('#select_role option').filter(':selected').val();
+  //   console.log(select_role);
+  //
+  //   $.ajax({
+  //     _ajax_nonce: nkms_ajax.nonce,
+  //     url: nkms_ajax.ajax_url,
+  //     type: "POST",
+  //     data: {
+  //       action: 'ds_update_registration_fields',
+  //       role: select_role,
+  //     },
+  //     success: function(response) {
+  //       $('#ds-reg-fields').css('display','block');
+  //       console.log(response);
+  //     },
+  //     error: function(response) {
+  //       $('#ds-reg-fields').css('display','none');
+  //       console.log(response);
+  //     }
+  //   });
+  // });
 
 });

@@ -387,19 +387,61 @@ function nkms_update_profile_fields( $user_id ) {
  * REGISTRATION
  *
  */
-//also add , $first_name, $last_name
-function registration_validation( $username, $password, $email )  {
+function registration_form() {
+
+  echo '
+    <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+      <p>
+        <label for="username">Username</label>
+        <input type="text" name="username" value="">
+      </p>
+
+      <p>
+        <label for="password">Password</label>
+        <input type="password" name="password" value="">
+      </p>
+
+      <p>
+        <label for="email">Email</label>
+        <input type="text" name="email" value="">
+      </p>
+
+      <p>
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" value="">
+      </p>
+
+      <p>
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" value="">
+      </p>
+      <p>
+        <label for="sel_role">Account type</label>
+        <select id="select_role" name="sel_role">
+          <option value="dancer">Dancer</option>
+          <option value="guardian">Guardian/Parent</option>
+          <option value="dance-school">Dance School</option>
+        </select>
+      </p>
+      <p>
+        <input type="submit" name="registration_submit" value="Register"/>
+      </p>
+    </form>
+  ';
+}
+
+function registration_validation( $username, $password, $email, $first_name, $last_name )  {
   global $reg_errors;
   $reg_errors = new WP_Error;
 
   //Check if fields are empty
-  if ( empty( $username ) || empty( $password ) || empty( $email ) ) {
-    $reg_errors->add('field', 'Required form field is missing');
+  if ( empty( $username ) || empty( $password ) || empty( $email ) || empty( $first_name ) || empty( $last_name ) ) {
+    $reg_errors->add('field', 'All fields are equired.');
   }
 
   //Check if username is more than 4 chars.
   if ( 4 > strlen( $username ) ) {
-    $reg_errors->add( 'username_length', 'Username too short. At least 4 characters is required' );
+    $reg_errors->add( 'username_length', 'Username too short. At least 4 characters required.' );
   }
 
   //WP function. Checks if username exists.
@@ -409,37 +451,36 @@ function registration_validation( $username, $password, $email )  {
 
   //WP function. Checks if username is valid
   if ( ! validate_username( $username ) ) {
-    $reg_errors->add( 'username_invalid', 'Sorry, the username you entered is not valid' );
+    $reg_errors->add( 'username_invalid', 'Sorry, the username you entered is not valid.' );
   }
 
   //Password more than 6 chars
   if ( 5 > strlen( $password ) ) {
-        $reg_errors->add( 'password', 'Password length must be greater than 5' );
+    $reg_errors->add( 'password', 'Password length must be greater than 5.' );
   }
 
   //Check if email is valid
   if ( !is_email( $email ) ) {
-    $reg_errors->add( 'email_invalid', 'Email is not valid' );
+    $reg_errors->add( 'email_invalid', 'Email is not valid.' );
   }
   //Check if email is in use
   if ( email_exists( $email ) ) {
-    $reg_errors->add( 'email', 'Email Already in use' );
+    $reg_errors->add( 'email', 'Email Already in use!' );
   }
 
   //Loop through errors & display them
   if ( is_wp_error( $reg_errors ) ) {
+    echo '<div id="nkms-account">';
     foreach ( $reg_errors->get_error_messages() as $error ) {
-      echo '<div>';
-      echo '<strong>ERROR</strong>:';
-      echo $error . '<br/>';
-      echo '</div>';
+      echo '<strong style="color:red;">' . $error . '</strong><br/>';
     }
+    echo '<p></p></div>';
   }
 }
 
-//Complete registration. Should add , $first_name, $last_name
+//Complete registration
 function complete_registration() {
-  global $reg_errors, $username, $password, $email;
+  global $reg_errors, $username, $password, $email, $first_name, $last_name, $role;
   //if dance school set custom fields to empty array.
   $empty_array = [];
   if ( 1 > count( $reg_errors->get_error_messages() ) ) {
@@ -449,46 +490,36 @@ function complete_registration() {
     'user_pass'     =>   $password,
     'first_name'    =>   $first_name,
     'last_name'     =>   $last_name,
+    'role'          =>   $role,
     );
     $user = wp_insert_user( $userdata );
-    echo 'Registration complete. Goto <a href="' . get_site_url() . '/login">login page</a>.';
+    echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
   }
 }
 
-function custom_registration_function() {
-  if ( isset($_POST['submit'] ) ) {
+function nkms_custom_registration() {
+  if ( isset($_POST['registration_submit'] ) ) {
     registration_validation(
     $_POST['username'],
     $_POST['password'],
-    $_POST['email']
-    // $_POST['fname'],
-    // $_POST['lname']
+    $_POST['email'],
+    $_POST['first_name'],
+    $_POST['last_name']
     );
 
     // sanitize user form input. Add $first_name, $last_name
-    global $username, $password, $email;
+    global $username, $password, $email, $first_name, $last_name, $role;
     $username   =   sanitize_user( $_POST['username'] );
     $password   =   esc_attr( $_POST['password'] );
     $email      =   sanitize_email( $_POST['email'] );
-    // $first_name =   sanitize_text_field( $_POST['fname'] );
-    // $last_name  =   sanitize_text_field( $_POST['lname'] );
+    $first_name =   sanitize_text_field( $_POST['first_name'] );
+    $last_name  =   sanitize_text_field( $_POST['last_name'] );
+    $role       =   $_POST['sel_role'];
 
     // call @function complete_registration to create the user
     // only when no WP_error is found
-    complete_registration(
-    $username,
-    $password,
-    $email
-    // $first_name,
-    // $last_name
-    );
+    complete_registration();
   }
 
-  registration_form(
-    $username,
-    $password,
-    $email
-    //$first_name,
-    //$last_name
-    );
+  registration_form();
 }

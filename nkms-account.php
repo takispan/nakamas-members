@@ -22,17 +22,18 @@ get_header(); // Loads the header.php template. ?>
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'dashboard')" id="defaultOpen">Dashboard</button>
                 <button class="tablinks" onclick="openTab(event, 'dance-school')" id="danceSchool">Dance School</button>
-                <button class="tablinks" onclick="openTab(event, 'profile')" id="profile">Profile</button>
+                <button class="tablinks" onclick="openTab(event, 'profile')" id="profileTab">Profile</button>
             </div>
 
             <!-- Tab content -->
             <div id="dashboard" class="tabcontent">
                 <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
             </div>
-
-            <div id="dance-school" class="tabcontent">
-               <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
-            </div>
+            <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
+              <div id="dance-school" class="tabcontent">
+                 <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
+              </div>
+            <?php endif; ?>
 
             <div id="profile" class="tabcontent">
                 <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>

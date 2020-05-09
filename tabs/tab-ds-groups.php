@@ -26,7 +26,6 @@ if (!is_array($ds_groups_list_array)) { $ds_groups_list_array = []; }
     }
     echo '</table>';
   } else {
-    print_r($ds_groups_list_array);
     echo "<p>" . $ds_name . " does not have any groups.</p>";
     echo "<p>Create one by clicking the button below.</p>";
   }
