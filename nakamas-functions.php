@@ -342,19 +342,19 @@ function nkms_show_extra_profile_fields( $user ) {
 	<h3>Dance School</h3>
 
 	<p>
-    <label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label></th>
+    <label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label>
     <input type="text" name="dance_school_name" value="<?php echo esc_attr( $ds_name ); ?>" class="regular-text" />
 	</p>
   <p>
-    <label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label></th>
+    <label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label>
     <input type="text" name="dance_school_address" value="<?php echo esc_attr( $ds_address ); ?>" class="regular-text" />
 	</p>
 	<p>
-    <label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label></th>
+    <label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label>
     <input type="text" name="dance_school_phone_number" value="<?php echo esc_attr( $ds_phone_number ); ?>" class="regular-text" />
 	</p>
   <p>
-    <label for="dance_school_description"><?php esc_html_e( 'Dance School Description', 'nkms' ); ?></label></th>
+    <label for="dance_school_description"><?php esc_html_e( 'Dance School Description', 'nkms' ); ?></label>
     <textarea rows="5" name="dance_school_description" class="regular-text"><?php echo esc_html( $ds_description ); ?></textarea>
 	</p>
 	<?php
