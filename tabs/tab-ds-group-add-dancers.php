@@ -5,10 +5,12 @@
  * Allow users manage dance school's dancer list.
  */
  $currently_viewing = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+ if ( !is_array($currently_viewing) ) { $currently_viewing = [0,0]; }
 
  $group_id = $currently_viewing[1];
  $ds_groups_list_array = get_user_meta( get_current_user_id(), 'dance_school_groups_list', true );
- $group = $ds_groups_list_array[$group_id];
+ if ( is_array($ds_groups_list_array) ) {
+   $group = $ds_groups_list_array[$group_id];
 ?>
 
 <div class="nkms-tabs">
@@ -26,3 +28,7 @@
     </p>
   </form>
 </div><!-- .nkms-tabs -->
+<?php }
+else {
+  echo '<p>No dance groups.</p>';
+}

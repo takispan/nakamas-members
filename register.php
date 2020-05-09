@@ -27,7 +27,7 @@ else {
     }
 
     // Check email address is present and valid
-    $email = $wpdb->escape($_REQUEST['email']);
+    $email = esc_sql($_REQUEST['email']);
     if( !is_email( $email ) ) {
       $errors['email'] = "Please enter a valid email";
     }
@@ -82,6 +82,14 @@ else {
       <p>
        <label for="password_confirmation">Confirm Password</label>
        <input type="password" name="password_confirmation" id="password_confirmation">
+      </p>
+      <p>
+       <label for="first_name">First Name</label>
+       <input type="text" name="first_name" id="first_name">
+     </p>
+      <p>
+       <label for="last_name">Last Name</label>
+       <input type="text" name="last_name" id="last_name">
       </p>
       <p>
       <label for="account_role">Choose Account Role</label>

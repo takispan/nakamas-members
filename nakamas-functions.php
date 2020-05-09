@@ -115,7 +115,6 @@ function ds_change_status() {
 add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
 function ds_single_dancer() {
 	global $wpdb; // this is how you get access to the database
-
   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
   if (!is_array($currview)) {
     $currview = [0,0];
@@ -126,7 +125,9 @@ function ds_single_dancer() {
 
   $currview[0] = intval($_POST['single_dancer_id']);
   echo $currview[0];
+  echo 'tiny';
   update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
+  header("Refresh:0");
 	wp_die();
 }
 
@@ -439,13 +440,15 @@ function registration_validation( $username, $password, $email )  {
 //Complete registration. Should add , $first_name, $last_name
 function complete_registration() {
   global $reg_errors, $username, $password, $email;
+  //if dance school set custom fields to empty array.
+  $empty_array = [];
   if ( 1 > count( $reg_errors->get_error_messages() ) ) {
     $userdata = array(
     'user_login'    =>   $username,
     'user_email'    =>   $email,
     'user_pass'     =>   $password,
-    //'first_name'    =>   $first_name,
-    //'last_name'     =>   $last_name,
+    'first_name'    =>   $first_name,
+    'last_name'     =>   $last_name,
     );
     $user = wp_insert_user( $userdata );
     echo 'Registration complete. Goto <a href="' . get_site_url() . '/login">login page</a>.';
@@ -453,39 +456,39 @@ function complete_registration() {
 }
 
 function custom_registration_function() {
-    if ( isset($_POST['submit'] ) ) {
-        registration_validation(
-        $_POST['username'],
-        $_POST['password'],
-        $_POST['email']
-        // $_POST['fname'],
-        // $_POST['lname']
-        );
+  if ( isset($_POST['submit'] ) ) {
+    registration_validation(
+    $_POST['username'],
+    $_POST['password'],
+    $_POST['email']
+    // $_POST['fname'],
+    // $_POST['lname']
+    );
 
-        // sanitize user form input. Add $first_name, $last_name
-        global $username, $password, $email;
-        $username   =   sanitize_user( $_POST['username'] );
-        $password   =   esc_attr( $_POST['password'] );
-        $email      =   sanitize_email( $_POST['email'] );
-        // $first_name =   sanitize_text_field( $_POST['fname'] );
-        // $last_name  =   sanitize_text_field( $_POST['lname'] );
+    // sanitize user form input. Add $first_name, $last_name
+    global $username, $password, $email;
+    $username   =   sanitize_user( $_POST['username'] );
+    $password   =   esc_attr( $_POST['password'] );
+    $email      =   sanitize_email( $_POST['email'] );
+    // $first_name =   sanitize_text_field( $_POST['fname'] );
+    // $last_name  =   sanitize_text_field( $_POST['lname'] );
 
-        // call @function complete_registration to create the user
-        // only when no WP_error is found
-        complete_registration(
-        $username,
-        $password,
-        $email
-        // $first_name,
-        // $last_name
-        );
-    }
+    // call @function complete_registration to create the user
+    // only when no WP_error is found
+    complete_registration(
+    $username,
+    $password,
+    $email
+    // $first_name,
+    // $last_name
+    );
+  }
 
-    registration_form(
-        $username,
-        $password,
-        $email
-        //$first_name,
-        //$last_name
-        );
+  registration_form(
+    $username,
+    $password,
+    $email
+    //$first_name,
+    //$last_name
+    );
 }

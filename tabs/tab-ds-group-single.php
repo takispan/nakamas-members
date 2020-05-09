@@ -6,11 +6,12 @@
  */
 
 $currently_viewing = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-
+if ( !is_array($currently_viewing) ) { $currently_viewing = [0,0]; }
 $group_id = $currently_viewing[1];
 $ds_groups_list_array = get_user_meta( get_current_user_id(), 'dance_school_groups_list', true );
-$group = $ds_groups_list_array[$group_id];
-$group_dancers = $group->getDancers();
+if ( is_array($ds_groups_list_array) ) {
+  $group = $ds_groups_list_array[$group_id];
+  $group_dancers = $group->getDancers();
 ?>
 
 <div class="nkms-tabs">
@@ -56,3 +57,8 @@ $group_dancers = $group->getDancers();
         <button  onclick="dsOpenTab(event, 'ds-group-remove-dancers')">Remove Dancers</button>
       <?php } ?>
 </div><!-- .nkms-tabs -->
+<?php }
+else {
+  echo '<p>No dance groups.</p>';
+}
+?>
