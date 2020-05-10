@@ -39,10 +39,10 @@ if ( is_array($ds_groups_list_array) ) {
             <th>Status</th>
           </tr>
           <?php
-            foreach ($group_dancers as $key => $value) {
-              $dncr = get_user_by( 'id', $value );
+            foreach ($group_dancers as $key => $id) {
+              $dncr = get_user_by( 'id', $id );
               ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
-              echo '<tr><td>' . $value . '</td><td>' . $dncr->first_name . ' ' . $dncr->last_name . '</td><td>' . $status . '</td></tr>';
+              echo '<tr><td>' . $id . '</td><td>' . $dncr->first_name . ' ' . $dncr->last_name . '</td><td>' . $status . '</td></tr>';
             }
           ?>
         </table>
@@ -52,9 +52,9 @@ if ( is_array($ds_groups_list_array) ) {
         echo '<p>' . $group->getGroupName() . ' does not have any dancers.</p>';
         echo '<p>You may add by clicking the button below.</p>';
       } ?>
-      <button  onclick="dsOpenTab(event, 'ds-group-add-dancers')">Add Dancers</button>
+      <a data-toggle="tab" href="#ds-group-add-dancers" class="nkms-btn">Add Dancers</a>
       <?php if ( !empty($group_dancers) ) { ?>
-        <button  onclick="dsOpenTab(event, 'ds-group-remove-dancers')">Remove Dancers</button>
+        <a data-toggle="tab" href="#ds-group-remove-dancers" class="nkms-btn">Remove Dancers</a>
       <?php } ?>
 </div><!-- .nkms-tabs -->
 <?php }

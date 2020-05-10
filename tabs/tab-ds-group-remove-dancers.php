@@ -30,7 +30,7 @@
     <p class="success_msg" style="display: none">Dancer removed successfully!</p>
     <p class="error_msg" style="display: none">An error occured, dancer was not removed.</p>
     <p>
-      <input type="submit" name="dance_school_group_remove_dancers_submit" value="Remove" />
+      <input type="submit" name="dance_school_group_remove_dancers_submit" value="Remove" class="nkms-btn" />
     </p>
   </form>
 </div><!-- .nkms-tabs -->

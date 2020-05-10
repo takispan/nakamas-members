@@ -43,6 +43,7 @@ function nkms_assets() {
    * Optional: deps (dependencies), ver (version, used date for this), in_footer (load on footer or not. By default off an loads on header)
    */
   wp_register_script( 'nkms-js', plugins_url( '/assets/js/nakamas-members.js', __FILE__ ), array( 'jquery' ), '20200406', true );
+  wp_register_script( 'nkms-bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array( 'jquery' ), '3.3.7', true );
 
   /* Register the style like this for a plugin
    * Parameters
@@ -50,10 +51,14 @@ function nkms_assets() {
    * Optional: deps (dependencies), ver (version, used date for this), media (The media for which this stylesheet has been defined. Accepts media types like 'all', 'print' and 'screen', or media queries like '(orientation: portrait)' and '(max-width: 640px)'.)
    */
   wp_register_style( 'nkms-css', plugins_url( '/assets/css/nakamas-members.css', __FILE__ ), array(), '20200404', 'all' );
+  //wp_register_style( 'bootstrap', plugins_url( '/assets/css/bootstrap.min.css', __FILE__), array(), '3.3.7', 'all' );
+  wp_register_style( 'nkms-bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', array(), '3.3.7', 'all' );
 
   // For either a plugin or a theme, you can then enqueue the script/style
   wp_enqueue_script( 'nkms-js' );
+  wp_enqueue_script( 'nkms-bootstrap' );
   wp_enqueue_style( 'nkms-css' );
+  wp_enqueue_style( 'nkms-bootstrap' );
 
 	$js_values = array(
 		'ajax_url' => admin_url( 'admin-ajax.php' ),

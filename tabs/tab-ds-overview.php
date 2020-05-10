@@ -22,6 +22,7 @@
         <?php echo get_the_author_meta( 'dance_school_description', $current_user->ID ); ?>
       </span>
     </p>
-
-    <button onclick="dsOpenTab(event, 'ds-details')">Edit Details</button>
+    <br>
+    <a data-toggle="tab" href="#ds-details" class="nkms-btn">Edit Details</a>
+    <!-- <button onclick="dsOpenTab(event, 'ds-details')">Edit Details</button> -->
 </div><!-- .nkms-tabs -->

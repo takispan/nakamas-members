@@ -1,62 +1,31 @@
-function openTab(evt, tabName) {
-  // Declare all variables
-  var i, tabcontent, tablinks;
-
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
-
-}
-
-function dsOpenTab(evt, dsTabName) {
-  // Declare all variables
-  var i, dstabcontent, dstablinks;
-
-  // Get all elements with class="ds-tabcontent" and hide them
-  dstabcontent = document.getElementsByClassName("ds-tabcontent");
-  for (i = 0; i < dstabcontent.length; i++) {
-    dstabcontent[i].style.display = "none";
-  }
-
-  // Get all elements with class="ds-tablinks" and remove the class "active"
-  dstablinks = document.getElementsByClassName("ds-tablinks");
-  for (i = 0; i < dstablinks.length; i++) {
-    dstablinks[i].className = dstablinks[i].className.replace(" active", "");
-  }
-
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(dsTabName).style.display = "block";
-  evt.currentTarget.className += " active";
-
-}
-
-// Default tab
-document.getElementById("defaultOpen").click();
-document.getElementById("dsDefaultOpen").click();
-
 
 // jQuery
 jQuery(document).ready(function($) {
 
   // Tab reload test
-  // var profile = "/profile"
-  // $('#danceGroups').click(function(){
-  //   $('#ds-dance-groups').html(ajax_load).load(profile);
-  // });
-
-  //$('#nkms-tabs').tabs();
+  $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+    var tabLink = $(e.target).attr('href');
+    if ( tabLink.startsWith('#ds') ) {
+      tabLink = '#dance-school';
+      tabLink2 = $(e.target).attr('href');
+      sessionStorage.setItem('activeTab', tabLink);
+      sessionStorage.setItem('activeTab2', tabLink2);
+    }
+    else {
+      sessionStorage.setItem('activeTab', tabLink);
+    }
+	});
+	var activeTab = sessionStorage.getItem('activeTab');
+  if ( activeTab = '#dance-school') {
+    var activeTab2 = sessionStorage.getItem('activeTab2');
+  }
+	if(activeTab){
+		$('#myTab a[href="' + activeTab + '"]').tab('show');
+	}
+  if(activeTab2) {
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+    $('#myTab2 a[href="' + activeTab2 + '"]').tab('show');
+  }
 
   /*
    * DANCERS
@@ -80,9 +49,7 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.success_msg').css('display','block');
         console.log(response);
-        window.location.reload();
-        document.getElementById("danceSchool").click();
-        document.getElementById("dancers").click();
+        window.location.reload(true);
       },
       error: function(response) {
         $('.error_msg').css('display','block');
@@ -106,7 +73,7 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         console.log("Response: " + response);
-        dsOpenTab(e, 'ds-dancer-single');
+        //$('#myTab2 a[href="ds-details"]').tab('show');
       },
       error: function(response) {
         console.log(response);

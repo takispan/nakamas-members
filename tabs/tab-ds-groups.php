@@ -22,7 +22,7 @@ if (!is_array($ds_groups_list_array)) { $ds_groups_list_array = []; }
       </tr>
     <?php
     foreach ($ds_groups_list_array as $key => $value) {
-      echo '<tr><td>' . $value->getType() . '</td><td><button class="single-group" data-group-id="' . $key . '">' . $value->getGroupName() . '</button></td><td>' . $value->getStatus() . '</td></tr>';
+      echo '<tr><td>' . $value->getType() . '</td><td><a data-toggle="tab" href="#ds-group-single" class="single-group" data-group-id="' . $key . '">' . $value->getGroupName() . '</a></td><td>' . $value->getStatus() . '</td></tr>';
     }
     echo '</table>';
   } else {
@@ -30,5 +30,5 @@ if (!is_array($ds_groups_list_array)) { $ds_groups_list_array = []; }
     echo "<p>Create one by clicking the button below.</p>";
   }
   ?>
-  <button onclick="dsOpenTab(event, 'ds-add-groups')">Add Group</button>
+  <a data-toggle="tab" href="#ds-add-groups" class="nkms-btn">Add Group</a>
 </div><!-- .nkms-tabs -->

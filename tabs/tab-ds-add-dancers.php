@@ -17,7 +17,7 @@
     <p class="success_msg" style="display: none">Dancer added successfully!</p>
     <p class="error_msg" style="display: none">An error occured, dancer not added.</p>
     <p>
-      <input type="submit" name="dance_school_add_dancers_submit" value="Add" />
+      <input type="submit" name="dance_school_add_dancers_submit" value="Add" class="nkms-btn" />
     </p>
   </form>
 </div><!-- .nkms-tabs -->

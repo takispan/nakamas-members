@@ -19,26 +19,36 @@ get_header(); // Loads the header.php template. ?>
             </p><!-- .warning -->
         <?php else : ?>
             <!-- Tab links -->
-            <div class="tab">
-                <button class="tablinks" onclick="openTab(event, 'dashboard')" id="defaultOpen">Dashboard</button>
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active"><a data-toggle="tab" href="#dashboard">Dashboard</a></li>
                 <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
-                  <button class="tablinks" onclick="openTab(event, 'dance-school')" id="danceSchool">Dance School</button>
+                  <li><a data-toggle="tab" href="#dance-school">Dance School</a></li>
                 <?php endif; ?>
+                <li><a data-toggle="tab" href="#profile">Profile</a></li>
+            </ul>
+
+            <!-- <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'dashboard')" id="defaultOpen">Dashboard</button>
+                <?php //if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
+                  <button class="tablinks" onclick="openTab(event, 'dance-school')" id="danceSchool">Dance School</button>
+                <?php //endif; ?>
                 <button class="tablinks" onclick="openTab(event, 'profile')" id="profileTab">Profile</button>
-            </div>
+            </div> -->
 
             <!-- Tab content -->
-            <div id="dashboard" class="tabcontent">
-                <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
-            </div>
-            <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
-              <div id="dance-school" class="tabcontent">
-                 <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
+            <div class="tab-content">
+              <div id="dashboard" class="tab-pane fade in active">
+                  <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
               </div>
-            <?php endif; ?>
+              <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
+                <div id="dance-school" class="tab-pane fade">
+                   <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
+                </div>
+              <?php endif; ?>
 
-            <div id="profile" class="tabcontent">
-                <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
+              <div id="profile" class="tab-pane fade">
+                  <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
+              </div>
             </div>
         <?php endif; ?>
     </div><!-- #nkms-account -->
