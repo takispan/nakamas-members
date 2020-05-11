@@ -15,6 +15,7 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
         <li class="active"><a data-toggle="tab" href="#ds-overview">Overview</a></li>
         <li><a data-toggle="tab" href="#ds-dancers">Dancers</a></li>
         <li><a data-toggle="tab" href="#ds-dance-groups">Dance groups</a></li>
+        <li><a data-toggle="tab" href="#ds-registrations">Registrations</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-details">Details</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-add-dancers">Add dancer</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-dancer-single">Single dancer</a></li>
@@ -38,6 +39,11 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
       <!-- Tab content - Dance Groups -->
       <div id="ds-dance-groups" class="tab-pane fade">
           <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-groups.php'); ?>
+      </div>
+
+      <!-- Tab content - Registrations -->
+      <div id="ds-registrations" class="tab-pane fade">
+          <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-register-groups.php'); ?>
       </div>
 
       <!-- HIDDEN TABS -->

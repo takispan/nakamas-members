@@ -36,15 +36,6 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
         update_user_meta( $current_user->ID, 'first_name', esc_attr( $_POST['first-name'] ) );
     if ( !empty( $_POST['last-name'] ) )
         update_user_meta($current_user->ID, 'last_name', esc_attr( $_POST['last-name'] ) );
-
-    /* Redirect so the page will show updated info.*/
-    /*I am not Author of this Code- i dont know why but it worked for me after changing below line to if ( count($error) == 0 ){ */
-    //if ( count($error) == 0 ) {
-        //action hook for plugins and extra fields saving
-        //do_action('edit_user_profile_update', $current_user->ID);
-        //wp_redirect( get_permalink().'?updated=true' );
-        //exit;
-    //}
 }
 ?>
 

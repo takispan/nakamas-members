@@ -5,6 +5,9 @@ jQuery(document).ready(function($) {
   // Tab reload test
   $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
     var tabLink = $(e.target).attr('href');
+    if ( tabLink == '#dance-school' ) {
+      $('#myTab2 a[href="#ds-overview"]').tab('show');
+    }
     if ( tabLink.startsWith('#ds') ) {
       tabLink = '#dance-school';
       tabLink2 = $(e.target).attr('href');
@@ -16,7 +19,7 @@ jQuery(document).ready(function($) {
     }
 	});
 	var activeTab = sessionStorage.getItem('activeTab');
-  if ( activeTab = '#dance-school') {
+  if ( activeTab == '#dance-school' ) {
     var activeTab2 = sessionStorage.getItem('activeTab2');
   }
 	if(activeTab){
@@ -73,7 +76,7 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         console.log("Response: " + response);
-        //$('#myTab2 a[href="ds-details"]').tab('show');
+        window.location.reload();
       },
       error: function(response) {
         console.log(response);
@@ -153,7 +156,6 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.success_msg').css('display','block');
         console.log(response);
-        window.location.reload();
       },
       error: function(response) {
         $('.error_msg').css('display','block');
@@ -175,7 +177,7 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         console.log("Response: " + response);
-        dsOpenTab(e, 'ds-group-single');
+        window.location.reload();
       },
       error: function(response) {
         console.log(response);
@@ -203,7 +205,6 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.success_msg').css('display','block');
         console.log(response);
-        window.location.reload();
       },
       error: function(response) {
         $('.error_msg').css('display','block');
@@ -232,7 +233,6 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.success_msg').css('display','block');
         console.log(response);
-        window.location.reload();
       },
       error: function(response) {
         $('.error_msg').css('display','block');

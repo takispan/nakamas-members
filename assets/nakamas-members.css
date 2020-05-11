@@ -1,0 +1,30 @@
+/* Tabs */
+#nkms-account, .nkms-tabs {
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+}
+
+.nkms-tabs {
+	padding: 4rem 0;
+}
+
+/* Buttons */
+input.nkms-btn, nkms-btn {
+	padding: 1em 1.5em;
+}
+
+input.nkms-btn, a.nkms-btn {
+	padding: 1em 1.5em;
+	background: #cd2653;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 600;
+	text-decoration: none;
+  transition: opacity 0.15s linear;
+}
+a.nkms-btn:hover {
+	color: #fff;
+	text-decoration: underline;
+  transition: opacity 0.15s linear;
+}
