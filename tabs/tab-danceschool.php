@@ -5,7 +5,7 @@
  * Allow users to update their profiles from Frontend.
  */
 
-$ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
+$ds_name = get_the_author_meta( 'dance_school_name', get_current_user_id() );
 
 ?>
 
@@ -14,7 +14,7 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
     <ul class="nav nav-tabs" id="myTab2">
         <li class="active"><a data-toggle="tab" href="#ds-overview">Overview</a></li>
         <li><a data-toggle="tab" href="#ds-dancers">Dancers</a></li>
-        <li><a data-toggle="tab" href="#ds-dance-groups">Dance groups</a></li>
+        <li><a data-toggle="tab" href="#ds-dance-groups">Groups</a></li>
         <li><a data-toggle="tab" href="#ds-registrations">Registrations</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-details">Details</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-add-dancers">Add dancer</a></li>
@@ -36,7 +36,7 @@ $ds_name = get_the_author_meta( 'dance_school_name', $current_user->ID );
          <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-dancers.php'); ?>
       </div>
 
-      <!-- Tab content - Dance Groups -->
+      <!-- Tab content - Groups -->
       <div id="ds-dance-groups" class="tab-pane fade">
           <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-groups.php'); ?>
       </div>

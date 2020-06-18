@@ -24,5 +24,4 @@
     </p>
     <br>
     <a data-toggle="tab" href="#ds-details" class="nkms-btn">Edit Details</a>
-    <!-- <button onclick="dsOpenTab(event, 'ds-details')">Edit Details</button> -->
 </div><!-- .nkms-tabs -->

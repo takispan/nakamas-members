@@ -3,29 +3,62 @@
  * Ajax in WP
  *
  */
+
  //Add dancer to dance school list of dancers
  add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
  function ds_add_dancer() {
  	global $wpdb; // this is how you get access to the database
 
- 	$dancer_to_add_id = intval($_POST['dancer']);
- 	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+ 	$dancer2add_id = intval($_POST['dancer']);
+ 	$dancer2add = get_user_by( 'id', $dancer2add_id );
  	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
- 		$data_entry = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
- 		if (!is_array($data_entry)) {
- 			$data_entry = [];
- 		}
- 		$entry = $dancer_to_add_id;
- 		if (!in_array($entry, $data_entry)) {
- 			array_push($data_entry, $entry);
- 		}
- 		update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $data_entry);
- 		echo "Dancer added.";
+ 		$dancers_list = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
+ 		if ( ! is_array( $dancers_list ) ) { $dancers_list = [];}
+ 		if ( ! in_array( $dancer2add_id, $dancers_list ) ) {
+      array_push($dancers_list, $dancer2add_id);
+   		update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $dancers_list);
+   		wp_send_json_success("<p class='text-info'>Dancer added.</p>");
+    }
+    else {
+      wp_send_json_error("<p class='text-danger'>Dancer is already part of the School.</p>");
+    }
  	}
  	else {
- 		echo "Invalid Dancer ID";
- 		//wp_send_json_error();
+ 		wp_send_json_error("<p class='text-danger'>Invalid dancer ID.</p>");
  	}
+ }
+
+ //Pass dancer id to populate single dancer tab
+ add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
+ function ds_single_dancer() {
+ 	global $wpdb; // this is how you get access to the database
+   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+   $ds_name = get_user_meta( 'dance_school_name', get_current_user_id() );
+   if ( ! is_array( $currview ) ) { $currview = [0,0]; }
+   if ( sizeof($currview) < 2 ) { array_push($currview, 0); }
+
+   $dancer_id = intval($_POST['single_dancer_id']);
+   $currview[0] = $dancer_id;
+   update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
+   $dancer = get_user_by( 'id', $dancer_id );
+   (!get_user_meta($dancer_id, 'active', true)) ? $active_status = "Inactive" : $active_status = "Active";
+   $single_dancer_data = '
+   <h3 style="font-weight:300;">Dancer <span style="font-weight:600;">' . $dancer->first_name . ' ' . $dancer->last_name . '</span> for <span style="font-weight:600;">' . $ds_name . '</span></h3></br>
+   <table>
+     <tr>
+       <th>ID</th>
+       <th>Name</th>
+       <th>Status</th>
+     </tr>
+     <tr>
+       <td>' . $dancer_id . '</td>
+       <td>' . $dancer->first_name . ' ' . $dancer->last_name . '</td>
+       <td>' . $active_status . '</td>
+     </tr>
+   </table>
+   <button class="change-dancer-status" data-dancer-id="' . $dancer_id . '">Change Status</button>
+   <button class="remove-dancer" data-dancer-id="' . $dancer_id . '">Remove Dancer</button>';
+   wp_send_json_success($single_dancer_data);
  	wp_die();
  }
 
@@ -34,39 +67,12 @@
  function ds_change_status() {
    global $wpdb;
 
-   $dancer_id = $_POST['single_dancer_id'];
+   $dancer_id = $_POST['dancer_id'];
    $status = get_user_meta($dancer_id, 'active', true);
-   echo "Status is of value: " . $status;
-   if ($status != 1 && $status != 0) {
-     echo "Was not bool so changed";
-     $status = 1;
-   }
+   if ($status != 1 && $status != 0) { $status = 1; }
    $status = abs($status - 1);
    update_user_meta($dancer_id, 'active', $status);
-   echo "Dancer ID: " . $dancer_id;
-   echo "Type of status: " . gettype($status);
-   echo "Set active to: " . $status;
    wp_die();
- }
-
- //Pass dancer id to populate single dancer tab
- add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
- function ds_single_dancer() {
- 	global $wpdb; // this is how you get access to the database
-   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-   if (!is_array($currview)) {
-     $currview = [0,0];
-   }
-   if (sizeof($currview) < 2) {
-     array_push($currview, 0);
-   }
-
-   $currview[0] = intval($_POST['single_dancer_id']);
-   echo $currview[0];
-   echo 'tiny';
-   update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
-   header("Refresh:0");
- 	wp_die();
  }
 
  //Remove dancer from dance school list of dancers

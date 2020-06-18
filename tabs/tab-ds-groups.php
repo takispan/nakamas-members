@@ -11,7 +11,7 @@ if (!is_array($ds_groups_list_array)) { $ds_groups_list_array = []; }
 
 
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Dance Groups for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
+  <h3 style="font-weight:300;">Groups for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
   <?php
   if ( ! empty( $ds_groups_list_array ) ) { ?>
     <table>

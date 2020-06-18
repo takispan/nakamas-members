@@ -27,6 +27,7 @@ function my_rewrite_flush() {
 }
 */
 
+
 /*
  * Enqueue scripts & styles
  *
@@ -56,6 +57,8 @@ function nkms_assets() {
   // For either a plugin or a theme, you can then enqueue the script/style
   wp_enqueue_script( 'nkms-js' );
   wp_enqueue_script( 'nkms-bootstrap' );
+  // Load the datepicker script (pre-registered in WordPress)
+  wp_enqueue_script( 'jquery-ui-datepicker' );
   wp_enqueue_style( 'nkms-css' );
   wp_enqueue_style( 'nkms-bootstrap' );
 
@@ -191,49 +194,6 @@ function nkms_update_profile_fields( $user_id ) {
  * REGISTRATION
  *
  */
-function registration_form() {
-
-  echo '
-    <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
-      <p>
-        <label for="username">Username</label>
-        <input type="text" name="username" value="">
-      </p>
-
-      <p>
-        <label for="password">Password</label>
-        <input type="password" name="password" value="">
-      </p>
-
-      <p>
-        <label for="email">Email</label>
-        <input type="text" name="email" value="">
-      </p>
-
-      <p>
-        <label for="first_name">First Name</label>
-        <input type="text" name="first_name" value="">
-      </p>
-
-      <p>
-        <label for="last_name">Last Name</label>
-        <input type="text" name="last_name" value="">
-      </p>
-      <p>
-        <label for="sel_role">Account type</label>
-        <select id="select_role" name="sel_role">
-          <option value="dancer">Dancer</option>
-          <option value="guardian">Guardian/Parent</option>
-          <option value="dance-school">Dance School</option>
-        </select>
-      </p>
-      <p>
-        <input type="submit" name="registration_submit" value="Register"/>
-      </p>
-    </form>
-  ';
-}
-
 function registration_validation( $username, $password, $email, $first_name, $last_name )  {
   global $reg_errors;
   $reg_errors = new WP_Error;
@@ -274,7 +234,7 @@ function registration_validation( $username, $password, $email, $first_name, $la
 
   //Loop through errors & display them
   if ( is_wp_error( $reg_errors ) ) {
-    echo '<div id="nkms-account">';
+    echo '<div id="registration-errors">';
     foreach ( $reg_errors->get_error_messages() as $error ) {
       echo '<strong style="color:red;">' . $error . '</strong><br/>';
     }
@@ -304,14 +264,14 @@ function complete_registration() {
 function nkms_custom_registration() {
   if ( isset($_POST['registration_submit'] ) ) {
     registration_validation(
-    $_POST['username'],
-    $_POST['password'],
-    $_POST['email'],
-    $_POST['first_name'],
-    $_POST['last_name']
+      $_POST['username'],
+      $_POST['password'],
+      $_POST['email'],
+      $_POST['first_name'],
+      $_POST['last_name']
     );
 
-    // sanitize user form input. Add $first_name, $last_name
+    // sanitize user form input.
     global $username, $password, $email, $first_name, $last_name, $role;
     $username   =   sanitize_user( $_POST['username'] );
     $password   =   esc_attr( $_POST['password'] );
@@ -324,6 +284,4 @@ function nkms_custom_registration() {
     // only when no WP_error is found
     complete_registration();
   }
-
-  registration_form();
 }

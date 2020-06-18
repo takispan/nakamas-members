@@ -28,3 +28,48 @@ a.nkms-btn:hover {
 	text-decoration: underline;
   transition: opacity 0.15s linear;
 }
+
+
+/* Datepicker */
+#ui-datepicker-div {
+	background: #fff;
+	box-shadow: 0 0 5px 0 #000;
+}
+
+.ui-datepicker-prev, .ui-datepicker-next {
+	width: 50%;
+	display: inline-block;
+	padding: 0 10px;
+	cursor: pointer;
+}
+
+.ui-datepicker-next {
+	text-align: right;
+}
+
+.ui-datepicker-prev span, .ui-datepicker-next span {
+	font-size: 0.75em;
+}
+
+.ui-datepicker-title {
+	text-align: center;
+	font-size: 1.2em;
+	padding: 10px 0;
+}
+
+.ui-datepicker-calendar {
+	margin: 0;
+}
+
+.ui-datepicker-calendar th, .ui-datepicker-calendar td {
+	border: 0;
+	text-align: center;
+}
+
+.ui-datepicker-calendar a {
+	text-decoration: none;
+}
+
+.ui-datepicker-calendar a:hover {
+	text-decoration: none;
+}

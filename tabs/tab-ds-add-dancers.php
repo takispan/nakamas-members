@@ -14,8 +14,7 @@
 			<input id="add_dancer_to_ds" type="text" name="dance_school_add_dancers" value="" class="regular-text" />
     </p>
     <!-- info messages -->
-    <p class="success_msg" style="display: none">Dancer added successfully!</p>
-    <p class="error_msg" style="display: none">An error occured, dancer not added.</p>
+    <div class="ajax-response"></div>
     <p>
       <input type="submit" name="dance_school_add_dancers_submit" value="Add" class="nkms-btn" />
     </p>
