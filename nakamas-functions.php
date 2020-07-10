@@ -254,7 +254,7 @@ function complete_registration() {
     'user_pass'     =>   $password,
     'first_name'    =>   $first_name,
     'last_name'     =>   $last_name,
-    'role'          =>   $role,
+    'role'          =>   $role
     );
     $user = wp_insert_user( $userdata );
     echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
@@ -268,17 +268,20 @@ function nkms_custom_registration() {
       $_POST['password'],
       $_POST['email'],
       $_POST['first_name'],
-      $_POST['last_name']
+      $_POST['last_name'],
+      $_POST['dob']
     );
 
     // sanitize user form input.
-    global $username, $password, $email, $first_name, $last_name, $role;
-    $username   =   sanitize_user( $_POST['username'] );
-    $password   =   esc_attr( $_POST['password'] );
-    $email      =   sanitize_email( $_POST['email'] );
-    $first_name =   sanitize_text_field( $_POST['first_name'] );
-    $last_name  =   sanitize_text_field( $_POST['last_name'] );
-    $role       =   $_POST['sel_role'];
+    global $username, $password, $email, $first_name, $last_name, $role, $dob, $xp;
+    $username   = sanitize_user( $_POST['username'] );
+    $password   = esc_attr( $_POST['password'] );
+    $email      = sanitize_email( $_POST['email'] );
+    $first_name = sanitize_text_field( $_POST['first_name'] );
+    $last_name  = sanitize_text_field( $_POST['last_name'] );
+    $dob        = sanitize_text_field( $_POST['dob'] );
+    $xp         = $_POST['dancer_experience'];
+    $role       = $_POST['sel_role'];
 
     // call @function complete_registration to create the user
     // only when no WP_error is found

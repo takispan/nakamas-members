@@ -275,7 +275,6 @@ jQuery(document).ready(function($) {
   });
 
 
-
   // REGISTRATION
   $("#select_role").change(function() {
     //e.preventDefault();
@@ -294,6 +293,24 @@ jQuery(document).ready(function($) {
       $('#ds-reg-fields-dancer').hide();
     }
   });
+
+  $("#datepicker").change(function() {
+    var dob = $('#datepicker').val();
+    var dobDate = $.datepicker.parseDate("dd/mm/yy",dob);
+    var tmpToday = $.datepicker.formatDate("dd/mm/yy", new Date());
+    var today = $.datepicker.parseDate("dd/mm/yy",tmpToday);
+    var age = Math.floor((today-dobDate) / (365.25 * 24 * 60 * 60 * 1000));
+    if ( age < 18 ) {
+      $('#ds-reg-fields-dancer-guardian').show();
+    }
+    else {
+      $('#ds-reg-fields-dancer-guardian').hide();
+    }
+    console.log(dobDate);
+    console.log(today);
+    console.log(age);
+  });
+
   // // Custom registration
   // $('#submit_registration').on('submit', function() {
   //   e.preventDefault();

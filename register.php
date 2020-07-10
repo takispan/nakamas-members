@@ -51,6 +51,31 @@ get_header(); ?>
       <input type="text" name="phone_number" value="<?php echo ( isset( $_POST['phone_number'] ) ?  $_POST['phone_number'] : ''  ); ?>">
     </p>
     <p>
+      <label for="dancer_experience">Dancing Experience</label>
+      <select id="dancer_xp" name="dancer_experience">
+        <option value="newcomer">Newcomer</option>
+        <option value="novice">Novice</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+    </p>
+    <!-- Guardian fields if dancer is < 18 -->
+    <div id="ds-reg-fields-dancer-guardian" style="display:none;">
+      <h6>Guardian Details</h6>
+      <p>
+        <label for="dancer_guardian_name">Guardian Name</label>
+        <input type="text" name="dancer_guardian_name" value="<?php echo ( isset( $_POST['dancer_guardian_name'] ) ?  $_POST['dancer_guardian_name'] : ''  ); ?>">
+      </p>
+      <p>
+        <label for="dancer_guardian_phone_number">Guardian Phone Number</label>
+        <input type="text" name="dancer_guardian_phone_number" value="<?php echo ( isset( $_POST['dancer_guardian_phone_number'] ) ?  $_POST['dancer_guardian_phone_number'] : ''  ); ?>">
+      </p>
+      <p>
+        <label for="dancer_guardian_email">Guardian Email</label>
+        <input type="text" name="dancer_guardian_email" value="<?php echo ( isset( $_POST['dancer_guardian_email'] ) ?  $_POST['dancer_guardian_email'] : ''  ); ?>">
+      </p>
+    </div>
+    <p>
       <label for="sel_role">Account type</label>
       <select id="select_role" name="sel_role">
         <option value="dancer">Dancer</option>
