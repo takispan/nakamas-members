@@ -11,7 +11,7 @@ jQuery(document).ready(function($) {
   $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
     var tabLink = $(e.target).attr('href');
     if ( tabLink == '#dance-school' ) {
-      $('#myTab2 a[href="#ds-overview"]').tab('show');
+      $('#ds-tabs a[href="#ds-overview"]').tab('show');
     }
     if ( tabLink.startsWith('#ds') ) {
       tabLink = '#dance-school';
@@ -28,11 +28,11 @@ jQuery(document).ready(function($) {
     var activeTab2 = sessionStorage.getItem('activeTab2');
   }
 	if(activeTab){
-		$('#myTab a[href="' + activeTab + '"]').tab('show');
+		$('#top-tabs a[href="' + activeTab + '"]').tab('show');
 	}
   if(activeTab2) {
-    $('#myTab a[href="' + activeTab + '"]').tab('show');
-    $('#myTab2 a[href="' + activeTab2 + '"]').tab('show');
+    $('#top-tabs a[href="' + activeTab + '"]').tab('show');
+    $('#ds-tabs a[href="' + activeTab2 + '"]').tab('show');
   }
 
   /*

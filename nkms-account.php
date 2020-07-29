@@ -19,13 +19,15 @@ get_header(); // Loads the header.php template. ?>
             </p><!-- .warning -->
         <?php else : ?>
             <!-- Tab links -->
-            <ul class="nav nav-tabs" id="myTab">
-                <li class="active"><a data-toggle="tab" href="#dashboard">Dashboard</a></li>
-                <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
-                  <li><a data-toggle="tab" href="#dance-school">Dance School</a></li>
-                <?php endif; ?>
-                <li><a data-toggle="tab" href="#profile">Profile</a></li>
-            </ul>
+            <div id="top-tabs-wrapper">
+              <ul class="nav nav-tabs" id="top-tabs">
+                  <li class="active"><a data-toggle="tab" href="#dashboard">Dashboard</a></li>
+                  <?php if ( nkms_has_role(wp_get_current_user(), 'dance-school') ) : ?>
+                    <li><a data-toggle="tab" href="#dance-school">Dance School</a></li>
+                  <?php endif; ?>
+                  <li><a data-toggle="tab" href="#profile">Profile</a></li>
+              </ul>
+            </div>
 
             <!-- Tab content -->
             <div class="tab-content">

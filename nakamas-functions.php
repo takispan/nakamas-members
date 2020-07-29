@@ -260,7 +260,7 @@ function complete_registration() {
     echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
   }
 }
-
+// Validate & Sanitize
 function nkms_custom_registration() {
   if ( isset($_POST['registration_submit'] ) ) {
     registration_validation(

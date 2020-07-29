@@ -11,11 +11,12 @@ $ds_name = get_the_author_meta( 'dance_school_name', get_current_user_id() );
 
 <div class="nkms-tabs">
     <h3 style="font-weight:300;">Dance School Information for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
-    <ul class="nav nav-tabs" id="myTab2">
+    <ul class="nav nav-tabs" id="ds-tabs">
         <li class="active"><a data-toggle="tab" href="#ds-overview">Overview</a></li>
         <li><a data-toggle="tab" href="#ds-dancers">Dancers</a></li>
         <li><a data-toggle="tab" href="#ds-dance-groups">Groups</a></li>
         <li><a data-toggle="tab" href="#ds-registrations">Registrations</a></li>
+        <li><a data-toggle="tab" href="#ds-teachers">Teachers</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-details">Details</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-add-dancers">Add dancer</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-dancer-single">Single dancer</a></li>
@@ -23,6 +24,8 @@ $ds_name = get_the_author_meta( 'dance_school_name', get_current_user_id() );
         <li style="display:none;"><a data-toggle="tab" href="#ds-group-single">Single group</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-group-add-dancers">Add dancer to group</a></li>
         <li style="display:none;"><a data-toggle="tab" href="#ds-group-remove-dancers">Remove dancer from group</a></li>
+        <li style="display:none;"><a data-toggle="tab" href="#ds-add-teachers">Add teacher</a></li>
+        <li style="display:none;"><a data-toggle="tab" href="#ds-teacher-single">Single teacher</a></li>
     </ul>
 
     <!-- Tab content - Overview -->
@@ -44,6 +47,11 @@ $ds_name = get_the_author_meta( 'dance_school_name', get_current_user_id() );
       <!-- Tab content - Registrations -->
       <div id="ds-registrations" class="tab-pane fade">
           <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-register-groups.php'); ?>
+      </div>
+
+      <!-- Tab content - Teachers -->
+      <div id="ds-teachers" class="tab-pane fade">
+          <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-teachers.php'); ?>
       </div>
 
       <!-- HIDDEN TABS -->
@@ -80,6 +88,16 @@ $ds_name = get_the_author_meta( 'dance_school_name', get_current_user_id() );
       <!-- Tab content - Remove dancers from group -->
       <div id="ds-group-remove-dancers" class="tab-pane fade">
           <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-group-remove-dancers.php'); ?>
+      </div>
+
+      <!-- Tab content - Add Dancers -->
+      <div id="ds-add-teachers" class="tab-pane fade">
+          <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-add-teachers.php'); ?>
+      </div>
+
+      <!-- Tab content - Teacher Single (Change status & remove)-->
+      <div id="ds-teacher-single" class="tab-pane fade">
+          <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-teacher-single.php'); ?>
       </div>
     </div>
 
