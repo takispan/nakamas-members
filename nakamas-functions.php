@@ -121,7 +121,26 @@ function nkms_has_role($user, $role) {
 // WooCommerce
 add_action('woocommerce_before_add_to_cart_button', 'nkms_func');
 function nkms_func(){
-  echo 'Hello World';
+  echo '<div class="register-groups">';
+  $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+  echo 'Groups List:';
+  //print_r($groups);
+  echo '<table><tr><th>Type</th><th>Group Name</th></tr>';
+  foreach ($ds_groups_list_array as $key => $id) {
+    if ( $id->getStatus() == 'Active' ) {
+      echo '<tr><th colspan="2">' . $id->getGroupName() . '</th></tr>';
+      $group = $ds_groups_list_array[$key];
+      $group_dancers = $group->getDancers();
+      foreach ($group_dancers as $key => $id) {
+        $dncr = get_user_by( 'id', $id );
+        ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
+        if ( $status == 'Active' ) {
+          echo '<tr><td>' . $id . '</td><td>' . $dncr->first_name . ' ' . $dncr->last_name . '</td><td>' . $status . '</td></tr>';
+        }
+      }
+    }
+  }
+  echo '</table></div>';
 }
 
 /*

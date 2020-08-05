@@ -145,10 +145,11 @@
  add_action( 'wp_ajax_ds_add_group_dancer', 'ds_add_group_dancer' );
  function ds_add_group_dancer() {
  	global $wpdb; // this is how you get access to the database
-   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-   $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-   $group_id = $currview[1];
-   $group = $groups_list[$group_id];
+  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+  $group_id = $currview[1];
+  $group = $groups_list[$group_id];
+  console.log($group);
  	$dancer_to_add_id = intval($_POST['dancer']);
  	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
  	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
