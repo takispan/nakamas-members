@@ -284,11 +284,11 @@ jQuery(document).ready(function($) {
       $('#ds-reg-fields-dancer').hide();
       $('#ds-reg-fields-dance-school').show();
     }
-    if ( selRole === 'dancer') {
+    else if ( selRole === 'dancer') {
       $('#ds-reg-fields-dance-school').hide();
       $('#ds-reg-fields-dancer').show();
     }
-    if ( selRole === 'guardian') {
+    else {
       $('#ds-reg-fields-dance-school').hide();
       $('#ds-reg-fields-dancer').hide();
     }

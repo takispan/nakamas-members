@@ -104,10 +104,24 @@ add_role('guardian', __(
 	)
 );
 
+//Guardian
+add_role('spectator', __(
+	'Spectator'),
+	array(
+		'read'	=> true, //Allows a user to read
+	)
+);
+
 //Check if a user has a role
 function nkms_has_role($user, $role) {
 	$roles = $user->roles;
 	return in_array($role, (array) $user->roles);
+}
+
+// WooCommerce
+add_action('woocommerce_before_add_to_cart_button', 'nkms_func');
+function nkms_func(){
+  echo 'Hello World';
 }
 
 /*
