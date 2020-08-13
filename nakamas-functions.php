@@ -118,30 +118,210 @@ function nkms_has_role($user, $role) {
 	return in_array($role, (array) $user->roles);
 }
 
-// WooCommerce
-add_action('woocommerce_before_add_to_cart_button', 'nkms_func');
-function nkms_func(){
-  echo '<div class="register-groups">';
-  $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-  echo 'Groups List:';
-  //print_r($groups);
-  echo '<table><tr><th>Type</th><th>Group Name</th></tr>';
-  foreach ($ds_groups_list_array as $key => $id) {
-    if ( $id->getStatus() == 'Active' ) {
-      echo '<tr><th colspan="2">' . $id->getGroupName() . '</th></tr>';
-      $group = $ds_groups_list_array[$key];
-      $group_dancers = $group->getDancers();
-      foreach ($group_dancers as $key => $id) {
-        $dncr = get_user_by( 'id', $id );
-        ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
-        if ( $status == 'Active' ) {
-          echo '<tr><td>' . $id . '</td><td>' . $dncr->first_name . ' ' . $dncr->last_name . '</td><td>' . $status . '</td></tr>';
+/*
+ * WooCommerce
+ */
+
+/**
+* Display a custom text field on product
+*/
+// function nkms_custom_woo_field() {
+//  woocommerce_wp_text_input(
+//    array(
+//      'id' => 'dancer_registration_fee',
+//      'label' => __( 'Dancer Registration Fee', 'cfwc' ),
+//      'class' => 'nkms-registration-fee',
+//      'desc_tip' => true,
+//      'description' => __( 'Enter the event registration price for a dancer.', 'ctwc' ),
+//    )
+//  );
+// }
+// add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
+
+/**
+* Save the custom field
+*/
+function nkms_save_woo_field( $post_id ) {
+  $product = wc_get_product( $post_id );
+  $dancer_reg_fee = isset( $_POST['dancer_registration_fee'] ) ? $_POST['dancer_registration_fee'] : '';
+  $product->update_meta_data( 'dancer_registration_fee', sanitize_text_field( $dancer_reg_fee ) );
+  $product->save();
+}
+add_action( 'woocommerce_process_product_meta', 'nkms_save_woo_field' );
+
+//Change event price based on registered dancers
+add_filter('woocommerce_product_get_price', 'nkms_change_price_dancers_fee', 10, 2);
+function nkms_change_price_dancers_fee($price, $product) {
+   //global post object & post id
+   // global $post;
+   // $product = wc_get_product( $post->ID );
+   // $_POST['registered_dancers_num'] = 0;
+   if ( isset( $_POST['registered_dancers_num'] ) ) {
+     // var_dump($_POST['registered_dancers_num']);
+     $registed_dancers_num = $_POST['registered_dancers_num'];
+     $dancer_fee = $product->get_meta( 'dancer_registration_fee' );
+     $price += ($registed_dancers_num * $dancer_fee);
+   }
+
+   //return the new price
+   // var_dump($_POST['registered_dancers_num']);
+   return $price;
+}
+
+add_action('woocommerce_before_add_to_cart_button', 'nkms_register_dancers_to_events');
+function nkms_register_dancers_to_events(){
+  // Check if user is logged in
+  if ( is_user_logged_in() ) {
+    $user = get_user_by( 'id', get_current_user_id() );
+    // Check if user is Dance School type
+    if ( nkms_has_role($user, 'dance-school') ) {
+      echo '<div id="product-register-groups">';
+      // Get groups
+      $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+      // $registered_dancers_arr = [];
+      // Check whether dance school has groups
+      if (is_array($ds_groups_list_array) || is_object($ds_groups_list_array)) {
+        echo '<h3>Groups List</h3><div>';
+        // List active groups
+        // echo '<form action="" method="post">';
+        foreach ($ds_groups_list_array as $key => $id) {
+          if ( $id->getStatus() == 'Active' ) {
+            echo '<p class="register-group-names">' . $id->getGroupName() . '</p>';
+            $group = $ds_groups_list_array[$key];
+            $group_dancers = $group->getDancers();
+            // List active dancers within group
+            foreach ($group_dancers as $key => $id) {
+              $dncr = get_user_by( 'id', $id );
+              ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
+              if ( $status == 'Active' ) {
+                echo '<p class="register-group-dancers"><label>' . '<input type="checkbox" name="registered_dancer_' . $id . '">' . $dncr->first_name . ' ' . $dncr->last_name . '</label></p>';
+              }
+            }
+          }
+        }
+        echo '</div>';
+      }
+      else {
+        echo '<p>No groups or dancers available. Make sure you add from your dashboard!</p>';
+      }
+      echo '</div>';
+      // var_dump($_GET['registered_dancers_arr']);
+    }
+  }
+}
+
+add_action( 'woocommerce_before_calculate_totals', 'add_custom_price', 20, 1);
+function add_custom_price( $cart ) {
+
+    // This is necessary for WC 3.0+
+    if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+        return;
+
+    // Avoiding hook repetition (when using price calculations for example)
+    if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 )
+        return;
+
+    // Loop through cart items
+    foreach ( $cart->get_cart() as $item ) {
+        $prod_id = $item['product_id'];
+        $product = wc_get_product( $prod_id );
+        $dancer_fee = $product->get_meta( 'dancer_registration_fee' );
+        // $item['data']->set_price( $dancer_fee );
+    }
+
+    // $cart->set_quantity($cart_item_key, $reg_dancers );
+}
+
+add_filter( 'woocommerce_add_cart_item_data', 'nkms_add_group_cart', 10, 3 );
+function nkms_add_group_cart( $cart_item_data, $product_id, $variation_id ) {
+
+  $user = get_user_by( 'id', get_current_user_id() );
+  // Check if user is Dance School type
+  if ( is_user_logged_in() && nkms_has_role($user, 'dance-school') ) {
+    // Get groups
+    $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+    // $registered_dancers_arr = [];
+    // Check whether dance school has groups
+    if (is_array($ds_groups_list_array) || is_object($ds_groups_list_array)) {
+      // List active groups
+      $active_dancers = [];
+      foreach ($ds_groups_list_array as $key => $id) {
+        if ( $id->getStatus() == 'Active' ) {
+          $group_name = $id->getGroupName();
+          $group = $ds_groups_list_array[$key];
+          $group_dancers = $group->getDancers();
+          // List active dancers within group
+          foreach ($group_dancers as $key => $id) {
+            $dncr = get_user_by( 'id', $id );
+            ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
+            if ( $status == 'Active' ) {
+              $active_dancers[$id] = $dncr->first_name . ' ' . $dncr->last_name;
+            }
+          }
         }
       }
     }
+    else {
+      echo '<p>No groups or dancers registered.</p>';
+    }
+    // var_dump($_GET['registered_dancers_arr']);
+    $reg_dancers = [];
+    foreach ( $active_dancers as $id => $name ) {
+      if ( isset( $_POST['registered_dancer_'.$id] ) ) {
+        if ( $_POST['registered_dancer_'.$id] === 'on' ) {
+          array_push($reg_dancers, $name);
+        }
+      }
+    }
+    $cart_item_data['suki'] = $reg_dancers;
   }
-  echo '</table></div>';
+  return $cart_item_data;
+
 }
+
+//* Display dancers in cart items.
+add_filter( 'woocommerce_get_item_data', 'iconic_display_engraving_text_cart', 10, 2 );
+function iconic_display_engraving_text_cart( $item_data, $cart_item ) {
+	if ( empty( $cart_item['suki'] ) ) {
+		return $item_data;
+	}
+  // Check if user is Dance School type
+  if ( is_user_logged_in() ) {
+    $user = get_user_by( 'id', get_current_user_id() );
+    if (nkms_has_role($user, 'dance-school') ) {
+      $dancers_str_tmp = implode( "<br>", $cart_item['suki'] );
+      $dancers_str = '<p class="registered-dancers">' . $dancers_str_tmp;
+
+    	$item_data[] = array(
+    		'key'     => 'Dancers',
+    		'value'   => $dancers_str,
+    		'display' => '',
+    	);
+
+      $prod_id = $cart_item['product_id'];
+      $product = wc_get_product( $prod_id );
+      $dancer_fee = $product->get_price();
+      // var_dump($dancer_fee);
+      $cart_item['data']->set_price( sizeof($cart_item['suki']) * $dancer_fee );
+      return $item_data;
+    }
+  }
+}
+
+/**
+ * Display custom field on the front end
+ */
+// function nkms_display_woo_field() {
+//   global $post;
+//   // Check for the custom field value
+//   $product = wc_get_product( $post->ID );
+//   $title = $product->get_meta( 'dancer_registration_fee' );
+//   if( $title ) {
+//   // Only display our field if we've got a value for the field title
+//   printf( '<div class="nkms-dancer-registration-fee"><label for="nkms-registration-fee">%s</label><input type="text" id="nkms-registration-fee" name="nkms-registration-fee" value=""></div>', esc_html( $title ) );
+//   }
+// }
+// add_action( 'woocommerce_before_add_to_cart_button', 'nkms_display_woo_field' );
 
 /*
  * Add user profile fields

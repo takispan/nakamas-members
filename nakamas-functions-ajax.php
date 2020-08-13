@@ -98,34 +98,33 @@
  //Add group to dance school list of groups
  add_action( 'wp_ajax_ds_add_group', 'ds_add_group' );
  function ds_add_group() {
- 	global $wpdb; // this is how you get access to the database
-
- 	$group_name = $_POST['group_name'];
+   global $wpdb; // this is how you get access to the database
+   $group_name = $_POST['group_name'];
+   if ( empty($group_name) ) {wp_send_json_error();}
    $group_type = $_POST['group_type'];
 
-   $data_entry = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-   echo $data_entry;
- 	if (!is_array($data_entry)) {
- 		$data_entry = [];
+   $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+   if (!is_array($ds_groups_list_array)) {
+     $ds_groups_list_array = [];
      $last = 0;
- 	}
+   }
    else {
-     end($data_entry);
-     $last = key($data_entry);
+     end($ds_groups_list_array);
+     $last = key($ds_groups_list_array);
      $last++;
    }
    echo $last;
    $ds_group2add = new DanceGroup(get_current_user_id(), $last, $group_name, $group_type );
-   $data_entry[$last] = $ds_group2add;
- 	update_user_meta(get_current_user_id(), 'dance_school_groups_list', $data_entry);
- 	echo "Group added.";
- 	wp_die();
+   $ds_groups_list_array[$last] = $ds_group2add;
+   update_user_meta(get_current_user_id(), 'dance_school_groups_list', $ds_groups_list_array);
+   echo "Group added.";
+   wp_die();
  }
 
  //Pass group id to populate single group tab
  add_action( 'wp_ajax_ds_single_group', 'ds_single_group' );
  function ds_single_group() {
- 	global $wpdb; // this is how you get access to the database
+   global $wpdb; // this is how you get access to the database
 
    $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
    if (!is_array($currview)) {
@@ -138,42 +137,41 @@
    $currview[1] = intval($_POST['single_group_id']);
    echo $currview[1];
    update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
- 	wp_die();
+ 	 wp_die();
  }
 
  //Add dancer to group
  add_action( 'wp_ajax_ds_add_group_dancer', 'ds_add_group_dancer' );
  function ds_add_group_dancer() {
- 	global $wpdb; // this is how you get access to the database
-  $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-  $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-  $group_id = $currview[1];
-  $group = $groups_list[$group_id];
-  console.log($group);
- 	$dancer_to_add_id = intval($_POST['dancer']);
- 	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
- 	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
- 		$data_entry = $group->addDancer($dancer_to_add_id);
- 		if ( $data_entry ) {
-       $groups_list[$group_id] = $group;
-       update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
- 			echo 'Dancer added.';
- 		}
-     else {
-       echo 'An error occured, dancer not added.';
-     }
- 	}
- 	else {
- 		echo "Invalid Dancer ID";
- 		wp_send_json_error();
- 	}
- 	wp_die();
+   	global $wpdb; // this is how you get access to the database
+    $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
+    $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
+    $group_id = $currview[1];
+    $group = $groups_list[$group_id];
+   	$dancer_to_add_id = intval($_POST['dancer']);
+   	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
+   	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
+   		$data_entry = $group->addDancer($dancer_to_add_id);
+   		if ( $data_entry ) {
+         $groups_list[$group_id] = $group;
+         update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
+   			echo 'Dancer added.';
+   		}
+       else {
+         echo 'An error occured, dancer not added.';
+       }
+   	}
+   	else {
+   		echo "Invalid Dancer ID";
+   		wp_send_json_error();
+   	}
+   	wp_die();
  }
 
  //Remove dancer from group
  add_action( 'wp_ajax_ds_remove_group_dancer', 'ds_remove_group_dancer' );
  function ds_remove_group_dancer() {
- 	global $wpdb; // this is how you get access to the database
+ 	 global $wpdb; // this is how you get access to the database
    $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
    $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
 
@@ -182,17 +180,17 @@
    var_dump($group);
    echo $group->getGroupName();
 
- 	$dancer_to_remove_id = intval($_POST['dancer']);
+ 	 $dancer_to_remove_id = intval($_POST['dancer']);
    $data_entry = $group->removeDancer($dancer_to_remove_id);
- 	if ( $data_entry ) {
+ 	 if ( $data_entry ) {
      $groups_list[$group_id] = $group;
      update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
- 		echo 'Dancer removed.';
- 	}
+     echo 'Dancer removed.';
+ 	 }
    else {
      echo 'An error occured, dancer was not removed.';
    }
- 	wp_die();
+ 	 wp_die();
  }
 
  //Change dancer status
@@ -210,5 +208,15 @@
    $groups_list[$group_id] = $group;
    update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
    echo "Group status set to " . $status;
+   wp_die();
+ }
+
+ //Registered dancers
+ add_action( 'wp_ajax_registered_dancers', 'registered_dancers');
+ function registered_dancers() {
+   $reg_dancers = $_POST['registered_dancers_num'];
+   // var_dump($reg_dancers);
+   echo "I got this: " . $reg_dancers . " wut ";
+
    wp_die();
  }

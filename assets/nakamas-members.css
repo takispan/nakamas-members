@@ -1,3 +1,4 @@
+html {overflow-x: hidden;}
 #content {padding-top: 0;}
 /* Tabs */
 #nkms-account, .nkms-tabs {
@@ -63,6 +64,25 @@ a.nkms-btn:hover {
   transition: opacity 0.15s linear;
 }
 
+/* WooCommerce */
+.register-group-names {
+	font-weight: 600;
+	margin: 15px 0 0 0;
+}
+.register-group-dancers {
+	margin: 0;
+}
+.register-group-dancers label {
+	cursor: pointer;
+}
+.single-product form.cart .register-group-dancers input {
+	width: initial;
+	margin-right: 7px;
+}
+/* Variations */
+dd.variation-Dancers {
+	clear: both;
+}
 
 /* Datepicker */
 #ui-datepicker-div {

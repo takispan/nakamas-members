@@ -14,7 +14,7 @@
 			<input id="add_group_name" type="text" name="dance_school_add_group_name" value="" class="regular-text" />
     </p>
     <p>
-      <label for="dance_school_add_groups"><?php esc_html_e( 'Group name', 'nkms' ); ?></label>
+      <label for="dance_school_add_groups"><?php esc_html_e( 'Group type', 'nkms' ); ?></label>
 			<select id="add_group_type" type="text" name="dance_school_add_group_type" value="">
         <option value="Duo" selected>Duo</option>
         <option value="Parent/Child">Parent/Child</option>
@@ -25,8 +25,7 @@
       </select>
     </p>
     <!-- info messages -->
-    <p class="success_msg" style="display: none">Group added successfully!</p>
-    <p class="error_msg" style="display: none">An error occured, group not added.</p>
+    <p id="ajax-add-groups"></p>
     <p>
       <input type="submit" name="dance_school_add_groups_submit" value="Add" />
     </p>

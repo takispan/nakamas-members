@@ -82,14 +82,14 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         $('.ds-single-dancer').html( response.data );
-        $('#myTab2 a[href="#ds-dancers"]').removeClass('active');
-        $('#myTab2 a[href="#ds-dancer-single"]').addClass('active');
+        $('#ds-tabs a[href="#ds-dancers"]').removeClass('active');
+        $('#ds-tabs a[href="#ds-dancer-single"]').addClass('active');
         window.location.reload();
       },
       error: function(response) {
         $('.ds-single-dancer').html( '<p class="text-danger">Error getting dancer data. Please try again.</p>' );
-        $('#myTab2 a[href="#ds-dancers"]').removeClass('active');
-        $('#myTab2 a[href="#ds-dancer-single"]').addClass('active');
+        $('#ds-tabs a[href="#ds-dancers"]').removeClass('active');
+        $('#ds-tabs a[href="#ds-dancer-single"]').addClass('active');
         window.location.reload();
       }
     });
@@ -148,30 +148,34 @@ jQuery(document).ready(function($) {
   $('form#add-groups').on('submit', function(e) {
     e.preventDefault();
     //reset info messages
-    $('.success_msg').css('display','none');
-    $('.error_msg').css('display','none');
+    //$('.success_msg').css('display','none');
     //get user input from form
     var group_name = $('#add_group_name').val();
-    var group_type = $('#add_group_type').val();
+    if ( !group_name ) {
+      $('#ajax-add-groups').html('Group name cannot be empty.');
+    }
+    else {
+      var group_type = $('#add_group_type').val();
 
-    $.ajax({
-      _ajax_nonce: nkms_ajax.nonce,
-      url: nkms_ajax.ajax_url,
-      type: "POST",
-      data: {
-        action: 'ds_add_group',
-        group_name: group_name,
-        group_type: group_type,
-      },
-      success: function(response) {
-        $('.success_msg').css('display','block');
-        console.log(response);
-      },
-      error: function(response) {
-        $('.error_msg').css('display','block');
-        console.log(response);
-      }
-    });
+      $.ajax({
+        _ajax_nonce: nkms_ajax.nonce,
+        url: nkms_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: 'ds_add_group',
+          group_name: group_name,
+          group_type: group_type,
+        },
+        success: function(response) {
+          $('#ajax-add-groups').html('Group added successfully!');
+          console.log(response);
+        },
+        error: function(response) {
+          $('#ajax-add-groups').html('An error occured, group not added.');
+          console.log(response);
+        }
+      });
+    }
   });
 
   // Pass data to populate single group tab
@@ -274,6 +278,36 @@ jQuery(document).ready(function($) {
     });
   });
 
+  // WooCommerce
+  $( function() {
+    $( "#product-register-groups" ).accordion({
+      collapsible: true,
+      // active: false
+    });
+  });
+
+  $('.register-group-dancers input').on('click', function(e) {
+    var registered_dancers_num = $('.register-group-dancers input:checkbox:checked').length;
+    console.log('Dancers registered: ' + registered_dancers_num);
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'registered_dancers',
+        registered_dancers_num: registered_dancers_num,
+      },
+      success: function(response) {
+        console.log(response);
+        // var newPrice = '<span class="woocommerce-Price-currencySymbol">£</span>'+registered_dancers_num;
+        // $('span.woocommerce-Price-amount').html(newPrice);
+      },
+      error: function(response) {
+        console.log(response);
+      }
+    });
+  });
 
   // REGISTRATION
   $("#select_role").change(function() {
