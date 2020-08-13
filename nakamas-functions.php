@@ -407,13 +407,13 @@ function nkms_update_profile_fields( $user_id ) {
  * REGISTRATION
  *
  */
-function registration_validation( $username, $password, $email, $first_name, $last_name )  {
+function registration_validation( $username, $password, $email, $first_name, $last_name, $dob )  {
   global $reg_errors;
   $reg_errors = new WP_Error;
 
   //Check if fields are empty
-  if ( empty( $username ) || empty( $password ) || empty( $email ) || empty( $first_name ) || empty( $last_name ) ) {
-    $reg_errors->add('field', 'All fields are equired.');
+  if ( empty( $username ) || empty( $password ) || empty( $email ) || empty( $first_name ) || empty( $last_name ) || empty( $dob ) ) {
+    $reg_errors->add('field', 'All fields are equired.' );
   }
 
   //Check if username is more than 4 chars.
@@ -469,8 +469,15 @@ function complete_registration() {
     'last_name'     =>   $last_name,
     'role'          =>   $role
     );
-    $user = wp_insert_user( $userdata );
-    echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
+    $user_id = wp_insert_user( $userdata );
+    if ( $user_id ) {
+      //initialize custom fields
+      user_initialization($user_id);
+      echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
+    }
+    else {
+      echo '<h4>Something went wrong. Please try again later!</h4>';
+    }
   }
 }
 // Validate & Sanitize
@@ -486,18 +493,103 @@ function nkms_custom_registration() {
     );
 
     // sanitize user form input.
-    global $username, $password, $email, $first_name, $last_name, $role, $dob, $xp;
-    $username   = sanitize_user( $_POST['username'] );
-    $password   = esc_attr( $_POST['password'] );
-    $email      = sanitize_email( $_POST['email'] );
-    $first_name = sanitize_text_field( $_POST['first_name'] );
-    $last_name  = sanitize_text_field( $_POST['last_name'] );
-    $dob        = sanitize_text_field( $_POST['dob'] );
-    $xp         = $_POST['dancer_experience'];
-    $role       = $_POST['sel_role'];
+    global $username, $password, $email, $first_name, $last_name, $role,
+    $dob, $address, $phone_number, $xp,
+    $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email,
+    $dancer_guardian_name, $dancer_guardian_phone_number,
+    $dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_school_description;
+
+    $username     = sanitize_user( $_POST['username'] );
+    $password     = esc_attr( $_POST['password'] );
+    $email        = sanitize_email( $_POST['email'] );
+    $first_name   = sanitize_text_field( $_POST['first_name'] );
+    $last_name    = sanitize_text_field( $_POST['last_name'] );
+    $role         = $_POST['sel_role'];
+    $dob          = sanitize_text_field( $_POST['dob'] );
+    $address      = sanitize_text_field( $_POST['address'] );
+    $phone_number = sanitize_text_field( $_POST['phone_number'] );
+    $xp           = $_POST['dancer_experience'];
+
+    // dancer fields
+    if ( $role === 'dancer' ) {
+      $dancer_ds_name = sanitize_text_field( $_POST['dancer_ds_name'] );
+      $dancer_ds_teacher_name = sanitize_text_field( $_POST['dancer_ds_teacher_name'] );
+      $dancer_ds_teacher_email = sanitize_email( $_POST['dancer_ds_teacher_email'] );
+
+      // dob calcs
+      $is_adult = isAdult($dob);
+      if ( $is_adult ) {
+        // guardian details
+        $dancer_guardian_name = sanitize_text_field( $_POST['dancer_guardian_name'] );
+        $dancer_guardian_phone_number = sanitize_text_field( $_POST['dancer_guardian_phone_number'] );
+      }
+    }
+
+    // dance school fields
+    if ( $role === 'dance-school' ) {
+      $dance_school_name = sanitize_text_field( $_POST['dance_school_name'] );
+      $dance_school_address = sanitize_text_field( $_POST['dance_school_address'] );
+      $dance_school_phone_number = sanitize_text_field( $_POST['dance_school_phone_number'] );
+      $dance_school_description = sanitize_textarea_field( $_POST['dance_school_description'] );
+    }
 
     // call @function complete_registration to create the user
     // only when no WP_error is found
     complete_registration();
   }
+}
+
+// Initialize user & custom fields
+function user_initialization( $user_id ) {
+  global $role, $dob, $address, $phone_number, $xp,
+  $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email,
+  $dancer_guardian_name, $dancer_guardian_phone_number,
+  $dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_school_description;
+
+  // Custom fields not created with wp_insert_user (only available for basic fields)
+  update_user_meta( $user_id, 'dob', $dob );
+  update_user_meta( $user_id, 'address', $address );
+  update_user_meta( $user_id, 'phone_number', $phone_number );
+  update_user_meta( $user_id, 'experience', $xp );
+
+  if ( $role === 'dancer' ) {
+    // create fields realated to DANCER
+    update_user_meta( $user_id, 'dancer_ds_name', $dancer_ds_name );
+    update_user_meta( $user_id, 'dancer_ds_teacher_name', $dancer_ds_teacher_name );
+    update_user_meta( $user_id, 'dancer_ds_teacher_email', $dancer_ds_teacher_email );
+    $is_adult = isAdult($dob);
+    if ( ! $is_adult ) {
+      update_user_meta( $user_id, 'dancer_guardian_name', $dancer_guardian_name );
+      update_user_meta( $user_id, 'dancer_guardian_phone_number', $dancer_guardian_phone_number );
+    }
+  }
+
+  if ( $role === 'dance-school' ) {
+    // create fields realated to DANCE SCHOOL
+    update_user_meta( $user_id, 'dance_school_name', $dance_school_name );
+    update_user_meta( $user_id, 'dance_school_address', $dance_school_address );
+    update_user_meta( $user_id, 'dance_school_phone_number', $dance_school_phone_number );
+    update_user_meta( $user_id, 'dance_school_description', $dance_school_description );
+
+    $initial_ds_dancers_list = [];
+    update_user_meta( $user_id, 'dance_school_dancers_list', $initial_ds_dancers_list );
+    $initial_ds_groups_list = [];
+    update_user_meta( $user_id, 'dance_school_groups_list', $initial_ds_groups_list );
+    $initial_currview = [0,0];
+    update_user_meta( $user_id, 'currently_viewing', $initial_currview );
+  }
+}
+
+// validate birthday
+function isAdult($birthday, $age = 18) {
+  // $birthday can be UNIX_TIMESTAMP or just a string-date.
+  if(is_string($birthday)) {
+      $birthday = strtotime($birthday);
+  }
+
+  // 31536000 is the number of seconds in a 365 days year.
+  if(time() - $birthday < $age * 31536000)  {
+      return false;
+  }
+  return true;
 }

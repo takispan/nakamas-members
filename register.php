@@ -78,10 +78,10 @@ get_header(); ?>
     <p>
       <label for="sel_role">Account type</label>
       <select id="select_role" name="sel_role">
+        <option value="spectator">Spectator</option>
         <option value="dancer">Dancer</option>
         <option value="guardian">Guardian/Parent</option>
         <option value="dance-school">Dance School</option>
-        <option value="spectator">Spectator</option>
       </select>
     </p>
     <!-- Dancer fields -->
