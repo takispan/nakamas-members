@@ -53,10 +53,10 @@ get_header(); ?>
     <p>
       <label for="dancer_experience">Dancing Experience</label>
       <select id="dancer_xp" name="dancer_experience">
-        <option value="newcomer">Newcomer</option>
-        <option value="novice">Novice</option>
-        <option value="intermediate">Intermediate</option>
-        <option value="advanced">Advanced</option>
+        <option value="Newcomer">Newcomer</option>
+        <option value="Novice">Novice</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
       </select>
     </p>
     <!-- Guardian fields if dancer is < 18 -->

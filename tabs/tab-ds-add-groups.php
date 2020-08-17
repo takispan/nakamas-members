@@ -1,8 +1,6 @@
 <?php
 /**
- * Add / Remove Dancers from Dance School
- *
- * Allow users manage dance school's dancer list.
+ * Add Groups to Dance School
  */
 ?>
 

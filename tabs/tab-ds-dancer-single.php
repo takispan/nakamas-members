@@ -1,8 +1,7 @@
 <?php
 /**
- * Template Name: Dance School Dancer Single
- *
  * Displays a single dancer from the Dance School's dance list.
+ * Able to change status of dancers and remove from Dance School.
  */
 
 $currently_viewing = get_user_meta(get_current_user_id(), 'currently_viewing', true);

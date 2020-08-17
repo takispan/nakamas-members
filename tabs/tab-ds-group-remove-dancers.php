@@ -1,14 +1,11 @@
 <?php
 /**
- * Add / Remove Dancers from Dance School
- *
- * Allow users manage dance school's dancer list.
+ * Remove Dancers from a group
  */
  $currently_viewing = get_user_meta(get_current_user_id(), 'currently_viewing', true);
- if ( !is_array($currently_viewing) ) { $currently_viewing = [0,0]; }
  $group_id = $currently_viewing[1];
  $ds_groups_list_array = get_user_meta( get_current_user_id(), 'dance_school_groups_list', true );
- if ( is_array($ds_groups_list_array) ) {
+ if ( ! empty($ds_groups_list_array) ) {
    $group = $ds_groups_list_array[$group_id];
    $group_dancers = $group->getDancers();
  ?>
@@ -27,8 +24,7 @@
       </select>
     </p>
     <!-- info messages -->
-    <p class="success_msg" style="display: none">Dancer removed successfully!</p>
-    <p class="error_msg" style="display: none">An error occured, dancer was not removed.</p>
+    <p id="ajax-groups-remove-dancers"></p>
     <p>
       <input type="submit" name="dance_school_group_remove_dancers_submit" value="Remove" class="nkms-btn" />
     </p>

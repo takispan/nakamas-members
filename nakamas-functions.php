@@ -13,21 +13,6 @@ function my_cpt_init() {
     register_post_type( ... );
 }
 
-register_activation_hook( __FILE__, 'my_rewrite_flush' );
-function my_rewrite_flush() {
-    // First, we "add" the custom post type via the above written function.
-    // Note: "add" is written with quotes, as CPTs don't get added to the DB,
-    // They are only referenced in the post_type column with a post entry,
-    // when you add a post of this CPT.
-    my_cpt_init();
-
-    // ATTENTION: This is *only* done during plugin activation hook in this example!
-    // You should *NEVER EVER* do this on every page load!!
-    flush_rewrite_rules();
-}
-*/
-
-
 /*
  * Enqueue scripts & styles
  *
@@ -118,6 +103,30 @@ function nkms_has_role($user, $role) {
 	return in_array($role, (array) $user->roles);
 }
 
+// is Dance school or Teacher
+function nkms_can_manage_dance_school($dance_school_id, $user_id) {
+  if ( $dance_school_id === $user_id ) {
+    return true;
+  }
+  else {
+    //nkms_has_role($user_id, 'dance-school');
+  }
+}
+
+/*
+ * Invite system
+ */
+function nkms_invite_dancer_request_to_join() {
+  // TO DO - when a dancer request to join a dance school
+}
+function nkms_invite_dance_school() {
+  // TO DO - when a Dance School / Teacher invites a dancer
+}
+
+function display_invites() {
+  // TO DO - Display invites in dashboard
+}
+
 /*
  * WooCommerce
  */
@@ -137,6 +146,17 @@ function nkms_has_role($user, $role) {
 //  );
 // }
 // add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
+
+//Remove quantity on Dancer Registration category
+function nkms_remove_quantity_field( $return, $product ) {
+  // Get woo product categories
+  $product_id = $product->get_id();
+  $product_categories = wc_get_product_category_list( $product_id );
+  if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
+    return true;
+  }
+}
+add_filter( 'woocommerce_is_sold_individually', 'nkms_remove_quantity_field', 10, 2 );
 
 /**
 * Save the custom field
@@ -173,28 +193,35 @@ function nkms_register_dancers_to_events(){
   // Check if user is logged in
   if ( is_user_logged_in() ) {
     $user = get_user_by( 'id', get_current_user_id() );
+    // Get woo product categories
+    global $product;
+    $product_id = $product->get_id();
+    $product_categories = wc_get_product_category_list( $product_id );
     // Check if user is Dance School type
-    if ( nkms_has_role($user, 'dance-school') ) {
+    if ( nkms_has_role($user, 'dance-school') && strpos( $product_categories, 'Dancer Registration' ) !== false ) {
       echo '<div id="product-register-groups">';
       // Get groups
       $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
       // $registered_dancers_arr = [];
       // Check whether dance school has groups
-      if (is_array($ds_groups_list_array) || is_object($ds_groups_list_array)) {
+      if ( is_array($ds_groups_list_array) || is_object($ds_groups_list_array ) ) {
         echo '<h3>Groups List</h3><div>';
+
         // List active groups
-        // echo '<form action="" method="post">';
-        foreach ($ds_groups_list_array as $key => $id) {
-          if ( $id->getStatus() == 'Active' ) {
-            echo '<p class="register-group-names">' . $id->getGroupName() . '</p>';
-            $group = $ds_groups_list_array[$key];
-            $group_dancers = $group->getDancers();
-            // List active dancers within group
-            foreach ($group_dancers as $key => $id) {
-              $dncr = get_user_by( 'id', $id );
-              ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
-              if ( $status == 'Active' ) {
-                echo '<p class="register-group-dancers"><label>' . '<input type="checkbox" name="registered_dancer_' . $id . '">' . $dncr->first_name . ' ' . $dncr->last_name . '</label></p>';
+        foreach ( $ds_groups_list_array as $key => $id ) {
+          $group_type = $id->getType();
+          if ( strpos( $product_categories, $group_type ) !== false ) {
+            if ( $id->getStatus() == 'Active' ) {
+              echo '<p class="register-group-names">' . $id->getGroupName() . '</p>';
+              $group = $ds_groups_list_array[$key];
+              $group_dancers = $group->getDancers();
+              // List active dancers within group
+              foreach ( $group_dancers as $key => $id ) {
+                $dncr = get_user_by( 'id', $id );
+                ( $dncr->active ==  1 ) ? $status = "Active" : $status = "Inactive";
+                if ( $status == 'Active' ) {
+                  echo '<p class="register-group-dancers"><label>' . '<input type="checkbox" name="registered_dancer_' . $id . '">' . $dncr->first_name . ' ' . $dncr->last_name . '</label></p>';
+                }
               }
             }
           }
@@ -557,10 +584,34 @@ function user_initialization( $user_id ) {
     update_user_meta( $user_id, 'dancer_ds_name', $dancer_ds_name );
     update_user_meta( $user_id, 'dancer_ds_teacher_name', $dancer_ds_teacher_name );
     update_user_meta( $user_id, 'dancer_ds_teacher_email', $dancer_ds_teacher_email );
-    $is_adult = isAdult($dob);
-    if ( ! $is_adult ) {
+    $age = get_age($dob);
+    if ( $age < 18 ) {
       update_user_meta( $user_id, 'dancer_guardian_name', $dancer_guardian_name );
       update_user_meta( $user_id, 'dancer_guardian_phone_number', $dancer_guardian_phone_number );
+    }
+    update_user_meta( $user_id, 'dancer_status', 'Active' );
+    update_user_meta( $user_id, 'dancer_invites', array() );
+    // Age category
+    if ( $age < 7 ) {
+      update_user_meta( $user_id, 'age_category', '6 and under' );
+    }
+    if ( $age == 7 || $age == 8 ) {
+      update_user_meta( $user_id, 'age_category', '8 and under' );
+    }
+    if ( $age == 9 || $age == 10 ) {
+      update_user_meta( $user_id, 'age_category', '10 and under' );
+    }
+    if ( $age == 11 || $age == 12 ) {
+      update_user_meta( $user_id, 'age_category', '12 and under' );
+    }
+    if ( $age == 13 || $age == 14 ) {
+      update_user_meta( $user_id, 'age_category', '14 and under' );
+    }
+    if ( $age == 15 || $age == 16 ) {
+      update_user_meta( $user_id, 'age_category', '16 and under' );
+    }
+    if ( $age > 17 ) {
+      update_user_meta( $user_id, 'age_category', '17+' );
     }
   }
 
@@ -571,25 +622,22 @@ function user_initialization( $user_id ) {
     update_user_meta( $user_id, 'dance_school_phone_number', $dance_school_phone_number );
     update_user_meta( $user_id, 'dance_school_description', $dance_school_description );
 
-    $initial_ds_dancers_list = [];
-    update_user_meta( $user_id, 'dance_school_dancers_list', $initial_ds_dancers_list );
-    $initial_ds_groups_list = [];
-    update_user_meta( $user_id, 'dance_school_groups_list', $initial_ds_groups_list );
+    update_user_meta( $user_id, 'dance_school_dancers_list', array() );
+    update_user_meta( $user_id, 'dance_school_groups_list', array() );
     $initial_currview = [0,0];
     update_user_meta( $user_id, 'currently_viewing', $initial_currview );
   }
 }
 
 // validate birthday
-function isAdult($birthday, $age = 18) {
+function get_age($dob) {
   // $birthday can be UNIX_TIMESTAMP or just a string-date.
-  if(is_string($birthday)) {
-      $birthday = strtotime($birthday);
+  if( is_string($dob) ) {
+      $dob = strtotime($dob);
   }
 
   // 31536000 is the number of seconds in a 365 days year.
-  if(time() - $birthday < $age * 31536000)  {
-      return false;
-  }
-  return true;
+  $age = ( time() - $dob ) * 31536000;
+  // if( time() - $dob < $age * 31536000 )  { return false; }
+  return $age;
 }

@@ -1,8 +1,6 @@
 <?php
 /**
- * Add / Remove Teachers from Dance School
- *
- * Allow users manage dance school's techer list.
+ * Add Teachers to Dance School
  */
 ?>
 
@@ -14,7 +12,7 @@
 			<input id="add_teacher_to_ds" type="text" name="dance_school_add_teachers" value="" class="regular-text" />
     </p>
     <!-- info messages -->
-    <div class="ajax-response"></div>
+    <div id="ajax-add-teachers"></div>
     <p>
       <input type="submit" name="dance_school_add_teachers_submit" value="Add" class="nkms-btn" />
     </p>

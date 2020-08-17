@@ -279,13 +279,6 @@ jQuery(document).ready(function($) {
   });
 
   // WooCommerce
-  $( function() {
-    $( "#product-register-groups" ).accordion({
-      collapsible: true,
-      // active: false
-    });
-  });
-
   $('.register-group-dancers input').on('click', function(e) {
     var registered_dancers_num = $('.register-group-dancers input:checkbox:checked').length;
     console.log('Dancers registered: ' + registered_dancers_num);
@@ -300,8 +293,6 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         console.log(response);
-        // var newPrice = '<span class="woocommerce-Price-currencySymbol">£</span>'+registered_dancers_num;
-        // $('span.woocommerce-Price-amount').html(newPrice);
       },
       error: function(response) {
         console.log(response);
