@@ -44,6 +44,17 @@ html {overflow-x: hidden;}
 	padding: 4rem 0;
 }
 
+/* Invite system *
+.dancer-invitatons button {
+	border-radius: 50%;
+}
+
+/* Single dancer */
+.dancer-details p span, .group-details p span {
+	display: flex;
+	color: #999;
+}
+
 /* Buttons */
 input.nkms-btn, nkms-btn {
 	padding: 1em 1.5em;
@@ -80,8 +91,13 @@ a.nkms-btn:hover {
 	margin-right: 7px;
 }
 /* Variations */
-dd.variation-Dancers {
+.registered-dancers, .registered-groups {
 	clear: both;
+}
+.group-title {
+	font-weight: 600;
+	margin-top: 5px;
+	display: inline-block;
 }
 
 /* Datepicker */

@@ -4,13 +4,13 @@
  *
  * Dance School tab to manage dance school.
  */
-
-$ds_name = get_the_author_meta( 'dance_school_name', get_current_user_id() );
-
+$dance_school_dancers_list = $dance_school->nkms_dance_school_fields['dance_school_dancers_list'];
+$dance_school_groups_list = $dance_school->nkms_dance_school_fields['dance_school_groups_list'];
+$dance_school_teachers_list = $dance_school->nkms_dance_school_fields['dance_school_teachers_list'];
 ?>
 
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Dance School Information for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
+  <h3 style="font-weight:300;">Dance School Information for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3></br>
   <ul class="nav nav-tabs" id="ds-tabs">
     <li class="active"><a data-toggle="tab" href="#ds-overview">Overview</a></li>
     <li><a data-toggle="tab" href="#ds-dancers">Dancers</a></li>

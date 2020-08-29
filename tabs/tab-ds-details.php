@@ -5,7 +5,7 @@
 ?>
 
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Details for <span style="font-weight:600;"><?php echo $ds_name; ?></span></h3></br>
+  <h3 style="font-weight:300;">Details for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
 
   <form method="post" id="edit-dance-school-details" action="">
     <div class="nkms-extra-fields">

@@ -5,13 +5,102 @@
  * Allow users to update their profiles from Frontend.
  *
  */
+nkms_invitations();
 ?>
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Dashboard of <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3></br>
+  <h3 style="font-weight:300;">Dashboard of <span style="font-weight:600;"><?php echo $current_user->user_login; ?></span></h3>
   <div class="soar-mid">
-		<h4><span>Soar</span> membership ID</h4>
-		<h3><?php echo $current_user->ID; ?></h3>
+		<h4><span>Soar ID</span> <?php echo $current_user->ID; ?></h4>
+
 	</div>
+  <p>
+    <?php
+    if ( nkms_has_role( $current_user, 'guardian' ) && ! $dancer_id ) : ?>
+        <h4>Manage a dancer</h4>
+        <p>You are not managing a dancer at the moment. Add their ID below in order to control their dashboard.</p>
+        <form method="post" id="guardian-add-dancer-to-manage">
+          <p><input type="hidden" name="guardian_id" value="<?php echo get_current_user_id(); ?>" />
+          <p><input type="text" name="guardian_dancer_id_to_manage" value="" /></p>
+          <p class="ajax-response"></p>
+          <p><input type="submit" name="guardian_dancer_to_manage_submit" value="Submit" /></p>
+        </form>
+    <?php endif; ?>
+  </p>
+  <?php
+  if ( nkms_has_role( $current_user, 'guardian' ) && $dancer_id ) : ?>
+    <h3 style="font-weight:300;">Managing dashboard of <span style="font-weight:600;"><?php echo $dancer->user_login; ?></span></h3>
+    <div class="soar-mid">
+  		<h4><span>Soar ID</span> <?php echo $dancer->ID; ?></h4>
+    </div>
+  <?php endif;?>
+  <?php if ( $dancer_id ) : ?>
+    <div class="dancer-invitatons">
+      <?php nkms_fix_user_meta();
+
+      // IF $dancer has dancer_invites['guardian']
+      $dancer_fields = $dancer->nkms_dancer_fields;
+      $dancer_invites_guardian = $dancer_fields['dancer_invites']['guardian'];
+      if ( ! empty( $dancer_invites_guardian ) ) {
+        echo '<h4>Guardian invites</h4>';
+        foreach ($dancer_invites_guardian as $guardian_id) {
+          $guardian = get_user_by( 'id', $guardian_id ); ?>
+          <div><p><?php echo $guardian->first_name . " " . $guardian->last_name; ?> wants to manage your account.</p>
+            <form method="post" class="invite-btn">
+              <input type="hidden" name="guardian_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
+              <input type="hidden" name="guardian_invite_guardian_id" value="<?php echo $guardian_id; ?>" />
+              <input type="submit" name="guardian_dancer_invite_accept" value="Accept" />
+              <input type="submit" name="guardian_dancer_invite_decline" value="Decline" />
+            </form>
+          </div>
+          <?php
+        }
+      }
+      else {
+        echo '<h4>Guardian invites</h4>';
+        echo '<p>You do not have any invites.</p>';
+      }
+
+      // IF $dancer has dancer_invites['dance-school']
+      $dancer_invites_dance_school = $dancer->nkms_dancer_fields['dancer_invites']['dance_school'];
+      if ( ! empty( $dancer_invites_dance_school ) ) {
+        echo '<h4>Dance School invites</h4>';
+        foreach ($dancer_invites_dance_school as $dance_school_id) {
+          $ds = get_user_by( 'id', $dance_school_id ); ?>
+          <div><p>You have been invited to join <?php echo $ds->nkms_dance_school_fields['dance_school_name']; ?>.</p>
+            <form method="post" class="invite-btn">
+              <input type="hidden" name="dancer_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
+              <input type="hidden" name="dancer_invite_dance_school_id" value="<?php echo $ds->ID; ?>" />
+              <input type="submit" name="dancer_invite_accept" value="Accept" />
+              <input type="submit" name="dancer_invite_dismiss" value="Decline" />
+            </form>
+          </div>
+          <?php
+        }
+      }
+      else {
+        echo '<h4>Dance School invites</h4>';
+        echo '<p>You do not have any invites.</p>';
+      }
+      ?>
+      <h4>Request to join a dance school</h4>
+      <?php
+      $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
+      // sort($dance_schools_list);
+      // print_r($dance_schools_list);
+      echo '<form method="post" class="invite-btn">';
+      echo '<p><select value="" ><option selected disabled hidden>Select dance school</option>';
+      foreach ($dance_schools_list as $ds) {
+        if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
+          echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
+        }
+      }
+      echo '</select></p>';
+      ?>
+        <input type="hidden" name="request_invite_dancer_id" value="<?php echo $dancer_id; ?>" />
+        <input type="submit" name="dancer_request_invite" value="Request" />
+      </form>
+    </div>
+  <?php endif; ?>
 
 	<h4>Recent orders</h4>
   <?php
@@ -88,6 +177,6 @@
       echo 'You need WooCommerce installed & activated';
   endif; ?>
   <p style="margin-top: 55px;">
-    <a href="<?php echo wp_logout_url(home_url()); ?>"><button>Logout</button></a>
+    <a href="<?php echo wp_logout_url( home_url() ); ?>"><button>Logout</button></a>
   </p>
 </div><!-- .nkms-tabs -->

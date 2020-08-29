@@ -70,12 +70,17 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
       <label for="pass2"><?php _e('Repeat Password *', 'profile'); ?></label>
       <input class="text-input" name="pass2" type="password" id="pass2" />
     </p><!-- .form-password -->
+    <p>
+      <?php echo do_shortcode( '[avatar]' );?>
+      <a data-toggle="tab" href="#profile-picture" class="nkms-btn">Edit Profile Picture</a>
+    </p>
 
     <!-- Custom fields -->
-    <p>
+    <!-- <p>
       <label for="dob">Date of Birth</label>
-      <input name="dob" type="text" id="dob" value="<?php echo get_user_meta( $current_user->ID, 'dob', true ); ?>" />
-    </p>
+      <input name="dob" type="text" id="dob" value="<?php
+      // echo get_user_meta( $current_user->ID, 'dob', true ); ?>" />
+    </p> -->
     <p>
       <label>Age category</label>
       <span>

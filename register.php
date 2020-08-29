@@ -53,6 +53,7 @@ get_header(); ?>
     <p>
       <label for="dancer_experience">Dancing Experience</label>
       <select id="dancer_xp" name="dancer_experience">
+        <option value="" selected disabled hidden>Select dancing experience</option>
         <option value="Newcomer">Newcomer</option>
         <option value="Novice">Novice</option>
         <option value="Intermediate">Intermediate</option>
@@ -78,6 +79,7 @@ get_header(); ?>
     <p>
       <label for="sel_role">Account type</label>
       <select id="select_role" name="sel_role">
+        <option value="" selected disabled hidden>Select account type</option>
         <option value="spectator">Spectator</option>
         <option value="dancer">Dancer</option>
         <option value="guardian">Guardian/Parent</option>

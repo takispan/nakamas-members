@@ -8,10 +8,6 @@
   * A list of groups that the member is part of
   *
 */
-class Dancer extends WP_User {
-  // no constructor so WP_User's constructor is used
-
-}
 
 /**
   * DanceGroup Object to represent a dance group
@@ -21,39 +17,27 @@ class Dancer extends WP_User {
   * size         = Size (number of Dancers in Group)
   * type         = Group Type (Duo, Parent/Child, Trio/Quad, Team, Parent Team, Super Crew)
   * status       = Status (Active, Inactive)
-  * main_dancers = An array with the Dancers in the Group
+  * main_dancers = An array with the Dancers (ID) in the Group
   *
 */
 class DanceGroup {
 
-  private $dance_school;
-  private $id;
+  private $dance_school_id, $id, $group_name, $size, $type, $status, $main_dancers;
 
-  private $group_name;
-
-  private $size;
-
-  private $type;
-
-  private $status = 'Active';
-
-  private $main_dancers;
-
-  //$sub_dancers;
   //constructor
-  function __construct($dance_school, $id, $group_name, $group_type) {
-    $this->dance_school = $dance_school;
+  function __construct( $dance_school_id, $id, $group_name, $group_type ) {
+    $this->dance_school_id = $dance_school_id;
     $this->id = $id;
     $this->group_name = $group_name;
     $this->size = 0;
     $this->type = $group_type;
     $this->status = 'Active';
-    $this->main_dancers = [];
+    $this->main_dancers = array();
   }
 
   //Get Dance School associated
-  public function getDanceSchool() {
-    return $this->dance_school;
+  public function getDanceSchoolID() {
+    return $this->dance_school_id;
   }
 
   //Get Group ID
@@ -68,7 +52,12 @@ class DanceGroup {
 
   //Get Group Size
   public function getSize() {
-    return sizeof($main_dancers);
+    if ( ! empty( $this->getDancers() ) ) {
+      return sizeof( $this->getDancers() );
+    }
+    else {
+      return 0;
+    }
   }
 
   //Get Group Type
@@ -82,7 +71,7 @@ class DanceGroup {
   }
 
   //Set Group Status (Active / Inactive)
-  public function setStatus($group_status) {
+  public function setStatus( $group_status ) {
     $this->status = $group_status;
   }
 
@@ -92,9 +81,9 @@ class DanceGroup {
   }
 
   //Add a Dancer in Group
-  function addDancer($id) {
-		if (!in_array($id, $this->main_dancers)) {
-			array_push($this->main_dancers, $id);
+  function addDancer( $id ) {
+		if ( ! in_array( $id, $this->main_dancers ) ) {
+			array_push( $this->main_dancers, $id );
       $this->size++;
       return true;
 		}
@@ -102,15 +91,13 @@ class DanceGroup {
   }
 
   //Remove a Dancer from the Group
-  function removeDancer($id) {
-    if (!in_array($id, $this->main_dancers)) {
+  function removeDancer( $id ) {
+    if ( ! in_array( $id, $this->main_dancers ) ) {
         return false;
     }
-    $this->main_dancers = array_diff($this->main_dancers, [$id]);
+    $this->main_dancers = array_diff( $this->main_dancers, [$id] );
     $this->size--;
     return true;
   }
-
-
 }
 ?>

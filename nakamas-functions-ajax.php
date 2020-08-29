@@ -3,63 +3,103 @@
  * Ajax in WP
  *
  */
+ // Guardian - Request to manage dancer
+add_action( 'wp_ajax_guardian_invite_to_manage_dancer', 'guardian_invite_to_manage_dancer' );
+function guardian_invite_to_manage_dancer() {
+  // get dancer & guardian objects
+  $dancer_id = intval( $_POST['dancer_id'] );
+  $dancer = get_user_by( 'id', $dancer_id );
+  $guardian_id = intval( $_POST['guardian_id'] );
+  $guardian = get_user_by( 'id', $guardian_id );
 
- //Add dancer to dance school list of dancers
- add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
- function ds_add_dancer() {
- 	global $wpdb; // this is how you get access to the database
-
- 	$dancer2add_id = intval($_POST['dancer']);
- 	$dancer2add = get_user_by( 'id', $dancer2add_id );
- 	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
- 		$dancers_list = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
- 		if ( ! is_array( $dancers_list ) ) { $dancers_list = [];}
- 		if ( ! in_array( $dancer2add_id, $dancers_list ) ) {
-      array_push($dancers_list, $dancer2add_id);
-   		update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $dancers_list);
-   		wp_send_json_success("<p class='text-info'>Dancer added.</p>");
+  // check if input is dancer
+  if ( nkms_has_role( $dancer, 'dancer' ) ) {
+    // get dancer fields
+    $dancer_fields = $dancer->nkms_dancer_fields;
+    // check if guardian has already sent an invite
+    if ( ! in_array( $guardian_id, $dancer_fields['dancer_invites']['guardian'] ) ) {
+      // add guardian id to dancer invites(guardian) array
+      array_push( $dancer_fields['dancer_invites']['guardian'], $guardian_id );
+      // save dancer fields
+      update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+      wp_send_json_success("<p class='text-info'>Dancer invite sent.</p>");
     }
     else {
-      wp_send_json_error("<p class='text-danger'>Dancer is already part of the School.</p>");
+      wp_send_json_success("<p class='text-danger'>Dancer already has a pending invite.</p>");
     }
- 	}
- 	else {
- 		wp_send_json_error("<p class='text-danger'>Invalid dancer ID.</p>");
- 	}
- }
+  }
+  else {
+    wp_send_json_success("<p class='text-danger'>Invalid dancer ID.</p>");
+  }
+}
 
- //Pass dancer id to populate single dancer tab
+
+// DANCE SCHOOL - send invite to dancer
+add_action( 'wp_ajax_ds_add_dancer', 'ds_add_dancer' );
+function ds_add_dancer() {
+  // get dancer & dance school objects
+  $dancer_id = intval( $_POST['ds_add_dancer_id'] );
+  $dancer = get_user_by( 'id', $dancer_id );
+  $dance_school_id = intval( $_POST['ds_add_dancer_dance_school_id'] );
+  $dance_school = get_user_by( 'id', $dance_school_id );
+  // check if input is dancer
+  if ( nkms_has_role( $dancer, 'dancer' ) ) {
+    // get dance school fields
+  	$dance_school_fields = $dance_school->nkms_dance_school_fields;
+    // check if dancer is already part of dance school
+  	if ( ! in_array( $dancer_id, $dance_school_fields['dance_school_dancers_list'] ) ) {
+      // get dancer fields
+      $dancer_fields = $dancer->nkms_dancer_fields;
+      // check if dancer already has an invite by the dance school
+      if ( ! in_array( $dance_school_id, $dancer_fields['dancer_invites']['dance_school'] ) ) {
+        // add dance school id to dancer invites(dance school) array
+        array_push( $dancer_fields['dancer_invites']['dance_school'], $dance_school_id );
+        // save dancer fields
+        update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+        wp_send_json_success("<p class='text-info'>Dancer invite sent.</p>");
+      }
+      else {
+        wp_send_json_success("<p class='text-danger'>Dancer already has a pending invite.</p>");
+      }
+    }
+    else {
+      wp_send_json_success("<p class='text-danger'>Dancer is already part of the School.</p>");
+    }
+  }
+  else {
+  	wp_send_json_success("<p class='text-danger'>Invalid dancer ID.</p>");
+  }
+}
+
+ // Pass dancer id to populate single dancer tab
  add_action( 'wp_ajax_ds_single_dancer', 'ds_single_dancer' );
  function ds_single_dancer() {
- 	global $wpdb; // this is how you get access to the database
-   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-   $ds_name = get_user_meta( 'dance_school_name', get_current_user_id() );
-   if ( ! is_array( $currview ) ) { $currview = [0,0]; }
-   if ( sizeof($currview) < 2 ) { array_push($currview, 0); }
 
-   $dancer_id = intval($_POST['single_dancer_id']);
-   $currview[0] = $dancer_id;
-   update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
-   $dancer = get_user_by( 'id', $dancer_id );
-   (!get_user_meta($dancer_id, 'active', true)) ? $active_status = "Inactive" : $active_status = "Active";
+   // get dancer & dance school objects
+   $dancer_id = intval( $_POST['single_dancer_id'] );
+   $dancer = get_userdata( $dancer_id );
+   $dance_school_id = intval( $_POST['dance_school_id'] );
+   $dance_school = get_userdata( $dance_school_id );
+   //
+
+   // get dance school fields
+   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+   // add currently viewing dancer
+   $dance_school_fields['dance_school_currently_viewing']['dancer'] = $dancer_id;
+   // save dance school fields
+   update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
    $single_dancer_data = '
-   <h3 style="font-weight:300;">Dancer <span style="font-weight:600;">' . $dancer->first_name . ' ' . $dancer->last_name . '</span> for <span style="font-weight:600;">' . $ds_name . '</span></h3></br>
-   <table>
-     <tr>
-       <th>ID</th>
-       <th>Name</th>
-       <th>Status</th>
-     </tr>
-     <tr>
-       <td>' . $dancer_id . '</td>
-       <td>' . $dancer->first_name . ' ' . $dancer->last_name . '</td>
-       <td>' . $active_status . '</td>
-     </tr>
-   </table>
-   <button class="change-dancer-status" data-dancer-id="' . $dancer_id . '">Change Status</button>
-   <button class="remove-dancer" data-dancer-id="' . $dancer_id . '">Remove Dancer</button>';
-   wp_send_json_success($single_dancer_data);
- 	wp_die();
+   <h3 style="font-weight:300;">Dancer <span style="font-weight:600;">' . $dancer->first_name . ' ' . $dancer->last_name . '</span> for <span style="font-weight:600;">' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</span></h3></br>
+   <div class="dancer-details">
+     <p><span>Soar ID</span>' . $dancer_id . '</p>
+     <p><span>Full Name</span>' . $dancer->first_name . ' ' . $dancer->last_name . '</p>
+     <p><span>Status</span>' . $dancer->nkms_dancer_fields['dancer_status'] . '</p>
+     <p><span>Experience</span>' . $dancer->nkms_fields['experience'] . '</p>
+     <p><span>Category</span>' . $dancer->nkms_dancer_fields['dancer_age_category'] . '</p>
+   </div>
+   <button class="change-dancer-status" data-ds-id="' . $dance_school_id . '" data-dancer-id="' .  $dancer_id . '">Change Status</button>
+   <button class="remove-dancer" data-ds-id="' . $dance_school_id . '" data-dancer-id="' . $dancer_id . '">Remove Dancer</button>';
+   wp_send_json_success( $single_dancer_data );
  }
 
  //Change dancer status
@@ -78,145 +118,233 @@
  //Remove dancer from dance school list of dancers
  add_action( 'wp_ajax_ds_remove_dancer', 'ds_remove_dancer' );
  function ds_remove_dancer() {
- 	global $wpdb; // this is how you get access to the database
-
-   $user_id = get_current_user_id();
- 	$dancer_to_remove_id = intval($_POST['single_dancer_id']);
-   $dancers_list = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
-   if ( in_array( $dancer_to_remove_id, $dancers_list) ) {
-     $data_entry = array_diff( $dancers_list, [$dancer_to_remove_id] );
-     update_user_meta(get_current_user_id(), 'dance_school_dancers_list', $data_entry);
-   	echo "Dancer removed.";
-   }
-   else {
-     echo "Error occured.";
-     wp_send_json_error();
- 	}
- 	wp_die();
+ 	 // global $wpdb; // this is how you get access to the database
+   //
+   // $user_id = get_current_user_id();
+ 	 // $dancer_to_remove_id = intval($_POST['single_dancer_id']);
+   // $dancers_list = get_user_meta(get_current_user_id(), 'dance_school_dancers_list', true);
+   // if ( in_array( $dancer_to_remove_id, $dancers_list) ) {
+   //   $new_dancers_list = array_diff( $dancers_list, [$dancer_to_remove_id] );
+   //   update_user_meta( get_current_user_id(), 'dance_school_dancers_list', $new_dancers_list );
+   // 	echo "Dancer removed.";
+   // }
+   // else {
+   //   echo "Error occured.";
+   //   wp_send_json_error();
+ 	 // }
+ 	 // wp_die();
  }
 
  //Add group to dance school list of groups
  add_action( 'wp_ajax_ds_add_group', 'ds_add_group' );
  function ds_add_group() {
-   global $wpdb; // this is how you get access to the database
    $group_name = $_POST['group_name'];
-   if ( empty($group_name) ) {wp_send_json_error();}
+   if ( ! $group_name ) { wp_send_json_success( "<p class='text-danger'>Group name cannot be empty.</p>" ); }
    $group_type = $_POST['group_type'];
+   if ( ! $group_type ) { wp_send_json_success( "<p class='text-danger'>Group type must be selected.</p>" ); }
+   $dance_school_id = intval( $_POST['dance_school_id'] );
 
-   $ds_groups_list_array = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-   if (!is_array($ds_groups_list_array)) {
-     $ds_groups_list_array = [];
-     $last = 0;
-   }
-   else {
-     end($ds_groups_list_array);
-     $last = key($ds_groups_list_array);
-     $last++;
-   }
-   echo $last;
-   $ds_group2add = new DanceGroup(get_current_user_id(), $last, $group_name, $group_type );
-   $ds_groups_list_array[$last] = $ds_group2add;
-   update_user_meta(get_current_user_id(), 'dance_school_groups_list', $ds_groups_list_array);
-   echo "Group added.";
-   wp_die();
+   $dance_school = get_userdata( $dance_school_id );
+   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+   end( $dance_school_fields['dance_school_groups_list'] );
+   $last = key( $dance_school_fields['dance_school_groups_list'] );
+   $last++;
+
+   $ds_new_group = new DanceGroup( $dance_school_id, $last, $group_name, $group_type );
+   $dance_school_fields['dance_school_groups_list'][$last] = $ds_new_group;
+   update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+   wp_send_json_success("<p class='text-info'>Group added successfully.</p>");
  }
 
  //Pass group id to populate single group tab
  add_action( 'wp_ajax_ds_single_group', 'ds_single_group' );
  function ds_single_group() {
-   global $wpdb; // this is how you get access to the database
+   // get group id & dance school object
+   $group_id = intval( $_POST['single_group_id'] );
+   $dance_school_id = intval( $_POST['dance_school_id'] );
+   $dance_school = get_userdata( $dance_school_id );
 
-   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-   if (!is_array($currview)) {
-     $currview = [0,0];
+   // get dance school fields
+   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+   // add currently viewing group
+   $dance_school_fields['dance_school_currently_viewing']['group'] = $group_id;
+   // save dance school fields
+   update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+   $group = $dance_school->nkms_dance_school_fields['dance_school_groups_list'][$group_id];
+   $group_dancers = $group->getDancers();
+   $print_dancers;
+   if ( empty( $group_dancers ) ) {
+     $print_dancers = '<p>' . $group->getGroupName() . ' does not have any dancers.<br>You may add by clicking the button below.</p>';
    }
-   if (sizeof($currview) < 2) {
-     array_push($currview, 0);
+   else {
+     $print_dancers .= '<div class="group-dancers">';
+     foreach ($group_dancers as $group_dancer_id ) {
+       $group_dancer = get_user_by( 'id', $group_dancer_id );
+       $print_dancers .= '<p>' . $group_dancer_id . ': ' . $group_dancer->first_name . ' ' . $group_dancer->last_name . '<br><span>Status</span>' . $group_dancer->nkms_dancer_fields['dancer_status'] . '</p>';
+     }
+     $print_dancers .= '</div>';
    }
+   $single_group_data = '
+   <h3 style="font-weight:300;">Dance Group <span style="font-weight:600;">' . $group->getGroupName() . '</span> for <span style="font-weight:600;">' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</span></h3>
+   <div class="group-details">
+     <p><span>Type</span>' . $group->getType() . '</p>
+     <p><span>Name</span>' . $group->getGroupName() . '</p>
+     <p><span>Status</span>' . $group->getStatus() . '</p>
+     <button class="change-group-status" data-ds-id="' . $dance_school_id . '" data-dancer-id="' .  $group_id . '">Change Status</button>
+     <h4 style="font-weight: 300;">Dancers of <span style="font-weight:600;">' . $group->getGroupName() . '</span></h4>
+     <p>' . $print_dancers . '</p>
+     <a data-toggle="tab" href="#ds-group-add-dancers" class="nkms-btn">Add Dancers</a>';
 
-   $currview[1] = intval($_POST['single_group_id']);
-   echo $currview[1];
-   update_user_meta(get_current_user_id(), 'currently_viewing', $currview );
- 	 wp_die();
+   if ( ! empty( $group_dancers ) ) {
+     $single_group_data .= '<a style="margin-left:5px;" data-toggle="tab" href="#ds-group-remove-dancers" class="nkms-btn">Remove Dancers</a>';
+   }
+   $single_group_data .= '</div>';
+
+   wp_send_json_success( $single_group_data );
  }
 
  //Add dancer to group
  add_action( 'wp_ajax_ds_add_group_dancer', 'ds_add_group_dancer' );
  function ds_add_group_dancer() {
-   	global $wpdb; // this is how you get access to the database
-    $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-    $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-    $group_id = $currview[1];
-    $group = $groups_list[$group_id];
-   	$dancer_to_add_id = intval($_POST['dancer']);
-   	$dancer2add = get_user_by( 'id', $dancer_to_add_id );
-   	if ( nkms_has_role( $dancer2add, 'dancer' ) ) {
-   		$data_entry = $group->addDancer($dancer_to_add_id);
-   		if ( $data_entry ) {
-         $groups_list[$group_id] = $group;
-         update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
-   			echo 'Dancer added.';
+   	$dancer_id = intval( $_POST['dancer_id'] );
+    $dancer = get_userdata( $dancer_id );
+    $dance_school_id = intval( $_POST['dance_school_id'] );
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    $group_id = $dance_school_fields['dance_school_currently_viewing']['group'];
+    $group = $dance_school_fields['dance_school_groups_list'][$group_id];
+   	if ( ! empty( $dancer_id ) ) {
+   		$success = $group->addDancer( $dancer_id );
+   		if ( $success ) {
+        $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+        $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+        if ( $db_result ) {
+          wp_send_json_success( '<p class="text-info">Dancer added.</p>' );
+        }
+        else {
+          wp_send_json_success( '<p class="text-danger">Dancer was not saved in database.</p>' );
+        }
    		}
-       else {
-         echo 'An error occured, dancer not added.';
-       }
+      else {
+        wp_send_json_success( '<p class="text-danger">Dancer is already part of ' . $group->getGroupName() . '.</p>' );
+      }
    	}
    	else {
-   		echo "Invalid Dancer ID";
-   		wp_send_json_error();
+      wp_send_json_success( '<p class="text-danger">Invalid dancer.</p>' );
    	}
-   	wp_die();
  }
 
  //Remove dancer from group
  add_action( 'wp_ajax_ds_remove_group_dancer', 'ds_remove_group_dancer' );
  function ds_remove_group_dancer() {
- 	 global $wpdb; // this is how you get access to the database
-   $currview = get_user_meta(get_current_user_id(), 'currently_viewing', true);
-   $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-
-   $group_id = $currview[1];
-   $group = $groups_list[$group_id];
-   var_dump($group);
-   echo $group->getGroupName();
-
- 	 $dancer_to_remove_id = intval($_POST['dancer']);
-   $data_entry = $group->removeDancer($dancer_to_remove_id);
- 	 if ( $data_entry ) {
-     $groups_list[$group_id] = $group;
-     update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
-     echo 'Dancer removed.';
- 	 }
-   else {
-     echo 'An error occured, dancer was not removed.';
-   }
- 	 wp_die();
+   $dancer_id = intval( $_POST['dancer_id'] );
+   $dancer = get_userdata( $dancer_id );
+   $dance_school_id = intval( $_POST['dance_school_id'] );
+   $dance_school = get_userdata( $dance_school_id );
+   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+   $group_id = $dance_school_fields['dance_school_currently_viewing']['group'];
+   $group = $dance_school_fields['dance_school_groups_list'][$group_id];
+   // if ( ! empty( $dancer_id ) ) {
+     $success = $group->removeDancer( $dancer_id );
+     if ( $success ) {
+       $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+       $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+       if ( $db_result ) {
+         wp_send_json_success( '<p class="text-info">Dancer was removed.</p>' );
+       }
+       else {
+         wp_send_json_success( '<p class="text-danger">Dancer was not saved in database.</p>' );
+       }
+     }
+     else {
+       wp_send_json_success( '<p class="text-danger">Dancer is not part of ' . $group->getGroupName() . '.</p>' );
+     }
+   // }
+   // else {
+   //   wp_send_json_success( '<p class="text-danger">Invalid dancer.</p>' );
+   // }
  }
 
- //Change dancer status
+ //Change group status
  add_action( 'wp_ajax_ds_group_change_status', 'ds_group_change_status');
  function ds_group_change_status() {
-   global $wpdb;
-   $groups_list = get_user_meta(get_current_user_id(), 'dance_school_groups_list', true);
-
-   $group_id = $_POST['group_id'];
-   $group = $groups_list[$group_id];
+   // get group_id and dance school object
+   $group_id = intval( $_POST['group_id'] );
+   $dance_school = get_userdata( intval( $_POST['dance_school_id'] ) );
+   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+   $group = $dance_school_fields['dance_school_groups_list'][$group_id];
    $status = $group->getStatus();
-   ( $status == 'Active' ) ? $status = 'Inactive' : $status = 'Active';
-   $group->setStatus($status);
+   ( $status === 'Active' ) ? $status = 'Inactive' : $status = 'Active';
+   $group->setStatus( $status );
+   $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+   $update = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+   wp_send_json_success( var_dump( $update ) );
+ }
 
-   $groups_list[$group_id] = $group;
-   update_user_meta(get_current_user_id(), 'dance_school_groups_list', $groups_list);
-   echo "Group status set to " . $status;
-   wp_die();
+ // TEACHER - add to dance school
+ add_action( 'wp_ajax_ds_add_teacher', 'ds_add_teacher' );
+ function ds_add_teacher() {
+   // get dancer & dance school objects
+   $teacher_id = intval( $_POST['teacher_id'] );
+   $teacher = get_userdata( $teacher_id );
+   $dance_school_id = intval( $_POST['dance_school_id'] );
+   $dance_school = get_userdata( $dance_school_id );
+   // check if input is dancer
+   if ( nkms_has_role( $teacher, 'dancer' ) ) {
+     // get dance school fields
+   	 $dance_school_fields = $dance_school->nkms_dance_school_fields;
+     // check if teacher is already part of dance school
+   	if ( ! in_array( $teacher_id, $dance_school_fields['dance_school_teachers_list'] ) ) {
+       // get teacher fields
+       $teacher_fields = $teacher->nkms_dancer_fields;
+       // check if teacher is already managing another dance school
+       if ( empty( $teacher_fields['dancer_teacher_of'] ) ) {
+         // add dance school id to teacher array
+         array_push( $teacher_fields['dancer_teacher_of'], $dance_school_id );
+         // add teacher id to dance school list of teachers
+         array_push( $dance_school_fields['dance_school_teachers_list'], $teacher_id );
+         // save teacher fields
+         $teacher_save_to_db = update_user_meta( $teacher_id, 'nkms_dancer_fields', $teacher_fields );
+         $teacher_saved = false;
+         $ds_saved = false;
+         if ( $teacher_save_to_db ) {
+           $teacher_saved = true;
+         }
+         else {
+           wp_send_json_success("<p class='text-info'>Problem saving teacher data.</p>");
+         }
+         // save dance school fields
+         $ds_save_to_db = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+         if ( $ds_save_to_db ) {
+           // wp_send_json_success("<p class='text-info'>Teacher added.</p>");
+           $ds_saved = true;
+         }
+         else {
+           wp_send_json_success("<p class='text-info'>Problem saving teacher data.</p>");
+         }
+         if ( $teacher_saved && $ds_saved ) {
+           wp_send_json_success("<p class='text-info'>Teacher added.</p>");
+         }
+       }
+       else {
+         wp_send_json_success("<p class='text-danger'>Teacher is already managing another dance school.</p>");
+       }
+     }
+     else {
+       wp_send_json_success("<p class='text-danger'>Teacher is already managing this School.</p>");
+     }
+   }
+   else {
+   	wp_send_json_success("<p class='text-danger'>Invalid teacher ID.</p>");
+   }
  }
 
  //Registered dancers
- add_action( 'wp_ajax_registered_dancers', 'registered_dancers');
- function registered_dancers() {
-   $reg_dancers = $_POST['registered_dancers_num'];
-   // var_dump($reg_dancers);
-   echo "I got this: " . $reg_dancers . " wut ";
-
-   wp_die();
- }
+ // add_action( 'wp_ajax_registered_dancers', 'registered_dancers');
+ // function registered_dancers() {
+ //   $reg_dancers = $_POST['registered_dancers_num'];
+ //   // var_dump($reg_dancers);
+ //   echo "I got this: " . $reg_dancers . " wut ";
+ //
+ //   wp_die();
+ // }
