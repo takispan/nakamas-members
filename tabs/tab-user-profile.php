@@ -95,7 +95,8 @@
     <p class="form-submit">
       <?php //echo $referer; ?>
       <input name="update_user_info" type="submit" id="update_user_info" class="submit button" value="Update" />
-      <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
+      <?php
+      // wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
     </p><!-- .form-submit -->
   </form>
 </div><!-- .nkms-tabs -->
