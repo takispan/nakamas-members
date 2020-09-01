@@ -35,8 +35,8 @@ nkms_invitations();
   <?php endif;?>
   <?php if ( $dancer_id ) : ?>
     <div class="dancer-invitatons">
-      <?php nkms_fix_user_meta();
-
+      <?php
+      // nkms_fix_user_meta();
       // IF $dancer has dancer_invites['guardian']
       $dancer_fields = $dancer->nkms_dancer_fields;
       $dancer_invites_guardian = $dancer_fields['dancer_invites']['guardian'];
@@ -55,10 +55,10 @@ nkms_invitations();
           <?php
         }
       }
-      else {
-        echo '<h4>Guardian invites</h4>';
-        echo '<p>You do not have any invites.</p>';
-      }
+      // else {
+      //   echo '<h4>Guardian invites</h4>';
+      //   echo '<p>You do not have any invites.</p>';
+      // }
 
       // IF $dancer has dancer_invites['dance-school']
       $dancer_invites_dance_school = $dancer->nkms_dancer_fields['dancer_invites']['dance_school'];
@@ -77,28 +77,31 @@ nkms_invitations();
           <?php
         }
       }
-      else {
-        echo '<h4>Dance School invites</h4>';
-        echo '<p>You do not have any invites.</p>';
-      }
+      // else {
+      //   echo '<h4>Dance School invites</h4>';
+      //   echo '<p>You do not have any invites.</p>';
+      // }
+      $can_manage_dancer = nkms_can_manage_dancer( $dancer_id, $current_user->ID );
+      if ( $can_manage_dancer ) :
       ?>
-      <h4>Request to join a dance school</h4>
-      <?php
-      $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
-      // sort($dance_schools_list);
-      // print_r($dance_schools_list);
-      echo '<form method="post" class="invite-btn">';
-      echo '<p><select value="" ><option selected disabled hidden>Select dance school</option>';
-      foreach ($dance_schools_list as $ds) {
-        if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
-          echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
+        <h4>Request to join a dance school</h4>
+        <?php
+        $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
+        // sort($dance_schools_list);
+        // print_r($dance_schools_list);
+        echo '<form method="post" class="invite-btn">';
+        echo '<p><select value="" ><option selected disabled hidden>Select dance school</option>';
+        foreach ($dance_schools_list as $ds) {
+          if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
+            echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
+          }
         }
-      }
-      echo '</select></p>';
-      ?>
-        <input type="hidden" name="request_invite_dancer_id" value="<?php echo $dancer_id; ?>" />
-        <input type="submit" name="dancer_request_invite" value="Request" />
-      </form>
+        echo '</select></p>';
+        ?>
+          <input type="hidden" name="request_invite_dancer_id" value="<?php echo $dancer_id; ?>" />
+          <input type="submit" name="dancer_request_invite" value="Request" />
+        </form>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
 

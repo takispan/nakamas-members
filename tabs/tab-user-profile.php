@@ -5,50 +5,53 @@
  * Allow users to update their profiles from Frontend.
  */
 
-$error = array();
-/* If profile was saved, update profile. */
-if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-
-    /* Update user password. */
-    if ( ! empty($_POST['pass1'] ) && ! empty( $_POST['pass2'] ) ) {
-        if ( $_POST['pass1'] == $_POST['pass2'] )
-            wp_update_user( array( 'ID' => $current_user->ID, 'user_pass' => esc_attr( $_POST['pass1'] ) ) );
-        else
-            $error[] = 'The passwords you entered do not match.  Your password was not updated.';
-    }
-
-    /* Update user information. */
-    if ( ! empty( $_POST['email'] ) ) {
-        if (!is_email(esc_attr( $_POST['email'] ))) {
-            $error[] = 'The Email you entered is not valid.';
-        }
-        // CHECK IF EMAIL IS REGISTERED BY ANOTHER USER, NOT WORKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-        // elseif (email_exists(esc_attr( $_POST['email'] )) != $current_user->ID ) {
-        //     $error[] = 'This email is already used by another user, try a different one.';
-        //     $error[] = 'email exists:' . email_exists( $_POST['email'] ) . ', email:' . esc_attr( $_POST['email'] ) . ' test1';
-        // }
-        else {
-            wp_update_user( array( 'ID' => $current_user->ID, 'user_email' => esc_attr( $_POST['email'] ) ) );
-        }
-    }
-
-    if ( ! empty( $_POST['first-name'] ) ) {
-      update_user_meta( $current_user->ID, 'first_name', esc_attr( $_POST['first-name'] ) );
-    }
-    if ( ! empty( $_POST['last-name'] ) ) {
-      update_user_meta($current_user->ID, 'last_name', esc_attr( $_POST['last-name'] ) );
-    }
-}
+// $error = array();
+// /* If profile was saved, update profile. */
+// if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+//
+//     /* Update user password. */
+//     if ( ! empty($_POST['pass1'] ) && ! empty( $_POST['pass2'] ) ) {
+//         if ( $_POST['pass1'] == $_POST['pass2'] )
+//             wp_update_user( array( 'ID' => $current_user->ID, 'user_pass' => esc_attr( $_POST['pass1'] ) ) );
+//         else
+//             $error[] = 'The passwords you entered do not match.  Your password was not updated.';
+//     }
+//
+//     /* Update user information. */
+//     if ( ! empty( $_POST['email'] ) ) {
+//         if (!is_email(esc_attr( $_POST['email'] ))) {
+//             $error[] = 'The Email you entered is not valid.';
+//         }
+//         // CHECK IF EMAIL IS REGISTERED BY ANOTHER USER, NOT WORKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+//         // elseif (email_exists(esc_attr( $_POST['email'] )) != $current_user->ID ) {
+//         //     $error[] = 'This email is already used by another user, try a different one.';
+//         //     $error[] = 'email exists:' . email_exists( $_POST['email'] ) . ', email:' . esc_attr( $_POST['email'] ) . ' test1';
+//         // }
+//         else {
+//             wp_update_user( array( 'ID' => $current_user->ID, 'user_email' => esc_attr( $_POST['email'] ) ) );
+//         }
+//     }
+//
+//     if ( ! empty( $_POST['first-name'] ) ) {
+//       update_user_meta( $current_user->ID, 'first_name', esc_attr( $_POST['first-name'] ) );
+//     }
+//     if ( ! empty( $_POST['last-name'] ) ) {
+//       update_user_meta($current_user->ID, 'last_name', esc_attr( $_POST['last-name'] ) );
+//     }
+// }
 ?>
 
 
 <div class="nkms-tabs">
   <h3 style="font-weight:300;">Update Information for <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3></br>
-  <?php if ( isset($_GET['action'] ) ) {
-    if ( $_GET['updateuser'] == 'true' ) : ?>
-      <div id="message" class="updated"><p>Your profile has been updated.</p></div>
-  <?php endif; } ?>
-  <?php if ( count($error) > 0 ) echo '<p class="error">' . implode("<br />", $error) . '</p>'; ?>
+  <?php nkms_update_profile_info();
+  // if ( isset($_GET['action'] ) ) {
+    // if ( $_GET['updateuser'] == 'true' ) : ?>
+      <!-- <div id="message" class="updated"><p>Your profile has been updated.</p></div> -->
+  <?php
+// endif; } ?>
+  <?php
+  // if ( count($error) > 0 ) echo '<p class="error">' . implode("<br />", $error) . '</p>'; ?>
   <form method="post" id="adduser" action="<?php the_permalink(); ?>">
     <p class="form-username">
       <label for="first-name"><?php _e('First Name', 'profile'); ?></label>
@@ -70,9 +73,11 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
       <label for="pass2"><?php _e('Repeat Password *', 'profile'); ?></label>
       <input class="text-input" name="pass2" type="password" id="pass2" />
     </p><!-- .form-password -->
-    <p>
-      <?php echo do_shortcode( '[avatar]' );?>
-      <a data-toggle="tab" href="#profile-picture" class="nkms-btn">Edit Profile Picture</a>
+    <p class="nkms-pfp">
+      <label>Profile picture</label>
+      <a data-toggle="tab" href="#profile-picture">
+        <?php echo get_wp_user_avatar( $current_user->ID, '256', '' ); ?>
+      </a>
     </p>
 
     <!-- Custom fields -->
@@ -89,7 +94,7 @@ if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
     </p>
     <p class="form-submit">
       <?php //echo $referer; ?>
-      <input name="updateuser" type="submit" id="updateuser" class="submit button" value="<?php _e('Update', 'profile'); ?>" />
+      <input name="update_user_info" type="submit" id="update_user_info" class="submit button" value="Update" />
       <?php wp_nonce_field( 'update-user_'. $current_user->ID ) ?>
     </p><!-- .form-submit -->
   </form>

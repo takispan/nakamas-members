@@ -20,7 +20,7 @@ $ds_teachers_list_array = get_user_meta( get_current_user_id(), 'dance_school_te
     <?php
   	foreach ( $dance_school_teachers_list as $teacher_id ) {
   		$teacher = get_userdata( $teacher_id );
-      echo '<tr><td>' . $teacher_id . '</td><td><a data-toggle="tab" href="#ds-teacher-single" class="single-teacher" data-teacher-id="' . $teacher_id . '">' . $teacher->first_name . ' ' . $teacher->last_name . '</a></td><td>' . $teacher->nkms_dancer_fields['dancer_status'] . '</td></tr>';
+      echo '<tr><td>' . $teacher_id . '</td><td>' . $teacher->first_name . ' ' . $teacher->last_name . '</td><td>' . $teacher->nkms_dancer_fields['dancer_status'] . '</td></tr>';
   	 }
     echo '</table>';
   } else {

@@ -143,7 +143,7 @@ function nkms_has_role($user, $role) {
 }
 
 // is Dance school or Teacher
-function nkms_can_manage_dance_school($dance_school_id, $user_id) {
+function nkms_can_manage_dance_school( $dance_school_id, $user_id ) {
   if ( $dance_school_id === $user_id ) {
     return true;
   }
@@ -151,6 +151,22 @@ function nkms_can_manage_dance_school($dance_school_id, $user_id) {
     $dance_school_teachers = get_user_meta( $dance_school_id, 'dance_school_teachers_list', true );
     if ( in_array( $user_id, $dance_school_teachers ) ) {
       return true;
+    }
+    return false;
+  }
+}
+
+// is Dancer or Guardian
+function nkms_can_manage_dancer( $dancer_id, $user_id ) {
+  if ( $dancer_id === $user_id ) {
+    return true;
+  }
+  else {
+    $dancer_guardian_list = get_user_meta( $dancer_id, 'dancer_guardian_list', true );
+    if ( is_array( $dancer_guardian_list ) ) {
+      if ( in_array( $user_id, $dancer_guardian_list ) ) {
+        return true;
+      }
     }
     return false;
   }
@@ -174,9 +190,9 @@ function nkms_is_teacher( $user_id ) {
   return $dance_school_id;
 }
 
-function nkms_guardian_get_dancers( $guardian ) {
-  return $guardian->nkms_guardian_fields['guardian_dancers_list'];
-}
+// function nkms_guardian_get_dancers( $guardian ) {
+//   return $guardian->nkms_guardian_fields['guardian_dancers_list'];
+// }
 
 // Fix user meta
 function nkms_fix_user_meta() {
@@ -418,21 +434,19 @@ function nkms_display_woo_field() {
 
 // Hide Dancer Registration category if not needed
 add_filter( 'woocommerce_product_query_tax_query', 'nkms_hide_dancer_registration');
-function nkms_hide_dancer_registration ( $tax_query ) {
-  if ( nkms_has_role( wp_get_current_user(), 'Administrator' ) ) {
-  	$user = wp_get_current_user();
-  	// $blocked_user_roles = array( 'dancer', 'administrator' );
-    // $hidden_categories = array( 'Dancer Registration' );
-    if ( ! is_user_logged_in() || ! nkms_is_teacher( $user->ID ) ) {
-  		$tax_query[] = array(
-        'taxonomy' => 'product_cat',
-  			'terms'    => 'Dancer Registration',
-  			'field'    => 'slug',
-  			'operator' => 'NOT IN'
-  		);
-    }
+function nkms_hide_dancer_registration ( $tquery ) {
+	$user = wp_get_current_user();
+	$blocked_user_roles = array( 'spectator', 'customer', 'subscriber', 'contributor', 'author', 'editor'  );
+  $hidden_categories = array( 'dancer-registration' );
+  if ( is_shop() && ( ! is_user_logged_in() || is_user_logged_in() && count( array_intersect( $blocked_user_roles, $user->roles ) ) > 0 ) ) {
+		$tquery[] = array(
+      'taxonomy' => 'product_cat',
+			'terms'    => $hidden_categories,
+			'field'    => 'slug',
+			'operator' => 'NOT IN'
+		);
   }
-  return $tax_query;
+  return $tquery;
 }
 
 // List active dancers (if solo) or active groups to register to events
@@ -520,7 +534,7 @@ function nkms_add_to_cart_validation( $passed, $product_id, $quantity, $variatio
   return $passed;
 }
 
-// Custom cart item data: display group & dancers
+// Custom cart item data: group & dancers
 add_filter( 'woocommerce_add_cart_item_data', 'nkms_add_group_cart', 10, 3 );
 function nkms_add_group_cart( $cart_item_data, $product_id, $variation_id ) {
   if ( isset ( $_POST['registered_dancers'] ) ) {
@@ -635,15 +649,26 @@ function nkms_add_custom_price( $cart ) {
 // Save to order
 add_action( 'woocommerce_checkout_create_order_line_item', 'nkms_save_registered_dancers', 10, 4 );
 function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) {
-  if ( ! empty( $values['registered_dancers'] ) ) {
-    $item->add_meta_data( __( 'Dancers', 'nkms' ), $values['registered_dancers'] );
+  if ( isset( $values['registered_dancers'] ) ) {
+    $item->add_meta_data( __( 'Dancers', 'nkms' ), $values['registered_dancers'], true );
   }
-  if ( ! empty( $values['registered_groups'] ) ) {
-    $item->add_meta_data( __( 'Groups', 'nkms' ), $values['registered_groups'] );
+  if ( isset( $values['registered_groups'] ) ) {
+    $item->add_meta_data( __( 'Groups', 'nkms' ), $values['registered_groups'], true );
   }
-
-  return;
 }
+
+/**
+ * Add custom meta to order
+ */
+// add_action( 'woocommerce_checkout_create_order_line_item', 'nkms_checkout_create_order_line_item', 10, 4 );
+// function nkms_checkout_create_order_line_item( $item, $cart_item_key, $values, $order ) {
+//   if( isset( $values['registered_dancers'] ) ) {
+//     $item->add_meta_data( __( 'Dancers', 'nkms' ), $values['registered_dancers'], true );
+//   }
+//   if( isset( $values['registered_groups'] ) ) {
+//     $item->add_meta_data( __( 'Groups', 'nkms' ), $values['registered_groups'], true );
+//   }
+// }
 
 //Change event price based on registered dancers
 // add_filter('woocommerce_product_get_price', 'nkms_change_price_dancers_fee', 10, 2);
@@ -669,6 +694,9 @@ function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) 
  * show_user_profile: show on frontend when user editing their own profile
  * edit_user_profile: show on backend when admin edits other users
  */
+function nkms_update_profile_info() {
+  echo 'hello';
+}
 add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
 add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
 function nkms_show_extra_profile_fields( $user ) {

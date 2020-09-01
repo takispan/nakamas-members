@@ -55,6 +55,10 @@ html {overflow-x: hidden;}
 	color: #999;
 }
 
+.nkms-pfp img {
+	margin: 0;
+}
+
 /* Buttons */
 input.nkms-btn, nkms-btn {
 	padding: 1em 1.5em;

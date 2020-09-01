@@ -25,7 +25,7 @@ $dance_school_id = 0;
 $dance_school;
 if ( nkms_has_role( $current_user, 'dance-school') ) {
   $dance_school_id = $current_user->ID;
-  $dance_school = get_user_by( 'id', $dance_school_id );
+  $dance_school = get_userdata( $dance_school_id );
   $dancer_id = $dance_school->nkms_dance_school_fields['dance_school_currently_viewing']['dancer'];
   $dancer = get_userdata( $dancer_id );
   $group_id = $dance_school->nkms_dance_school_fields['dance_school_currently_viewing']['group'];

@@ -9,6 +9,6 @@
 <div class="nkms-tabs">
   <h3 style="font-weight:300;">Update Profile picture for <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3>
   <p>
-    <?php echo do_shortcode( '[avatar_upload id='. $current_user->ID . ']' );?>
+    <?php echo do_shortcode( '[avatar_upload id='. $current_user->ID . ']' ); ?>
   </p>
 </div><!-- .nkms-tabs -->
