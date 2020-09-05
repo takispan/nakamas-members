@@ -40,12 +40,15 @@ html {overflow-x: hidden;}
 	color: #f1f1f1;
 }
 
-.nkms-tabs {
-	padding: 85px 0;
-}
-
 /* Possible CSS for tabs & content */
-.nkms-tabs > h3 {max-width: 1200px; margin: auto; width: 100%;}
+.nkms-tabs > h3 {max-width: 1200px; margin: 20px auto; width: 100%; padding: 0 15px;}
+.nkms-tabs {
+	padding: 60px 0;
+}
+.nkms-tabs .tab-content {
+	padding: 60px 15px;
+}
+.nkms-tabs .tab-content h3 {margin: 20px 0;}
 
 /* Invite system *
 .dancer-invitatons button {
@@ -63,6 +66,8 @@ html {overflow-x: hidden;}
 }
 
 /* Buttons */
+.nkms-btn {display: inline-block;}
+
 input.nkms-btn, nkms-btn {
 	padding: 1em 1.5em;
 }
