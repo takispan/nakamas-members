@@ -4,8 +4,8 @@
  */
 ?>
 
-<div class="nkms-tabs">
-  <h3 style="font-weight:300;">Add a dancer for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?></span></h3></br>
+<div>
+  <h3 style="font-weight:300;">Add a dancer for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?></span></h3>
   <form id="add-dancers" method="post" action="" class="ajax">
     <p>
       <label for="dance_school_add_dancers"><?php esc_html_e( 'Add a dancer by ID', 'nkms' ); ?></label>

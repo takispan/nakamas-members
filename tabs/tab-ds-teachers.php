@@ -4,10 +4,9 @@
  *
  * Allow users to update their profiles from Frontend.
  */
-$ds_teachers_list_array = get_user_meta( get_current_user_id(), 'dance_school_teachers_list', true );
 ?>
 
-<div class="nkms-tabs teachers-list">
+<div class="teachers-list">
   <h3 style="font-weight:300;">Teachers for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <?php
   if ( ! empty( $dance_school_teachers_list ) ) { ?>

@@ -4,10 +4,16 @@
  *
  * Allow users to add a dancer to one of the dance groups.
  */
+ $group_id = $dance_school->nkms_dance_school_fields['dance_school_currently_viewing']['group'];
+ if ( $group_id ) {
+   $group = $dance_school_groups_list[$group_id];
+   $group_dancers = $group->getDancers();
+
 ?>
 
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Add a dancer to <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h3>
+  <h3 style="font-weight:300;">Add a dancer to <span style="font-weight:600;"><?php
+  // echo $group->getGroupName(); ?></span></h3>
   <form id="add-group-dancer" method="post" action="" class="ajax">
     <p>
       <?php if ( ! empty( $dance_school_dancers_list ) ) : ?>
@@ -33,3 +39,4 @@
     </p>
   </form>
 </div><!-- .nkms-tabs -->
+<?php  } ?>

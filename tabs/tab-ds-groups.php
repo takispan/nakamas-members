@@ -4,8 +4,8 @@
  */
 ?>
 
-<div class="nkms-tabs groups-list">
-  <h3 style="font-weight:300;">Groups for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3></br>
+<div class="groups-list">
+  <h3 style="font-weight:300;">Groups for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <?php
   if ( ! empty( $dance_school_groups_list ) ) { ?>
     <table>
@@ -20,8 +20,8 @@
     }
     echo '</table>';
   } else {
-    echo "<p>" . $dance_school->nkms_dance_school_fields['dance_school_name'] . " does not have any groups.</p>";
-    echo "<p>Create one by clicking the button below.</p>";
+    echo "<p>" . $dance_school->nkms_dance_school_fields['dance_school_name'] . " does not have any groups.";
+    echo "<br>Create one by clicking the button below.</p>";
   }
   ?>
   <a data-toggle="tab" href="#ds-add-groups" class="nkms-btn">Add Group</a>

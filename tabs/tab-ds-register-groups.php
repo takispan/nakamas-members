@@ -5,8 +5,8 @@
  * Allow users to register groups for events.
  */
 ?>
-<div class="nkms-tabs">
-  <h3 style="font-weight:300;">Register groups part of <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3></br>
+<div>
+  <h3 style="font-weight:300;">Register groups part of <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <h4>Events to register for</h4>
   <table>
     <tr>

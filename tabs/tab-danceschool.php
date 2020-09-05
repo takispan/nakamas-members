@@ -10,23 +10,25 @@ $dance_school_teachers_list = $dance_school->nkms_dance_school_fields['dance_sch
 ?>
 
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Dance School Information for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3></br>
-  <ul class="nav nav-tabs" id="ds-tabs">
-    <li class="active"><a data-toggle="tab" href="#ds-overview">Overview</a></li>
-    <li><a data-toggle="tab" href="#ds-dancers">Dancers</a></li>
-    <li><a data-toggle="tab" href="#ds-dance-groups">Groups</a></li>
-    <li><a data-toggle="tab" href="#ds-registrations">Registrations</a></li>
-    <li><a data-toggle="tab" href="#ds-teachers">Teachers</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-details">Details</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-add-dancers">Add dancer</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-dancer-single">Single dancer</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-add-groups">Add group</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-group-single">Single group</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-group-add-dancers">Add dancer to group</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-group-remove-dancers">Remove dancer from group</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-add-teachers">Add teacher</a></li>
-    <li style="display:none;"><a data-toggle="tab" href="#ds-teacher-single">Single teacher</a></li>
-  </ul>
+  <h3 style="font-weight:300;">Dance School Information for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
+  <div id="ds-tabs-wrapper">
+    <ul class="nav nav-tabs" id="ds-tabs">
+      <li class="active"><a data-toggle="tab" href="#ds-overview">Overview</a></li>
+      <li><a data-toggle="tab" href="#ds-dancers">Dancers</a></li>
+      <li><a data-toggle="tab" href="#ds-dance-groups">Groups</a></li>
+      <li><a data-toggle="tab" href="#ds-registrations">Registrations</a></li>
+      <li><a data-toggle="tab" href="#ds-teachers">Teachers</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-details">Details</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-add-dancers">Add dancer</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-dancer-single">Single dancer</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-add-groups">Add group</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-group-single">Single group</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-group-add-dancers">Add dancer to group</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-group-remove-dancers">Remove dancer from group</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-add-teachers">Add teacher</a></li>
+      <li style="display:none;"><a data-toggle="tab" href="#ds-teacher-single">Single teacher</a></li>
+    </ul>
+  </div>
 
   <!-- Tab content - Overview -->
   <div class="tab-content">

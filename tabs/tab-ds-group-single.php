@@ -9,7 +9,7 @@ if ( $group_id ) {
   $group_dancers = $group->getDancers();
 ?>
 
-<div class="nkms-tabs ds-single-group">
+<div class="ds-single-group">
   <h3 style="font-weight:300;">Dance Group <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span> for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <div class="group-details">
     <p><span>Type</span><?php echo $group->getType(); ?></p>

@@ -144,13 +144,16 @@ function nkms_has_role($user, $role) {
 
 // is Dance school or Teacher
 function nkms_can_manage_dance_school( $dance_school_id, $user_id ) {
-  if ( $dance_school_id === $user_id ) {
+  if ( $dance_school_id == $user_id ) {
     return true;
   }
   else {
-    $dance_school_teachers = get_user_meta( $dance_school_id, 'dance_school_teachers_list', true );
-    if ( in_array( $user_id, $dance_school_teachers ) ) {
-      return true;
+    if ( $dance_school_id ) {
+      $dance_school = get_userdata( $dance_school_id );
+      $dance_school_teachers = $dance_school->nkms_dance_school_fields['dance_school_teachers_list'];
+      if ( in_array( $user_id, $dance_school_teachers ) ) {
+        return true;
+      }
     }
     return false;
   }
@@ -158,14 +161,17 @@ function nkms_can_manage_dance_school( $dance_school_id, $user_id ) {
 
 // is Dancer or Guardian
 function nkms_can_manage_dancer( $dancer_id, $user_id ) {
-  if ( $dancer_id === $user_id ) {
+  if ( $dancer_id == $user_id ) {
     return true;
   }
   else {
-    $dancer_guardian_list = get_user_meta( $dancer_id, 'dancer_guardian_list', true );
-    if ( is_array( $dancer_guardian_list ) ) {
-      if ( in_array( $user_id, $dancer_guardian_list ) ) {
-        return true;
+    if ( $dancer_id ) {
+      $dancer = get_userdata( $dancer_id );
+      $dancer_guardian_list = $dancer->nkms_dancer_fields['dancer_guardian_list'];
+      if ( is_array( $dancer_guardian_list ) ) {
+        if ( in_array( $user_id, $dancer_guardian_list ) ) {
+          return true;
+        }
       }
     }
     return false;
@@ -210,12 +216,9 @@ function nkms_fix_user_meta() {
       // Phone
       echo 'Phone number: ' . $user->nkms_fields['phone_number'] . '<br>';
       // XP
-      echo 'Experience: ' . $user->nkms_fields['experience'] . '<br>';
+      echo 'Level: ' . $user->nkms_dancer_fields['dancer_level'] . '<br>';
       if ( $user->roles[0] === 'dancer' ) {
         echo '<u>Dancer fields</u><br>';
-        // Age category
-        echo 'Age category: ' . $user->nkms_dancer_fields['dancer_age_category'];
-        echo '<br>';
         // Dance school name
         echo 'Dance School name: ' . $user->nkms_dancer_fields['dancer_ds_name'];
         echo '<br>';
@@ -224,6 +227,9 @@ function nkms_fix_user_meta() {
         echo '<br>';
         // Dance school teacher email
         echo 'Dance School teacher email: ' . $user->nkms_dancer_fields['dancer_ds_teacher_email'];
+        echo '<br>';
+        // Age category
+        echo 'Age category: ' . $user->nkms_dancer_fields['dancer_age_category'];
         echo '<br>';
         // Dancer status
         echo 'Dancer status: ' . $user->nkms_dancer_fields['dancer_status'];
@@ -235,14 +241,23 @@ function nkms_fix_user_meta() {
         echo 'Dance School: ' . implode( ', ', $user->nkms_dancer_fields['dancer_invites']['dance_school'] );
         // print_r( $user->dancer_invites );
         echo '<br>';
-        // Dancer Guaridan
+        // Dancer Guardian list
         echo 'Guardian ID: ' . implode( ', ', $user->nkms_dancer_fields['dancer_guardian_list']);
         echo '<br>';
-        // Dancer Guaridan
-        if ( ! empty( $user->nkms_dancer_fields['dancer_teacher_of'] ) ) {
-          echo 'Teacher of: ' . implode( ', ', $user->nkms_dancer_fields['dancer_teacher_of']);
-        }
-        else { echo 'Teacher of: N/A'; }
+        // Dancer Guardian name
+        echo 'Guardian Name: ' . $user->nkms_dancer_fields['dancer_guardian_name'];
+        echo '<br>';
+        // Dancer Guardian email
+        echo 'Guardian Email: ' . $user->nkms_dancer_fields['dancer_guardian_email'];
+        echo '<br>';
+        // Dancer Guardian phone number
+        echo 'Guardian Phone number: ' . $user->nkms_dancer_fields['dancer_guardian_phone_number'];
+        echo '<br>';
+        // Dancer Teacher
+        echo 'Teacher of: ' . implode( ', ', $user->nkms_dancer_fields['dancer_teacher_of']);
+        echo '<br>';
+        // Dancer Part of School
+        echo 'Part of: ' . implode( ', ', $user->nkms_dancer_fields['dancer_part_of']);
         echo '<br>';
       }
       if ( $user->roles[0] === 'dance-school' ) {
@@ -297,9 +312,9 @@ function nkms_invitations() {
   // Dancer accepts invite from guardian
   if ( isset ( $_POST['guardian_dancer_invite_accept'] ) ) {
     $dancer_id = intval( $_POST['guardian_invite_dancer_id'] );
-    $dancer = get_user_by( 'id', $dancer_id );
+    $dancer = get_userdata( $dancer_id );
     $guardian_id = intval( $_POST['guardian_invite_guardian_id'] );
-    $guardian = get_user_by( 'id', $guardian_id );
+    $guardian = get_userdata( $guardian_id );
     $dancer_fields = $dancer->nkms_dancer_fields;
 
     // get dancer_invites['guardian'] array from dancer fields
@@ -345,21 +360,59 @@ function nkms_invitations() {
   }
 
   // Dancer requests to join a dance school
-  if ( isset( $_POST['dancer_request_invite'] ) ) {
-    $dance_school_id = intval( $_POST['request_dance_school_name'] );
-    $dancer_id = intval( $_POST['request_invite_dancer_id'] );
-    var_dump($dance_school_id);
-    var_dump($dancer_id);
+  if ( isset( $_POST['dancer_request_to_join_submit'] ) ) {
+    $dance_school_id = intval( $_POST['dancer_request_to_join_dance_school_id'] );
+    $dancer_id = intval( $_POST['dancer_request_to_join_dancer_id'] );
 
-    if ( ! empty( $dance_school_id ) ) {
-      $ds = get_user_by( 'id', $dance_school_id );
-      $ds_invites_list = get_user_meta( $ds->ID, 'dance_school_invites', true );
+    if ( $dance_school_id ) {
+      $dance_school = get_userdata( $dance_school_id );
+      $dance_school_fields = $dance_school->nkms_dance_school_fields;
+      $ds_invites_list = $dance_school_fields['dance_school_invites'];
       if ( ! in_array( $dancer_id, $ds_invites_list ) ) {
-        // array_push( $ds_invites_list, $dancer_id );
-        var_dump($ds_invites_list);
+        array_push( $ds_invites_list, $dancer_id );
+        $dance_school_fields['dance_school_invites'] = $ds_invites_list;
+        update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
       }
     }
   }
+  // Dance School accepts dancer
+  if ( isset( $_POST['dance_school_request_to_join_accept'] ) ) {
+    $dance_school_id = intval( $_POST['dance_school_request_to_join_ds_id'] );
+    $dancer_id = intval( $_POST['dance_school_request_to_join_dancer_id'] );
+
+    if ( $dance_school_id ) {
+      $dance_school = get_userdata( $dance_school_id );
+      $dance_school_fields = $dance_school->nkms_dance_school_fields;
+      $ds_invites_list = $dance_school_fields['dance_school_invites'];
+      if ( in_array( $dancer_id, $ds_invites_list ) ) {
+        $ds_invites_list = array_diff( $ds_invites_list, [$dancer_id] );
+        $dance_school_fields['dance_school_invites'] = $ds_invites_list;
+        $dancers_list = $dance_school_fields['dance_school_dancers_list'];
+        if ( ! in_array( $dancer_id, $dancers_list ) ) {
+          array_push( $dancers_list, $dancer_id );
+          $dance_school_fields['dance_school_dancers_list'] = $dancers_list;
+        }
+        update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
+      }
+    }
+  }
+  // Dance School declines dancer
+  if ( isset( $_POST['dance_school_request_to_join_decline'] ) ) {
+    $dance_school_id = intval( $_POST['dance_school_request_to_join_ds_id'] );
+    $dancer_id = intval( $_POST['dance_school_request_to_join_dancer_id'] );
+
+    if ( $dance_school_id ) {
+      $dance_school = get_userdata( $dance_school_id );
+      $dance_school_fields = $dance_school->nkms_dance_school_fields;
+      $ds_invites_list = $dance_school_fields['dance_school_invites'];
+      if ( in_array( $dancer_id, $ds_invites_list ) ) {
+        $ds_invites_list = array_diff( $ds_invites_list, [$dancer_id] );
+        $dance_school_fields['dance_school_invites'] = $ds_invites_list;
+        update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
+      }
+    }
+  }
+
   // Dancer accepts invite from dance school
   if ( isset( $_POST['dancer_invite_accept'] ) ) {
     // get dancer & dance school objects
@@ -694,137 +747,181 @@ function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) 
  * show_user_profile: show on frontend when user editing their own profile
  * edit_user_profile: show on backend when admin edits other users
  */
-function nkms_update_profile_info() {
-  echo 'hello';
-}
-add_action( 'show_user_profile', 'nkms_show_extra_profile_fields' );
-add_action( 'edit_user_profile', 'nkms_show_extra_profile_fields' );
-function nkms_show_extra_profile_fields( $user ) {
-	/* Dancer
-	 *
-	 *
-	 * Create custom fields
-	 */
-	$ds_name = get_the_author_meta( 'dance_school_name', $user->ID );
-	$ds_address = get_the_author_meta( 'dance_school_address', $user->ID );
-	$ds_phone_number = get_the_author_meta( 'dance_school_phone_number', $user->ID );
-	$ds_description = get_the_author_meta( 'dance_school_description', $user->ID );
 
-  if ( isset($_POST['update_ds_info']) ) {
-    $ds_name = $_POST['dance_school_name'];
-    $ds_address = $_POST['dance_school_address'];
-    $ds_phone_number = $_POST['dance_school_phone_number'];
-    $ds_description = $_POST['dance_school_description'];
-
-    update_user_meta( $user->ID, 'dance_school_name', $ds_name );
-    update_user_meta( $user->ID, 'dance_school_address', $ds_address );
-    update_user_meta( $user->ID, 'dance_school_phone_number', $ds_phone_number );
-    update_user_meta( $user->ID, 'dance_school_description', $ds_description );
-  }
-
-	// Dancer
-	?>
-
-	<!-- Dance School -->
-	<h3>Dance School</h3>
-
-	<p>
-    <label for="dance_school_name"><?php esc_html_e( 'Dance School Name', 'nkms' ); ?></label>
-    <input type="text" name="dance_school_name" value="<?php echo esc_attr( $ds_name ); ?>" class="regular-text" />
-	</p>
-  <p>
-    <label for="dance_school_address"><?php esc_html_e( 'Dance School Address', 'nkms' ); ?></label>
-    <input type="text" name="dance_school_address" value="<?php echo esc_attr( $ds_address ); ?>" class="regular-text" />
-	</p>
-	<p>
-    <label for="dance_school_phone_number"><?php esc_html_e( 'Dance School Phone Number', 'nkms' ); ?></label>
-    <input type="text" name="dance_school_phone_number" value="<?php echo esc_attr( $ds_phone_number ); ?>" class="regular-text" />
-	</p>
-  <p>
-    <label for="dance_school_description"><?php esc_html_e( 'Dance School Description', 'nkms' ); ?></label>
-    <textarea rows="5" name="dance_school_description" class="regular-text"><?php echo esc_html( $ds_description ); ?></textarea>
-	</p>
-	<?php
-}
-
-
-// Saving the field
-add_action( 'personal_options_update', 'nkms_update_profile_fields' );
-add_action( 'edit_user_profile_update', 'nkms_update_profile_fields' );
-function nkms_update_profile_fields( $user_id ) {
-	if ( ! current_user_can( 'edit_user', $user_id ) ) {
-		return false;
-	}
-
-	if ( ! empty( $_POST['dance_school_name'] ) ) {
-		update_user_meta( $user_id, 'dance_school_name', sanitize_text_field( $_POST['dance_school_name'] ) );
-	}
-	if ( ! empty( $_POST['dance_school_address'] ) ) {
-		update_user_meta( $user_id, 'dance_school_address', sanitize_text_field( $_POST['dance_school_address'] ) );
-	}
-	if ( ! empty( $_POST['dance_school_phone_number'] ) ) {
-		update_user_meta( $user_id, 'dance_school_phone_number', sanitize_text_field( $_POST['dance_school_phone_number'] ) );
-	}
-	if ( ! empty( $_POST['dance_school_description'] ) ) {
-		update_user_meta( $user_id, 'dance_school_description', sanitize_textarea_field( $_POST['dance_school_description'] ) );
-	}
-
+// Update Dance school details
+function nkms_update_ds_details() {
+  // if ( isset( $_POST['update_ds_details'] ) ) {
+  //   $dance_school_id = intval( $_POST['update_ds_details_ds_id'] );
+  //   $dance_school = get_userdata( $dance_school_id );
+  //   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+  //
+  //   $dance_school_fields['dance_school_name'] = $_POST['ds_details_dance_school_name'];
+  //   $dance_school_fields['dance_school_address'] = $_POST['ds_details_dance_school_address'];
+  //   $dance_school_fields['dance_school_phone_number'] = $_POST['ds_details_dance_school_phone_number'];
+  //   $dance_school_fields['dance_school_description'] = $_POST['ds_details_dance_school_description'];
+  //
+  //   $save_fields = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+  //   if ( $save_fields ) {
+  //     echo '<p class="text-info">Details have been saved.</p>';
+  //   }
+  //   else {
+  //     echo '<p class="text-danger">Something went wrong, details were not saved.</p>';
+  //   }
+  // }
 }
 
 /*
  * REGISTRATION
  *
  */
-function registration_validation( $username, $password, $email, $first_name, $last_name, $role, $dob )  {
+function registration_validation( $username, $password, $first_name, $last_name, $email, $phone_number, $dob, $country, $city, $address, $postcode,
+$dancer_guardian_name, $dancer_guardian_phone_number, $dancer_guardian_email, $role,
+$dancer_level, $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email,
+$dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_school_description )  {
   global $reg_errors;
   $reg_errors = new WP_Error;
 
-  //Check if fields are empty
-  if ( empty( $username ) || empty( $password ) || empty( $email ) || empty( $first_name ) || empty( $last_name ) || empty( $dob ) ) {
+  // Check if fields are empty
+  if ( empty( $username ) || empty( $password ) || empty( $first_name ) || empty( $last_name ) || empty( $email ) || empty( $phone_number ) || empty( $dob ) || empty( $country ) || empty( $city ) || empty( $address ) || empty( $postcode ) || empty( $role ) ) {
     $reg_errors->add('field', 'All fields are required.' );
   }
-
-  //Check if username is more than 4 chars.
+  // Check if username is more than 4 chars.
   if ( 4 > strlen( $username ) ) {
     $reg_errors->add( 'username_length', 'Username too short. At least 4 characters required.' );
   }
-
-  //WP function. Checks if username exists.
+  // WP function. Checks if username exists.
   if ( username_exists( $username ) ) {
     $reg_errors->add('user_name', 'Sorry, that username already exists!');
   }
-
-  //WP function. Checks if username is valid
+  // WP function. Checks if username is valid
   if ( ! validate_username( $username ) ) {
     $reg_errors->add( 'username_invalid', 'Sorry, the username you entered is not valid.' );
   }
-
-  //Password more than 6 chars
+  // Password more than 6 chars
   if ( 5 > strlen( $password ) ) {
     $reg_errors->add( 'password', 'Password length must be greater than 5.' );
   }
-
-  //Check if email is valid
-  if ( !is_email( $email ) ) {
+  // Check if email is valid
+  if ( ! is_email( $email ) ) {
     $reg_errors->add( 'email_invalid', 'Email is not valid.' );
   }
   //Check if email is in use
   if ( email_exists( $email ) ) {
     $reg_errors->add( 'email', 'Email Already in use!' );
   }
-
-  $age = nkms_get_age($dob);
+  $age = nkms_get_age( $dob );
   if ( $role === 'guardian' && $age < 18 ) {
     $reg_errors->add( 'guardian', 'You have to be an adult in order to own a guardian account.' );
   }
-
+  if ( $age < 18 ) {
+    if ( empty( $dancer_guardian_name ) || empty( $dancer_guardian_phone_number ) ) {
+      $reg_errors->add( 'dancer_guardian', 'Guardian details are required if you are underage.' );
+    }
+    if ( ! is_email( $dancer_guardian_email ) && empty( $reg_errors->errors['email_invalid'] ) ) {
+      $reg_errors->add( 'teacher_email_invalid', 'Guardian email is not valid.' );
+    }
+  }
+  if ( $role === 'dancer' && empty( $reg_errors->errors['field'] ) ) {
+    if ( empty( $dancer_level ) || empty( $dancer_ds_name ) || empty( $dancer_ds_teacher_name ) || empty( $dancer_ds_teacher_email ) ) {
+      $reg_errors->add('field', 'All fields are required.' );
+    }
+    if ( ! is_email( $dancer_ds_teacher_email ) && empty( $reg_errors->errors['email_invalid'] ) ) {
+      $reg_errors->add( 'teacher_email_invalid', 'Teacher email is not valid.' );
+    }
+  }
+  if ( $role === 'dance-school' && empty( $reg_errors->errors['field'] ) ) {
+    if ( empty( $dance_school_name ) || empty( $dance_school_address ) || empty( $dance_school_phone_number ) || empty( $dance_school_description ) ) {
+      $reg_errors->add('field', 'All fields are required.' );
+    }
+  }
   //Loop through errors & display them
   if ( is_wp_error( $reg_errors ) ) {
     echo '<div id="registration-errors">';
     foreach ( $reg_errors->get_error_messages() as $error ) {
-      echo '<strong style="color:red;">' . $error . '</strong><br/>';
+      echo '<span class="text-danger">' . $error . '</span><br/>';
     }
     echo '<p></p></div>';
+  }
+}
+
+// Validate & Sanitize
+function nkms_custom_registration() {
+  if ( isset( $_POST['registration_submit'] ) ) {
+    registration_validation(
+      $_POST['reg_username'],
+      $_POST['reg_password'],
+      $_POST['reg_first_name'],
+      $_POST['reg_last_name'],
+      $_POST['reg_email'],
+      $_POST['reg_phone_number'],
+      $_POST['reg_dob'],
+      $_POST['billing_country'],
+      $_POST['reg_city'],
+      $_POST['reg_address'],
+      $_POST['reg_postcode'],
+      // if not adult
+      $_POST['reg_dancer_guardian_name'],
+      $_POST['reg_dancer_guardian_phone_number'],
+      $_POST['reg_dancer_guardian_email'],
+      ( isset( $_POST['reg_sel_role'] ) ? $_POST['reg_sel_role'] : '' ),
+      // if dancer
+      ( isset( $_POST['reg_dancer_level'] ) ? $_POST['reg_dancer_level'] : '' ),
+      $_POST['reg_dancer_ds_name'],
+      $_POST['reg_dancer_ds_teacher_name'],
+      $_POST['reg_dancer_ds_teacher_email'],
+      // if dance school
+      $_POST['reg_dance_school_name'],
+      $_POST['reg_dance_school_address'],
+      $_POST['reg_dance_school_phone_number'],
+      $_POST['reg_dance_school_description'],
+    );
+
+    // sanitize user form input.
+    global $username, $password, $email, $first_name, $last_name, $role,
+    $dob, $phone_number, $country, $city, $address, $postcode,
+    $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email, $level,
+    $dancer_guardian_name, $dancer_guardian_phone_number, $dancer_guardian_email,
+    $dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_school_description;
+
+    $username     = sanitize_user( $_POST['reg_username'] );
+    $password     = esc_attr( $_POST['reg_password'] );
+    $first_name   = sanitize_text_field( $_POST['reg_first_name'] );
+    $last_name    = sanitize_text_field( $_POST['reg_last_name'] );
+    $email        = sanitize_email( $_POST['reg_email'] );
+    $phone_number = sanitize_email( $_POST['reg_phone_number'] );
+    $dob          = sanitize_text_field( $_POST['reg_dob'] );
+    $country      = $_POST['billing_country'];
+    $city         = sanitize_text_field( $_POST['reg_city'] );
+    $address      = sanitize_text_field( $_POST['reg_address'] );
+    $postcode     = sanitize_text_field( $_POST['reg_postcode'] );
+    $role         = ( isset( $_POST['reg_sel_role'] ) ? $_POST['reg_sel_role'] : '' );
+    // $address      = sanitize_text_field( $_POST['reg_address'] );
+    $phone_number = sanitize_text_field( $_POST['reg_phone_number'] );
+    $level        = ( isset( $_POST['reg_dancer_level'] ) ? $_POST['reg_dancer_level'] : '' );
+
+    // dancer fields
+    if ( $role === 'dancer' ) {
+      $dancer_ds_name = sanitize_text_field( $_POST['reg_dancer_ds_name'] );
+      $dancer_ds_teacher_name = sanitize_text_field( $_POST['reg_dancer_ds_teacher_name'] );
+      $dancer_ds_teacher_email = sanitize_email( $_POST['reg_dancer_ds_teacher_email'] );
+
+      // guardian details
+      $dancer_guardian_name = ( isset( $_POST['reg_dancer_guardian_name'] ) ? sanitize_text_field( $_POST['reg_dancer_guardian_name'] ) : '' );
+      $dancer_guardian_phone_number = ( isset( $_POST['reg_dancer_guardian_phone_number'] ) ? sanitize_text_field( $_POST['reg_dancer_guardian_phone_number'] ) : '' );
+      $dancer_guardian_email = ( isset( $_POST['reg_dancer_guardian_email'] ) ? sanitize_email( $_POST['reg_dancer_guardian_email'] ) : '' );
+    }
+
+    // dance school fields
+    if ( $role === 'dance-school' ) {
+      $dance_school_name = sanitize_text_field( $_POST['reg_dance_school_name'] );
+      $dance_school_address = sanitize_text_field( $_POST['reg_dance_school_address'] );
+      $dance_school_phone_number = sanitize_text_field( $_POST['reg_dance_school_phone_number'] );
+      $dance_school_description = sanitize_textarea_field( $_POST['reg_dance_school_description'] );
+    }
+
+    // call @function complete_registration to create the user
+    // only when no WP_error is found
+    complete_registration();
   }
 }
 
@@ -845,7 +942,7 @@ function complete_registration() {
     $user_id = wp_insert_user( $userdata );
     if ( $user_id ) {
       //initialize custom fields
-      user_initialization($user_id);
+      user_initialization( $user_id );
       echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
     }
     else {
@@ -853,94 +950,27 @@ function complete_registration() {
     }
   }
 }
-// Validate & Sanitize
-function nkms_custom_registration() {
-  if ( isset( $_POST['registration_submit'] ) ) {
-    registration_validation(
-      $_POST['username'],
-      $_POST['password'],
-      $_POST['email'],
-      $_POST['first_name'],
-      $_POST['last_name'],
-      $_POST['sel_role'],
-      $_POST['dob']
-    );
-
-    // sanitize user form input.
-    global $username, $password, $email, $first_name, $last_name, $role,
-    $dob, $address, $phone_number, $xp,
-    $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email,
-    $dancer_guardian_name, $dancer_guardian_phone_number,
-    $dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_school_description;
-
-    $username     = sanitize_user( $_POST['username'] );
-    $password     = esc_attr( $_POST['password'] );
-    $email        = sanitize_email( $_POST['email'] );
-    $first_name   = sanitize_text_field( $_POST['first_name'] );
-    $last_name    = sanitize_text_field( $_POST['last_name'] );
-    $role         = $_POST['sel_role'];
-    $dob          = sanitize_text_field( $_POST['dob'] );
-    $address      = sanitize_text_field( $_POST['address'] );
-    $phone_number = sanitize_text_field( $_POST['phone_number'] );
-    $xp           = $_POST['dancer_experience'];
-
-    // dancer fields
-    if ( $role === 'dancer' ) {
-      $dancer_ds_name = sanitize_text_field( $_POST['dancer_ds_name'] );
-      $dancer_ds_teacher_name = sanitize_text_field( $_POST['dancer_ds_teacher_name'] );
-      $dancer_ds_teacher_email = sanitize_email( $_POST['dancer_ds_teacher_email'] );
-
-      // dob calcs
-      $is_adult = nkms_get_age($dob) >= 18;
-      if ( $is_adult ) {
-        // guardian details
-        $dancer_guardian_name = sanitize_text_field( $_POST['dancer_guardian_name'] );
-        $dancer_guardian_phone_number = sanitize_text_field( $_POST['dancer_guardian_phone_number'] );
-      }
-    }
-
-    // dance school fields
-    if ( $role === 'dance-school' ) {
-      $dance_school_name = sanitize_text_field( $_POST['dance_school_name'] );
-      $dance_school_address = sanitize_text_field( $_POST['dance_school_address'] );
-      $dance_school_phone_number = sanitize_text_field( $_POST['dance_school_phone_number'] );
-      $dance_school_description = sanitize_textarea_field( $_POST['dance_school_description'] );
-    }
-
-    // call @function complete_registration to create the user
-    // only when no WP_error is found
-    complete_registration();
-  }
-}
 
 // Initialize user & custom fields
 function user_initialization( $user_id ) {
-  global $role, $dob, $address, $phone_number, $xp,
-  $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email,
-  $dancer_guardian_name, $dancer_guardian_phone_number,
+  global $role, $dob, $phone_number, $country, $city, $address, $postcode,
+  $dancer_ds_name, $dancer_ds_teacher_name, $dancer_ds_teacher_email, $level,
+  $dancer_guardian_name, $dancer_guardian_phone_number, $dancer_guardian_email,
   $dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_school_description;
 
   // Custom fields not created with wp_insert_user (only available for basic fields)
   $nkms_fields = array(
     'dob' => $dob,
+    'country' => $country,
+    'city' => $city,
     'address' => $address,
+    'postcode' => $postcode,
     'phone_number' => $phone_number,
-    'experience' => $xp,
   );
-  update_user_meta( $user_id, 'nkms_fields', $nkms_fields );
+  $fields_save = update_user_meta( $user_id, 'nkms_fields', $nkms_fields );
 
   if ( $role === 'dancer' ) {
-
-    $age = nkms_get_age($dob);
-    // $guardian = array();
-    // if ( $age < 18 ) {
-    //   $guardian = array(
-    //     'guardian_id' => 0,
-    //     'guardian_name' => $dancer_guardian_name,
-    //     'guardian_phone_number' => $dancer_guardian_phone_number
-    //   );
-    // }
-
+    $age = nkms_get_age( $dob );
     $age_category;
     // Age category
     if ( $age < 7 ) {
@@ -970,6 +1000,7 @@ function user_initialization( $user_id ) {
       'dancer_ds_name' => $dancer_ds_name,
       'dancer_ds_teacher_name' => $dancer_ds_teacher_name,
       'dancer_ds_teacher_email' => $dancer_ds_teacher_email,
+      'dancer_level' => $level,
       'dancer_status' => 'Active',
       'dancer_invites' => array(
         'guardian' => array(),
@@ -977,7 +1008,11 @@ function user_initialization( $user_id ) {
       ),
       'dancer_age_category' => $age_category,
       'dancer_guardian_list' => array(),
+      'dancer_guardian_name' => $dancer_guardian_name,
+      'dancer_guardian_email' => $dancer_guardian_email,
+      'dancer_guardian_phone_number' => $dancer_guardian_phone_number,
       'dancer_teacher_of' => array(),
+      'dancer_part_of' => array(),
     );
     update_user_meta( $user_id, 'nkms_dancer_fields', $nkms_dancer_fields );
   }
@@ -1012,14 +1047,6 @@ function user_initialization( $user_id ) {
 }
 
 // return age
-function nkms_get_age($dob) {
-  // $birthday can be UNIX_TIMESTAMP or just a string-date.
-  if( is_string($dob) ) {
-      $dob = strtotime($dob);
-  }
-
-  // 31536000 is the number of seconds in a 365 days year.
-  $age = ( time() - $dob ) * 31536000;
-  // if( time() - $dob < $age * 31536000 )  { return false; }
-  return $age;
+function nkms_get_age( $dob ) {
+  return intval( date( 'Y', time() - strtotime( $dob) ) ) - 1970;
 }

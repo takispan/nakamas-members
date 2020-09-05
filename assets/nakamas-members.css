@@ -7,7 +7,7 @@ html {overflow-x: hidden;}
 	width: 100%;
 }
 
-#top-tabs-wrapper {
+#top-tabs-wrapper, #ds-tabs-wrapper {
 	position: absolute;
 	width: 100vw;
 	left: 0;
@@ -16,33 +16,36 @@ html {overflow-x: hidden;}
 	z-index: 2;
 }
 
-#top-tabs {
+#top-tabs, #ds-tabs {
 	max-width: 1200px;
 	margin: 0 auto;
 	border: 0;
 }
 
-#top-tabs > li {
+#top-tabs > li, #ds-tabs > li {
 	line-height: 60px;
 	margin: 0;
 }
 /* #top-tabs > li:first-child {
 	margin-left: 0;
 } */
-#top-tabs li a {
+#top-tabs li a, #ds-tabs li a {
 	text-decoration: none;
 	height: 100%;
 	display: block;
 	padding: 0 15px;
 }
-#top-tabs li a:hover {
+#top-tabs li a:hover, #ds-tabs li a:hover {
 	background: #cd2653;
 	color: #f1f1f1;
 }
 
 .nkms-tabs {
-	padding: 4rem 0;
+	padding: 85px 0;
 }
+
+/* Possible CSS for tabs & content */
+.nkms-tabs > h3 {max-width: 1200px; margin: auto; width: 100%;}
 
 /* Invite system *
 .dancer-invitatons button {
@@ -79,7 +82,12 @@ a.nkms-btn:hover {
   transition: opacity 0.15s linear;
 }
 
+/* Profile picture */
+.wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
+#profile-picture .avatar {margin: 0;}
+
 /* WooCommerce */
+.optional {display: none;}
 .register-group-names {
 	font-weight: 600;
 	margin: 15px 0 0 0;

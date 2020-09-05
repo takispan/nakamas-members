@@ -3,13 +3,12 @@
 jQuery(document).ready(function($) {
 
   // datepicker
-  $("#datepicker").datepicker({
-            dateFormat : "dd/mm/yy"
-        });
+  $("#datepicker").datepicker({ dateFormat : "dd/mm/yy" });
 
   // Remember tab after page reload
   $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
     var tabLink = $(e.target).attr('href');
+    console.log("activeTab: " + tabLink);
     if ( tabLink == '#dance-school' ) {
       $('#ds-tabs a[href="#ds-overview"]').tab('show');
     }
@@ -23,21 +22,104 @@ jQuery(document).ready(function($) {
       sessionStorage.setItem('activeTab', tabLink);
     }
 	});
-	var activeTab = sessionStorage.getItem('activeTab');
+  // Retrieve last activeTab, default: dashboard
+	activeTab = sessionStorage.getItem('activeTab');
+  activeTab2 = sessionStorage.getItem('activeTab2');
   if ( activeTab == '#dance-school' ) {
-    var activeTab2 = sessionStorage.getItem('activeTab2');
-  }
-	if(activeTab){
-		$('#top-tabs a[href="' + activeTab + '"]').tab('show');
-	}
-  if(activeTab2) {
+    activeTab2 = sessionStorage.getItem('activeTab2');
     $('#top-tabs a[href="' + activeTab + '"]').tab('show');
     $('#ds-tabs a[href="' + activeTab2 + '"]').tab('show');
   }
+  else if ( activeTab ) {
+    $('#top-tabs a[href="' + activeTab + '"]').tab('show');
+  }
+  else {
+    $('#top-tabs a[href="#dashboard"]').tab('show');
+  }
+
+  // remove add classes while navigating tabs
+  $('a[href="#ds-dancers"]').on('show.bs.tab', function(e) {
+    window.location.reload();
+    // $('#ds-tabs a[href="#ds-dancer-single"]').removeClass('active');
+    // $('#ds-tabs a.single-dancer').removeClass('active');
+
+  });
+  $('a[href="#ds-dance-groups"]').on('show.bs.tab', function(e) {
+    window.location.reload();
+  });
+  // $('a[href="#profile-picture"]').on('show.bs.tab', function(e) {
+  //   // window.location.reload();
+  //   $('#ds-tabs a[href="#profile"]').removeClass('active');
+  //   $('#ds-tabs a[href="#profile-picture"]').addClass('active');
+  // });
+
+  // Send request to dancer in order to manage their account
+  $('#wpua-upload-existing').on('click', function(e) {
+    $('#top-tabs a[href="#profile"]').tab('show');
+  });
+
+  /*
+   * UPDATE PROFILE
+  **/
+  $('form#update_profile').on('submit', function(e) {
+    e.preventDefault();
+    // Basic fields
+    var user_id = $('input[name=update_profile_user_id]').val();
+    var email = $('input[name=update_profile_email]').val();
+    var phone_number = $('input[name=update_profile_phone_number]').val();
+    var city = $('input[name=update_profile_city]').val();
+    var address = $('input[name=update_profile_address]').val();
+    var postcode = $('input[name=update_profile_postcode]').val();
+    // Guardian (if underage)
+    var guardian_name = $('input[name=update_profile_guardian_name]').val();
+    var guardian_phone_number = $('input[name=update_profile_guardian_phone_number]').val();
+    var guardian_email = $('input[name=update_profile_guardian_email]').val();
+    // Dancer
+    var dancer_ds_name = $('input[name=update_profile_dancer_ds_name]').val();
+    var dancer_ds_teacher_name = $('input[name=update_profile_dancer_ds_teacher_name]').val();
+    var dancer_ds_teacher_email = $('input[name=update_profile_dancer_ds_teacher_email]').val();
+    // Dance school
+    var dance_school_name = $('input[name=update_profile_dance_school_name]').val();
+    var dance_school_address = $('input[name=update_profile_dance_school_address]').val();
+    var dance_school_phone_number = $('input[name=update_profile_dance_school_phone_number]').val();
+    var dance_school_description = $('input[name=update_profile_dance_school_description]').val();
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'user_update_profile',
+        update_profile_user_id: user_id,
+        update_profile_email: email,
+        update_profile_phone_number: phone_number,
+        update_profile_city: city,
+        update_profile_address: address,
+        update_profile_postcode: postcode,
+        update_profile_guardian_name: guardian_name,
+        update_profile_guardian_phone_number: guardian_phone_number,
+        update_profile_guardian_email: guardian_email,
+        update_profile_dancer_ds_name: dancer_ds_name,
+        update_profile_dancer_ds_teacher_name: dancer_ds_teacher_name,
+        update_profile_dancer_ds_teacher_email: dancer_ds_teacher_email,
+        update_profile_dance_school_name: dance_school_name,
+        update_profile_dance_school_address: dance_school_address,
+        update_profile_dance_school_phone_number: dance_school_phone_number,
+        update_profile_dance_school_description: dance_school_description,
+      },
+      success: function(response) {
+         $('form#update_profile .ajax-response').html( response.data );
+      },
+      error: function(response) {
+        $('form#update_profile .ajax-response').html( response.data );
+      }
+    });
+  });
+
 
   /*
    * GUARDIANS
-   */
+  **/
    // Send request to dancer in order to manage their account
    $('form#guardian-add-dancer-to-manage').on('submit', function(e) {
      e.preventDefault();
@@ -65,16 +147,6 @@ jQuery(document).ready(function($) {
   /*
    * DANCERS
    */
-  // Reload dancers & groups lists
-  $('a[href="#ds-dancers"]').on('show.bs.tab', function(e) {
-    window.location.reload();
-    // $('#ds-tabs a[href="#ds-dancer-single"]').removeClass('active');
-    // $('#ds-tabs a.single-dancer').removeClass('active');
-
-  });
-  $('a[href="#ds-dance-groups"]').on('show.bs.tab', function(e) {
-    window.location.reload();
-  });
 
   // DANCE SCHOOL - send invite to dancer
   $('form#add-dancers').on('submit', function(e) {
@@ -338,7 +410,7 @@ jQuery(document).ready(function($) {
 
   // REGISTRATION
   $("#select_role").change(function() {
-    //e.preventDefault();
+    // e.preventDefault();
     var selRole = $('#select_role').val();
     console.log(selRole);
     if ( selRole === 'dance-school') {

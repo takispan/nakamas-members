@@ -2,9 +2,15 @@
 /**
  * Remove Dancers from a group
  */
+ $group_id = $dance_school->nkms_dance_school_fields['dance_school_currently_viewing']['group'];
+ if ( $group_id ) {
+   $group = $dance_school_groups_list[$group_id];
+   $group_dancers = $group->getDancers();
+
 ?>
 <div class="nkms-tabs">
-  <h3 style="font-weight:300;">Remove a dancer from <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h3>
+  <h3 style="font-weight:300;">Remove a dancer from <span style="font-weight:600;"><?php
+  // echo $group->getGroupName(); ?></span></h3>
   <form id="remove-group-dancer" method="post" action="" class="ajax">
     <p>
       <?php $group_dancers = $group->getDancers();
@@ -31,3 +37,4 @@
     </p>
   </form>
 </div><!-- .nkms-tabs -->
+<?php  }?>
