@@ -5,7 +5,7 @@
 ?>
 
 <div class="dancers-list">
-  <h3 style="font-weight:300;">Dancers for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?></span></h3>
+  <h3 style="font-weight:300;">Dancers of <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?></span></h3>
   <?php
   if ( ! empty( $dance_school_dancers_list ) ) { ?>
     <table>

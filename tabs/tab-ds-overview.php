@@ -16,7 +16,7 @@
     echo '<h4>Pending School Memberships</h4>';
     foreach ( $dance_school_invites as $dancer_id ) {
       $dancer = get_userdata( $dancer_id ); ?>
-      <div><p><?php echo $dancer->first_name . ' ' . $dancer->last_name . ' wants to join ' . $dance_school_fields['dance_school_name']; ?>.</p>
+      <div class="dancer-invites"><p><?php echo $dancer->first_name . ' ' . $dancer->last_name . ' wants to join ' . $dance_school_fields['dance_school_name']; ?>.</p>
         <form method="post" class="invite-btn">
           <input type="hidden" name="dance_school_request_to_join_dancer_id" value="<?php echo $dancer_id; ?>" />
           <input type="hidden" name="dance_school_request_to_join_ds_id" value="<?php echo $dance_school->ID; ?>" />

@@ -11,9 +11,8 @@
 
 ?>
 
-<div class="nkms-tabs">
-  <h3 style="font-weight:300;">Add a dancer to <span style="font-weight:600;"><?php
-  // echo $group->getGroupName(); ?></span></h3>
+<div>
+  <h3 style="font-weight:300;">Add a dancer to <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h3>
   <form id="add-group-dancer" method="post" action="" class="ajax">
     <p>
       <?php if ( ! empty( $dance_school_dancers_list ) ) : ?>

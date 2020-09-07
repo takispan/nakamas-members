@@ -9,7 +9,7 @@ if ( is_user_logged_in() ) {
  exit;
 }
 get_header(); ?>
-<div id="nkms-account">
+<div id="nkms-registration">
   <h2>Register</h2>
   <?php nkms_custom_registration(); ?>
   <form id="nkms_registration" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">

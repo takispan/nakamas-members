@@ -251,7 +251,7 @@ function ds_add_dancer() {
      $print_dancers .= '</div>';
    }
    $single_group_data = '
-   <h3 style="font-weight:300;">Dance Group <span style="font-weight:600;">' . $group->getGroupName() . '</span> for <span style="font-weight:600;">' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</span></h3>
+   <h3 style="font-weight:300;">Dance Group <span style="font-weight:600;">' . $group->getGroupName() . '</span> in <span style="font-weight:600;">' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</span></h3>
    <div class="group-details">
      <p><span>Type</span>' . $group->getType() . '</p>
      <p><span>Name</span>' . $group->getGroupName() . '</p>
@@ -285,14 +285,14 @@ function ds_add_dancer() {
         $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
         $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
         if ( $db_result ) {
-          wp_send_json_success( '<p class="text-info">Dancer added.</p>' );
+          wp_send_json_success( '<p class="text-info">' . $dancer->first_name . ' ' . $dancer->last_name . ' added in ' . $group->getGroupName() . '.</p>' );
         }
         else {
           wp_send_json_success( '<p class="text-danger">Dancer was not saved in database.</p>' );
         }
    		}
       else {
-        wp_send_json_success( '<p class="text-danger">Dancer is already part of ' . $group->getGroupName() . '.</p>' );
+        wp_send_json_success( '<p class="text-danger">' . $dancer->first_name . ' ' . $dancer->last_name . ' is already part of ' . $group->getGroupName() . '.</p>' );
       }
    	}
    	else {
@@ -378,27 +378,10 @@ function ds_add_dancer() {
          // add teacher id to dance school list of teachers
          array_push( $dance_school_fields['dance_school_teachers_list'], $teacher_id );
          // save teacher fields
-         $teacher_save_to_db = update_user_meta( $teacher_id, 'nkms_dancer_fields', $teacher_fields );
-         $teacher_saved = false;
-         $ds_saved = false;
-         if ( $teacher_save_to_db ) {
-           $teacher_saved = true;
-         }
-         else {
-           wp_send_json_success("<p class='text-info'>Problem saving teacher data.</p>");
-         }
+         update_user_meta( $teacher_id, 'nkms_dancer_fields', $teacher_fields );
          // save dance school fields
-         $ds_save_to_db = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
-         if ( $ds_save_to_db ) {
-           // wp_send_json_success("<p class='text-info'>Teacher added.</p>");
-           $ds_saved = true;
-         }
-         else {
-           wp_send_json_success("<p class='text-info'>Problem saving teacher data.</p>");
-         }
-         if ( $teacher_saved && $ds_saved ) {
-           wp_send_json_success("<p class='text-info'>Teacher added.</p>");
-         }
+         update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+         wp_send_json_success("<p class='text-info'>Teacher added.</p>");
        }
        else {
          wp_send_json_success("<p class='text-danger'>Teacher is already managing another dance school.</p>");

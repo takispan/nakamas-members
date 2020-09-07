@@ -8,9 +8,8 @@
    $group_dancers = $group->getDancers();
 
 ?>
-<div class="nkms-tabs">
-  <h3 style="font-weight:300;">Remove a dancer from <span style="font-weight:600;"><?php
-  // echo $group->getGroupName(); ?></span></h3>
+<div>
+  <h3 style="font-weight:300;">Remove a dancer from <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h3>
   <form id="remove-group-dancer" method="post" action="" class="ajax">
     <p>
       <?php $group_dancers = $group->getDancers();

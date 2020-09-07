@@ -1,25 +1,27 @@
 html {overflow-x: hidden;}
 #content {padding-top: 0;}
 /* Tabs */
-#nkms-account, .nkms-tabs {
+/* #nkms-account, .nkms-tabs {
 	max-width: 1200px;
 	margin: 0 auto;
 	width: 100%;
-}
+} */
 
 #top-tabs-wrapper, #ds-tabs-wrapper {
-	position: absolute;
-	width: 100vw;
-	left: 0;
-	height: 60px;
 	background: #f1f1f1;
-	z-index: 2;
 }
 
 #top-tabs, #ds-tabs {
 	max-width: 1200px;
 	margin: 0 auto;
 	border: 0;
+	overflow-y: scroll;
+	flex-wrap: nowrap;
+	scrollbar-width: none;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+#top-tabs::-webkit-scrollbar, #ds-tabs::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
 }
 
 #top-tabs > li, #ds-tabs > li {
@@ -30,10 +32,12 @@ html {overflow-x: hidden;}
 	margin-left: 0;
 } */
 #top-tabs li a, #ds-tabs li a {
+	display: flex;
 	text-decoration: none;
 	height: 100%;
-	display: block;
+	display: flex;
 	padding: 0 15px;
+	width: max-content;
 }
 #top-tabs li a:hover, #ds-tabs li a:hover {
 	background: #cd2653;
@@ -41,18 +45,21 @@ html {overflow-x: hidden;}
 }
 
 /* Possible CSS for tabs & content */
-.nkms-tabs > h3 {max-width: 1200px; margin: 20px auto; width: 100%; padding: 0 15px;}
-.nkms-tabs {
-	padding: 60px 0;
-}
-.nkms-tabs .tab-content {
-	padding: 60px 15px;
-}
+.nkms-tabs > h3 {max-width: 1200px; margin: 0 auto; width: 100%; padding: 20px 15px;}
+.nkms-tabs > .tab-content, #dashboard, #profile, #profile-picture, #nkms-registration, #nkms-login {max-width: 1200px; margin: 0 auto; padding: 20px 15px;}
 .nkms-tabs .tab-content h3 {margin: 20px 0;}
 
 /* Invite system *
 .dancer-invitatons button {
 	border-radius: 50%;
+} */
+.dancer-invites {padding: 15px 0;}
+.dancer-invites p {
+	padding-right: 15px;
+	margin: 5px 0;
+}
+.dancer-invites input[type="submit"] {
+	padding: 10px;
 }
 
 /* Single dancer */
@@ -87,6 +94,9 @@ a.nkms-btn:hover {
   transition: opacity 0.15s linear;
 }
 
+/* Update profile */
+input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
+
 /* Profile picture */
 .wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
 #profile-picture .avatar {margin: 0;}
@@ -103,9 +113,10 @@ a.nkms-btn:hover {
 .register-group-dancers label {
 	cursor: pointer;
 }
-.single-product form.cart .register-group-dancers input {
+.single-product form.cart .register-group-dancers input, #select-all-dancers {
 	width: initial;
 	margin-right: 7px;
+	border: 2px solid #999;
 }
 /* Variations */
 .registered-dancers, .registered-groups {
@@ -116,6 +127,9 @@ a.nkms-btn:hover {
 	margin-top: 5px;
 	display: inline-block;
 }
+
+.register-group-dancers input[type="checkbox"]:checked::before {margin: -0.3rem 0 0 -0.3rem;}
+#register-dancers {margin-bottom: 35px;}
 
 /* Datepicker */
 #ui-datepicker-div {

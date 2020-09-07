@@ -18,18 +18,17 @@ if( $_POST ) {
   );
 
   $user_verify = wp_signon( $login_data, false );
-  if ( !is_wp_error($user_verify) ) {
+  if ( ! is_wp_error( $user_verify ) ) {
     wp_redirect(home_url().'/profile');
   }
 }
-
 get_header(); ?>
-<div id="nkms-account">
+<div id="nkms-login">
   <h2>Login</h2>
 <?php
 
 if( $_POST ) {
-  if ( is_wp_error($user_verify) ) {
+  if ( is_wp_error( $user_verify ) ) {
     echo "<p style='color:red;'><strong>Invalid login details</strong></p>";
   }
   else {

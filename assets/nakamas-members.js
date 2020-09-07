@@ -58,6 +58,11 @@ jQuery(document).ready(function($) {
     $('#top-tabs a[href="#profile"]').tab('show');
   });
 
+  // WOO - select all dancers
+  $('input[type="checkbox"]').click(function(){
+    $('input:checkbox').not(this).prop('checked', this.checked);
+  });
+
   /*
    * UPDATE PROFILE
   **/

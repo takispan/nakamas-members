@@ -63,7 +63,7 @@ nkms_invitations();
         echo '<h4>Dance School invites</h4>';
         foreach ( $dancer_invites_dance_school as $dance_school_id ) {
           $ds = get_userdata( $dance_school_id ); ?>
-          <div><p>You have been invited to join <?php echo $ds->nkms_dance_school_fields['dance_school_name']; ?>.</p>
+          <div class="dancer-invites"><p>You have been invited to join <?php echo $ds->nkms_dance_school_fields['dance_school_name']; ?>.</p>
             <form method="post" class="invite-btn">
               <input type="hidden" name="dancer_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
               <input type="hidden" name="dancer_invite_dance_school_id" value="<?php echo $ds->ID; ?>" />
@@ -78,26 +78,33 @@ nkms_invitations();
       //   echo '<h4>Dance School invites</h4>';
       //   echo '<p>You do not have any invites.</p>';
       // }
-      if ( nkms_can_manage_dancer( $dancer->ID, $current_user->ID ) ) : ?>
-        <h4>Request to join a dance school</h4>
-        <?php
-        $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
-        // sort($dance_schools_list);
-        // print_r($dance_schools_list);
-        ?>
-        <form method="post" class="invite-btn">
-          <p><select name="dancer_request_to_join_dance_school_id"><option selected disabled hidden>Select dance school</option>
+      if ( nkms_can_manage_dancer( $dancer->ID, $current_user->ID ) ) :
+        $part_of_ds = $dancer->nkms_dancer_fields['dancer_part_of'];
+        if ( empty( $part_of_ds ) ) : ?>
+          <h4>Request to join a dance school</h4>
           <?php
-          foreach ( $dance_schools_list as $ds ) {
-            if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
-              echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
-            }
-          }
+          $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
+          // sort($dance_schools_list);
+          // print_r($dance_schools_list);
           ?>
-        </select></p>
-          <input type="hidden" name="dancer_request_to_join_dancer_id" value="<?php echo $dancer->ID; ?>" />
-          <input type="submit" name="dancer_request_to_join_submit" value="Request" />
-        </form>
+          <form method="post" class="invite-btn">
+            <p><select name="dancer_request_to_join_dance_school_id"><option selected disabled hidden>Select dance school</option>
+            <?php
+            foreach ( $dance_schools_list as $ds ) {
+              if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
+                echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
+              }
+            }
+            ?>
+          </select></p>
+            <input type="hidden" name="dancer_request_to_join_dancer_id" value="<?php echo $dancer->ID; ?>" />
+            <input type="submit" name="dancer_request_to_join_submit" value="Request" />
+          </form>
+        <?php else :
+          $dance_school_id = $part_of_ds[0];
+          $dance_school = get_userdata( $dance_school_id ); ?>
+          <p>Dancer representing <span><?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?></span></p>
+        <?php endif; ?>
       <?php endif; ?>
     </div>
   <?php endif; ?>
