@@ -17,11 +17,12 @@
     foreach ( $dance_school_invites as $dancer_id ) {
       $dancer = get_userdata( $dancer_id ); ?>
       <div class="dancer-invites"><p><?php echo $dancer->first_name . ' ' . $dancer->last_name . ' wants to join ' . $dance_school_fields['dance_school_name']; ?>.</p>
-        <form method="post" class="invite-btn">
+        <form method="post" id="dance_school_pending_memberships" class="invite-btn">
           <input type="hidden" name="dance_school_request_to_join_dancer_id" value="<?php echo $dancer_id; ?>" />
           <input type="hidden" name="dance_school_request_to_join_ds_id" value="<?php echo $dance_school->ID; ?>" />
           <input type="submit" name="dance_school_request_to_join_accept" value="Accept" />
           <input type="submit" name="dance_school_request_to_join_decline" value="Decline" />
+          <div class="ajax-response"></div>
         </form>
       </div>
       <?php

@@ -3,13 +3,26 @@
  * WOOCOMMERCE!
 **/
 // change woo required user fields
-add_filter('woocommerce_save_account_details_required_fields', 'nkms_woo_required_fields');
-function nkms_woo_required_fields( $account_fields ) {
-  unset( $account_fields['account_last_name'] );
-	// unset( $account_fields['account_first_name'] ); // First name
-	// unset( $account_fields['account_display_name'] ); // Display name
-	return $required_fields;
+add_filter('woocommerce_checkout_fields', 'nkms_woo_required_fields');
+function nkms_woo_required_fields( $fields ) {
+  unset( $fields['billing']['billing_address_2'] );
+  unset( $fields['billing']['billing_state'] );
+  if ( is_user_logged_in() ) {
+    $user = wp_get_current_user();
+
+    // $fields['billing']['billing_first_name'] = $user->first_name;
+  }
+
+	return $fields;
 }
+
+// define the woocommerce_save_account_details callback
+// add_action( 'woocommerce_save_account_details', 'action_woocommerce_save_account_details', 10, 1 );
+// function action_woocommerce_save_account_details( $user_id ) {
+//     // make action magic happen here...
+//     $user = get_userdata( $user_id );
+//
+// };
 
 // Display a custom text field on product
 add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
@@ -25,27 +38,6 @@ function nkms_custom_woo_field() {
 //  );
 }
 //
-// Save the custom field
-add_action( 'woocommerce_process_product_meta', 'nkms_save_woo_field' );
-function nkms_save_woo_field( $post_id ) {
-//   $product = wc_get_product( $post_id );
-//   $dancer_reg_fee = isset( $_POST['event_date'] ) ? $_POST['event_date'] : '';
-//   $product->update_meta_data( 'event_date', sanitize_text_field( $dancer_reg_fee ) );
-//   $product->save();
-}
-//
-// Display custom field on the front end
-add_action( 'woocommerce_before_add_to_cart_button', 'nkms_display_woo_field' );
-function nkms_display_woo_field() {
-//   global $post;
-//   // Check for the custom field value
-//   $product = wc_get_product( $post->ID );
-//   $title = $product->get_meta( 'event_date' );
-//   if( $title ) {
-//   // Only display our field if we've got a value for the field title
-//   printf( '<div class="nkms-event-date"><span>Date</span><label for="nkms-event-date">%s</label></div>', esc_html( $title ) );
-//   }
-}
 
 // Hide Dancer Registration category if not needed
 add_filter( 'woocommerce_product_query_tax_query', 'nkms_hide_dancer_registration');
@@ -69,7 +61,7 @@ add_action('woocommerce_before_add_to_cart_button', 'nkms_register_dancers_to_ev
 function nkms_register_dancers_to_events() {
   // if teacher
   $dance_school_id = nkms_is_teacher( get_current_user_id() );
-  if ( is_user_logged_in() && $dance_school_id ) {
+  if ( is_user_logged_in() && nkms_can_manage_dance_school( $dance_school_id, get_current_user_id() ) ) {
     $dance_school = get_userdata( $dance_school_id );
     // Get woo product categories
     global $product;
@@ -77,7 +69,7 @@ function nkms_register_dancers_to_events() {
     $product_categories = wc_get_product_category_list( $product_id );
     // Check if event is for dancers so they can register
     if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
-      echo '<p><input type="checkbox" id="select-all-dancers"><span>Select / Deselect all</span></p>';
+      echo '<p id="register-all-dancers"><label><input type="checkbox" id="select-all-dancers">Select / Deselect all dancers</label></p>';
       // Solo dancers
       echo '<div id="register-dancers"><h3>Dancers List</h3>';
       $registered_dancers = array();
@@ -130,6 +122,17 @@ function nkms_register_dancers_to_events() {
       echo '<input type="hidden" name="register_groups_array" value="' . $registered_groups . '"/>';
     }
   }
+  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'guardian' ) ) {
+    $dancer_id = wp_get_current_user()->nkms_guardian_fields['guardian_dancers_list'][0];
+    echo '<p style="display:none;"><label>' . '<input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
+    echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
+  }
+  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'dancer' ) ) {
+    $dancer_id = get_current_user_id();
+    echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
+    echo '<p style="display:none;"><label>' . '<input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
+
+  }
 }
 
 // Validate data - warn user if no dancers selected
@@ -139,7 +142,7 @@ function nkms_add_to_cart_validation( $passed, $product_id, $quantity, $variatio
   if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
     if ( empty( $_POST['registered_dancers'] ) ) {
       $passed = false;
-      wc_add_notice( __( 'You must select at least one dancer to register.', 'nkms' ), 'error' );
+      wc_add_notice( 'You must select at least one dancer to register.', 'error' );
     }
   }
   return $passed;
@@ -191,6 +194,42 @@ function nkms_remove_quantity_field( $return, $product ) {
   }
 }
 
+// Change product price.
+add_action( 'woocommerce_before_calculate_totals', 'nkms_add_custom_price', 20, 1);
+function nkms_add_custom_price( $cart ) {
+    // This is necessary for WC 3.0+
+    if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+        return;
+
+    // // Avoiding hook repetition (when using price calculations for example)
+    // if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 )
+    //     return;
+
+    // Loop through cart items
+    foreach ( $cart->get_cart() as $item ) {
+      $reg_dancers = 1;
+      if ( isset( $item['registered_dancers_num'] ) ) {
+        $reg_dancers = $item['registered_dancers_num'];
+      }
+      $item['data']->set_price( $item['data']->get_price() * $reg_dancers );
+    }
+}
+
+/**
+ * Display the custom field value in the cart
+ * @since 1.0.0
+ */
+add_filter( 'woocommerce_cart_item_name', 'nkms_cart_item_name', 10, 3 );
+function nkms_cart_item_name( $name, $cart_item, $cart_item_key ) {
+  if( isset( $cart_item['registered_dancers'] ) ) {
+    $name .= sprintf(
+      '<p>%s</p>',
+      implode( "<br>", $cart_item['registered_dancers'] )
+    );
+  }
+  return $name;
+}
+
 //* Display dancers in cart items.
 add_filter( 'woocommerce_get_item_data', 'nkms_display_dancers_in_cart', 10, 2 );
 function nkms_display_dancers_in_cart( $item_data, $cart_item ) {
@@ -200,11 +239,13 @@ function nkms_display_dancers_in_cart( $item_data, $cart_item ) {
   if ( ! empty( $cart_item['registered_dancers'] ) ) {
     $dancers_str_tmp = implode( "<br>", $cart_item['registered_dancers'] );
     $dancers_str = '<p class="registered-dancers">' . $dancers_str_tmp . '</p>';
+    // $display = ( sizeof( $cart_item['registered_dancers'] ) > 1 ) ? 'Dancers' : 'Dancer';
+    $registered_dancers_value_to_save = maybe_serialize( $cart_item['registered_dancers'] );
 
     $item_data[] = array(
       'key'     => 'Dancers',
-      'value'   => $dancers_str,
-      'display' => '',
+      'value'   => $registered_dancers_value_to_save,
+      // 'display' => $dancers_str,
     );
     $cart_item['data']->set_price( sizeof( $cart_item['registered_dancers'] ) * $product->get_price() );
 	}
@@ -236,65 +277,22 @@ function nkms_display_dancers_in_cart( $item_data, $cart_item ) {
   return $item_data;
 }
 
-// Something with price.
-add_action( 'woocommerce_before_calculate_totals', 'nkms_add_custom_price', 20, 1);
-function nkms_add_custom_price( $cart ) {
-    // This is necessary for WC 3.0+
-    if ( is_admin() && ! defined( 'DOING_AJAX' ) )
-        return;
-
-    // Avoiding hook repetition (when using price calculations for example)
-    if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 )
-        return;
-
-    // Loop through cart items
-    foreach ( $cart->get_cart() as $item ) {
-      $reg_dancers = 1;
-      if ( isset( $item['registered_dancers_num'] ) ) {
-        $reg_dancers = $item['registered_dancers_num'];
-      }
-      $item['data']->set_price( $item['data']->get_price() * $reg_dancers );
-    }
-}
-
+/**
+ * Add custom meta to order
+**/
 // Save to order
 add_action( 'woocommerce_checkout_create_order_line_item', 'nkms_save_registered_dancers', 10, 4 );
 function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) {
-  if ( isset( $values['registered_dancers'] ) ) {
-    $item->add_meta_data( __( 'Dancers', 'nkms' ), $values['registered_dancers'], true );
-  }
-  if ( isset( $values['registered_groups'] ) ) {
-    $item->add_meta_data( __( 'Groups', 'nkms' ), $values['registered_groups'], true );
+  foreach( $item as $cart_item_key => $values ) {
+    // var_dump($item);
+    // if ( isset( $values['Dancers'] ) ) {
+    // $dancers_value = maybe_unserialize( $values, true );
+    // $dancers_str = implode( "<br>", $dancers_value );
+    // $item->add_meta_data( 'Dancers', $dancers_value, true );
+    $item->add_meta_data( 'Dancers', $values, true );
+    // }
+    // if ( isset( $values['Groups'] ) ) {
+      $item->add_meta_data( 'Groups', 'test', true );
+    // }
   }
 }
-
-/**
- * Add custom meta to order
- */
-// add_action( 'woocommerce_checkout_create_order_line_item', 'nkms_checkout_create_order_line_item', 10, 4 );
-// function nkms_checkout_create_order_line_item( $item, $cart_item_key, $values, $order ) {
-//   if( isset( $values['registered_dancers'] ) ) {
-//     $item->add_meta_data( __( 'Dancers', 'nkms' ), $values['registered_dancers'], true );
-//   }
-//   if( isset( $values['registered_groups'] ) ) {
-//     $item->add_meta_data( __( 'Groups', 'nkms' ), $values['registered_groups'], true );
-//   }
-// }
-
-//Change event price based on registered dancers
-// add_filter('woocommerce_product_get_price', 'nkms_change_price_dancers_fee', 10, 2);
-// function nkms_change_price_dancers_fee($price, $product) {
-//    //global post object & post id
-//    // global $post;
-//    // $product = wc_get_product( $post->ID );
-//    // $_POST['registered_dancers_num'] = 0;
-//    if ( isset( $_POST['registered_dancers'] ) ) {
-//      $registered_dancers = $_POST['registered_dancers'];
-//      $num = sizeof( $registered_dancers );
-//
-//      // $dancer_fee = $product->get_meta( 'dancer_registration_fee' );
-//      $price *= $num;
-//    }
-//    //return the new price
-//    return $price;
-// }

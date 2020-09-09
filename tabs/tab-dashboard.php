@@ -78,6 +78,8 @@ nkms_invitations();
       //   echo '<h4>Dance School invites</h4>';
       //   echo '<p>You do not have any invites.</p>';
       // }
+
+      // Dancer requests to join dance school
       if ( nkms_can_manage_dancer( $dancer->ID, $current_user->ID ) ) :
         $part_of_ds = $dancer->nkms_dancer_fields['dancer_part_of'];
         if ( empty( $part_of_ds ) ) : ?>
@@ -87,8 +89,8 @@ nkms_invitations();
           // sort($dance_schools_list);
           // print_r($dance_schools_list);
           ?>
-          <form method="post" class="invite-btn">
-            <p><select name="dancer_request_to_join_dance_school_id"><option selected disabled hidden>Select dance school</option>
+          <form method="post" id="dancer_requests_to_join_dance_school" class="invite-btn">
+            <p><select id="dancer_requests_to_join_dance_school_id" name="dancer_request_to_join_dance_school_id"><option selected disabled hidden>Select dance school</option>
             <?php
             foreach ( $dance_schools_list as $ds ) {
               if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
@@ -96,7 +98,8 @@ nkms_invitations();
               }
             }
             ?>
-          </select></p>
+            </select></p>
+            <div class="ajax-response"></div>
             <input type="hidden" name="dancer_request_to_join_dancer_id" value="<?php echo $dancer->ID; ?>" />
             <input type="submit" name="dancer_request_to_join_submit" value="Request" />
           </form>

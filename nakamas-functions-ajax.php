@@ -195,6 +195,14 @@ function ds_add_dancer() {
    if ( in_array( $dancer_id, $dancers_list) ) {
      $new_dancers_list = array_diff( $dancers_list, [$dancer_id] );
      $dance_school_fields['dance_school_dancers_list'] = $new_dancers_list;
+     $dancer = get_userdata( $dancer_id );
+     $dancer_fields = $dancer->nkms_dancer_fields;
+     $part_of_ds = $dancer_fields['dancer_part_of'];
+     if ( in_array( $part_of_ds, $dance_school_id ) ) {
+       array_diff( $part_of_ds, [$dance_school_id] );
+       $dancer_fields['dancer_part_of'] = $part_of_ds;
+       update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+     }
      update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
      wp_send_json_sucess('<p class="text-info">Dancer was removed.</p>');
    }

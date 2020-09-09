@@ -39,7 +39,7 @@ jQuery(document).ready(function($) {
 
   // remove add classes while navigating tabs
   $('a[href="#ds-dancers"]').on('show.bs.tab', function(e) {
-    window.location.reload();
+    // window.location.href = window.location.href;
     // $('#ds-tabs a[href="#ds-dancer-single"]').removeClass('active');
     // $('#ds-tabs a.single-dancer').removeClass('active');
 
@@ -59,7 +59,7 @@ jQuery(document).ready(function($) {
   });
 
   // WOO - select all dancers
-  $('input[type="checkbox"]').click(function(){
+  $('#select-all-dancers').click(function(){
     $('input:checkbox').not(this).prop('checked', this.checked);
   });
 

@@ -110,7 +110,7 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 .register-group-dancers {
 	margin: 0;
 }
-.register-group-dancers label {
+#register-all-dancers label, .register-group-dancers label {
 	cursor: pointer;
 }
 .single-product form.cart .register-group-dancers input, #select-all-dancers {
