@@ -107,13 +107,15 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 	font-weight: 600;
 	margin: 15px 0 0 0;
 }
-.register-group-dancers {
+.register-solo-dancers, .register-group-dancers {
 	margin: 0;
 }
-#register-all-dancers label, .register-group-dancers label {
+#register-all-dancers label, .register-solo-dancers label, .register-group-dancers label {
 	cursor: pointer;
+	width: max-content;
+	padding-right: 10px;
 }
-.single-product form.cart .register-group-dancers input, #select-all-dancers {
+.single-product form.cart .register-solo-dancers input, .single-product form.cart .register-group-dancers input, #select-all-dancers {
 	width: initial;
 	margin-right: 7px;
 	border: 2px solid #999;
@@ -130,6 +132,8 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 
 .register-group-dancers input[type="checkbox"]:checked::before {margin: -0.3rem 0 0 -0.3rem;}
 #register-dancers {margin-bottom: 35px;}
+
+.wc-item-meta li p {clear: both;}
 
 /* Datepicker */
 #ui-datepicker-div {
