@@ -144,6 +144,24 @@ function nkms_avatar_filter(){
   }
 }
 
+// Add menu items
+add_filter( 'wp_nav_menu_items', 'lunchbox_add_loginout_link', 10, 2 );
+function lunchbox_add_loginout_link( $items, $args ) {
+    // If menu primary menu is set & user is logged in.
+    if ( is_user_logged_in() && $args->theme_location == 'primary' ) {
+      $items .= '<li id="nkms-acc-menu"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
+              . '<ul><li><a href="'. site_url('login/') .'">Soar Account</a></li>'
+              . '<li><a href="'. wp_logout_url() .'">Log Out</a></li></ul></li>';
+    }
+    // Else display login menu item.
+    elseif ( ! is_user_logged_in() && $args->theme_location == 'primary' ) {
+      $items .= '<li id="nkms-acc-menu"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
+              . '<ul><li><a href="'. site_url('register/') .'">Login</a></li>'
+              . '<li><a href="'. wp_logout_url() .'">Sign Up</a></li></ul></li>';
+    }
+    return $items;
+}
+
 //Check if a user has a role
 function nkms_has_role($user, $role) {
 	// $roles = $user->roles;

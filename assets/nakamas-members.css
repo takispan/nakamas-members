@@ -1,5 +1,12 @@
 html {overflow-x: hidden;}
 #content {padding-top: 0;}
+/* menu */
+#nkms-acc-menu:hover ul {
+	opacity: 1;
+	top: 30px;
+	right: -14px;
+}
+
 /* Tabs */
 /* #nkms-account, .nkms-tabs {
 	max-width: 1200px;
