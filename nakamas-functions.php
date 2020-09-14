@@ -156,8 +156,8 @@ function lunchbox_add_loginout_link( $items, $args ) {
     // Else display login menu item.
     elseif ( ! is_user_logged_in() && $args->theme_location == 'primary' ) {
       $items .= '<li id="nkms-acc-menu"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
-              . '<ul><li><a href="'. site_url('register/') .'">Login</a></li>'
-              . '<li><a href="'. wp_logout_url() .'">Sign Up</a></li></ul></li>';
+              . '<ul><li><a href="'. site_url('login/') .'">Login</a></li>'
+              . '<li><a href="'. site_url('register/') .'">Sign Up</a></li></ul></li>';
     }
     return $items;
 }

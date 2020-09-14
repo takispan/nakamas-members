@@ -108,6 +108,18 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 .wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
 #profile-picture .avatar {margin: 0;}
 
+/* Registration */
+#nkms_registration p {position: relative;}
+.show-password-input {
+	position: absolute;
+	opacity: 1;
+	z-index: 9999;
+	right: 0;
+	top: 1.7em;
+	cursor: pointer;
+	width: 50px;
+	height: 50px;}
+
 /* WooCommerce */
 .optional {display: none;}
 .register-group-names {

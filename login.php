@@ -37,20 +37,21 @@ if( $_POST ) {
   }
 }
 ?>
-
-  <form id="login-form" name="form" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
-    <p>
-      <label for="username">Username</label>
-      <input id="username" type="text" name="login_username">
-    </p>
-    <p>
-      <label for="password">Password</label>
-      <input id="password" type="password" name="login_password">
-    </p>
-    <p>
-      <input type="submit" id="login_submit" name="login_submit" value="Login" class="btn btn-primary btn-login">
-    </p>
-  </form>
+  <div class="woocommerce">
+    <form id="login-form" name="form" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
+      <p>
+        <label for="username">Username</label>
+        <input id="username" type="text" name="login_username">
+      </p>
+      <p>
+        <label for="password">Password</label>
+        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="login_password" id="password" autocomplete="current-password" >
+      </p>
+      <p>
+        <input type="submit" id="login_submit" name="login_submit" value="Login" class="btn btn-primary btn-login">
+      </p>
+    </form>
+  </div>
 </div><!-- #nkms-account -->
 
 <?php get_footer(); // Loads the footer.php template. ?>

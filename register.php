@@ -9,7 +9,7 @@ if ( is_user_logged_in() ) {
  exit;
 }
 get_header(); ?>
-<div id="nkms-registration">
+<div id="nkms-registration" class="woocommerce">
   <h2>Register</h2>
   <?php nkms_custom_registration(); ?>
   <form id="nkms_registration" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
@@ -19,7 +19,7 @@ get_header(); ?>
     </p>
     <p>
       <label for="reg_password">Password</label>
-      <input type="password" name="reg_password" value="">
+      <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="reg_password" id="password" autocomplete="current-password" >
     </p>
     <p>
       <label for="reg_first_name">First Name</label>
