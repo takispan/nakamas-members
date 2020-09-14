@@ -3,7 +3,12 @@
 jQuery(document).ready(function($) {
 
   // datepicker
-  $("#datepicker").datepicker({ dateFormat : "dd/mm/yy" });
+  $("#datepicker").datepicker({
+    dateFormat: "dd/mm/yy",
+    changeMonth: true,
+    changeYear: true,
+    yearRange: "-100:+0", 
+  });
 
   // Remember tab after page reload
   $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {

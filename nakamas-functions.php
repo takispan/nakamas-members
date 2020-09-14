@@ -226,6 +226,20 @@ function nkms_is_teacher( $user_id ) {
 //   return $guardian->nkms_guardian_fields['guardian_dancers_list'];
 // }
 
+// Add admin pages
+function my_admin_menu() {
+  add_menu_page( 'Nakamas Members', 'Soar', 'manage_options', 'nkms-members', 'my_admin_page_contents', 'dashicons-admin-users', 3 );
+}
+
+// add_action( 'admin_menu', 'my_admin_menu' );
+function my_admin_page_contents() {
+  echo '<h1>Welcome to Nakamas Members</h1>';
+  nkms_fix_user_meta();
+  // echo '<form action="nkms_fix_user_meta()" method="post">'
+  //     . '<button type="submit">Show users</button>'
+  //     . '</form>';
+}
+
 // Fix user meta
 function nkms_fix_user_meta() {
   $users_list = get_users();
@@ -702,25 +716,25 @@ function user_initialization( $user_id ) {
     $age_category;
     // Age category
     if ( $age < 7 ) {
-      $age_category = '6 and under';
+      $age_category = '6&u';
     }
     elseif ( $age == 7 || $age == 8 ) {
-      $age_category = '8 and under';
+      $age_category = '8&u';
     }
     elseif ( $age == 9 || $age == 10 ) {
-      $age_category = '10 and under';
+      $age_category = '10&u';
     }
     elseif ( $age == 11 || $age == 12 ) {
-      $age_category = '12 and under';
+      $age_category = '12&u';
     }
     elseif ( $age == 13 || $age == 14 ) {
-      $age_category = '14 and under';
+      $age_category = '14&u';
     }
     elseif ( $age == 15 || $age == 16 ) {
-      $age_category = '16 and under';
+      $age_category = '16&u';
     }
     else {
-      $age_category = '17+';
+      $age_category = '17&o';
     }
 
     // create & save fields related to DANCER
