@@ -88,7 +88,7 @@ get_header(); ?>
       <label for="reg_sel_role">Account type</label>
       <select id="select_role" name="reg_sel_role">
         <option value="" selected disabled hidden>Select account type</option>
-        <option value="spectator">Spectator</option>
+        <option value="customer">Spectator</option>
         <option value="dancer">Dancer</option>
         <option value="guardian">Guardian/Parent</option>
         <option value="dance-school">Dance School</option>

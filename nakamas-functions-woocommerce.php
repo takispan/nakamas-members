@@ -2,6 +2,23 @@
 /*
  * WOOCOMMERCE!
 **/
+/* Woo Account links & content */
+add_filter ( 'woocommerce_account_menu_items', 'misha_remove_my_account_links' );
+function misha_remove_my_account_links( $menu_links ){
+  // $menu_links['TAB ID HERE'] = 'NEW TAB NAME HERE';
+	$menu_links['downloads'] = 'My Files';
+
+  //unset( $menu_links['edit-address'] ); // Addresses
+	//unset( $menu_links['dashboard'] ); // Remove Dashboard
+	//unset( $menu_links['payment-methods'] ); // Remove Payment Methods
+	//unset( $menu_links['orders'] ); // Remove Orders
+	unset( $menu_links['downloads'] ); // Disable Downloads
+	//unset( $menu_links['edit-account'] ); // Remove Account details tab
+	//unset( $menu_links['customer-logout'] ); // Remove Logout link
+
+	return $menu_links;
+}
+
 // change woo required user fields
 add_filter('woocommerce_checkout_fields', 'nkms_woo_required_fields');
 function nkms_woo_required_fields( $fields ) {
@@ -43,7 +60,7 @@ function nkms_custom_woo_field() {
 add_filter( 'woocommerce_product_query_tax_query', 'nkms_hide_dancer_registration');
 function nkms_hide_dancer_registration ( $tquery ) {
 	$user = wp_get_current_user();
-	$blocked_user_roles = array( 'spectator', 'customer', 'subscriber', 'contributor', 'author', 'editor'  );
+	$blocked_user_roles = array( 'customer', 'subscriber', 'contributor', 'author', 'editor'  );
   $hidden_categories = array( 'dancer-registration' );
   if ( is_shop() && ( ! is_user_logged_in() || is_user_logged_in() && count( array_intersect( $blocked_user_roles, $user->roles ) ) > 0 ) ) {
 		$tquery[] = array(

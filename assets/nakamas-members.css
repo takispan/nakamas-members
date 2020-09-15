@@ -121,6 +121,8 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 	height: 50px;}
 
 /* WooCommerce */
+.woocommerce form .password-input, .woocommerce-page form .password-input {width: 100%;}
+
 .optional {display: none;}
 .register-group-names {
 	font-weight: 600;

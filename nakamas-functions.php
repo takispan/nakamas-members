@@ -61,7 +61,7 @@ function nkms_assets() {
   wp_enqueue_script( 'nkms-js' );
   wp_enqueue_script( 'nkms-bootstrap' );
   // Load the datepicker script (pre-registered in WordPress)
-  wp_enqueue_script( 'jquery-ui-datepicker' );
+  // wp_enqueue_script( 'jquery-ui-datepicker' );
   wp_enqueue_style( 'nkms-css' );
   wp_enqueue_style( 'nkms-bootstrap' );
 
@@ -75,15 +75,19 @@ function nkms_assets() {
  * Ajax in WP
  *
 **/
-include('nakamas-functions-ajax.php');
+include( 'nakamas-functions-ajax.php' );
 
 /*
  * WooCommerce
  *
 **/
-include('nakamas-functions-woocommerce.php');
+include( 'nakamas-functions-woocommerce.php' );
 
-
+/*
+ * Admin
+ *
+**/
+include( 'nakamas-functions-admin.php' );
 
 /*
  * Create user roles & capabilities
@@ -115,32 +119,24 @@ add_role('guardian', __(
 	)
 );
 
-//Guardian
-add_role('spectator', __(
-	'Spectator'),
-	array(
-		'read'	=> true, //Allows a user to read
-	)
-);
-
 // Add avatar support
 add_action('init','nkms_avatar_filter');
-function nkms_avatar_filter(){
+function nkms_avatar_filter() {
 
   // Remove from show_user_profile hook
-  remove_action('show_user_profile', array('wp_user_avatar', 'wpua_action_show_user_profile'));
-  remove_action('show_user_profile', array('wp_user_avatar', 'wpua_media_upload_scripts'));
+  remove_action( 'show_user_profile', array( 'wp_user_avatar', 'wpua_action_show_user_profile' ) );
+  remove_action( 'show_user_profile', array( 'wp_user_avatar', 'wpua_media_upload_scripts' ) );
 
   // Remove from edit_user_profile hook
-  remove_action('edit_user_profile', array('wp_user_avatar', 'wpua_action_show_user_profile'));
-  remove_action('edit_user_profile', array('wp_user_avatar', 'wpua_media_upload_scripts'));
+  remove_action( 'edit_user_profile', array( 'wp_user_avatar', 'wpua_action_show_user_profile' ) );
+  remove_action( 'edit_user_profile', array( 'wp_user_avatar', 'wpua_media_upload_scripts' ) );
 
   // Add to edit_user_avatar hook
-  add_action('edit_user_avatar', array('wp_user_avatar', 'wpua_action_show_user_profile'));
-  add_action('edit_user_avatar', array('wp_user_avatar', 'wpua_media_upload_scripts'));
+  add_action( 'edit_user_avatar', array( 'wp_user_avatar', 'wpua_action_show_user_profile' ) );
+  add_action( 'edit_user_avatar', array( 'wp_user_avatar', 'wpua_media_upload_scripts' ) );
   // Loads only outside of administration panel
-  if(!is_admin()) {
-    add_action('init','my_avatar_filter');
+  if( ! is_admin() ) {
+    add_action( 'init', 'my_avatar_filter' );
   }
 }
 
@@ -151,7 +147,7 @@ function lunchbox_add_loginout_link( $items, $args ) {
     if ( is_user_logged_in() && $args->theme_location == 'primary' ) {
       $items .= '<li id="nkms-acc-menu"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
               . '<ul><li><a href="'. site_url('login/') .'">Soar Account</a></li>'
-              . '<li><a href="'. wp_logout_url() .'">Log Out</a></li></ul></li>';
+              . '<li><a href="'. wp_logout_url( home_url() ) .'">Log Out</a></li></ul></li>';
     }
     // Else display login menu item.
     elseif ( ! is_user_logged_in() && $args->theme_location == 'primary' ) {
@@ -264,125 +260,6 @@ function nkms_is_teacher( $user_id ) {
 // function nkms_guardian_get_dancers( $guardian ) {
 //   return $guardian->nkms_guardian_fields['guardian_dancers_list'];
 // }
-
-// Add admin pages
-function my_admin_menu() {
-  add_menu_page( 'Nakamas Members', 'Soar', 'manage_options', 'nkms-members', 'my_admin_page_contents', 'dashicons-admin-users', 3 );
-}
-
-// add_action( 'admin_menu', 'my_admin_menu' );
-function my_admin_page_contents() {
-  echo '<h1>Welcome to Nakamas Members</h1>';
-  nkms_fix_user_meta();
-  // echo '<form action="nkms_fix_user_meta()" method="post">'
-  //     . '<button type="submit">Show users</button>'
-  //     . '</form>';
-}
-
-// Fix user meta
-function nkms_fix_user_meta() {
-  $users_list = get_users();
-  foreach ( $users_list as $user ) {
-    if ( $user->ID > 1 ) {
-      echo '<strong>' . $user->ID . ': ' . $user->roles[0] . '</strong><br>';
-      echo '<u>Basic fields</u><br>';
-      // Name
-      echo 'Full Name: ';
-      echo $user->first_name . ' ' . $user->last_name . '<br>';
-      echo 'DOB: ' . $user->nkms_fields['dob'] . '<br>';
-      // Address
-      echo 'Address: ' . $user->nkms_fields['address'] . '<br>';
-      // Phone
-      echo 'Phone number: ' . $user->nkms_fields['phone_number'] . '<br>';
-      // XP
-      echo 'Level: ' . $user->nkms_dancer_fields['dancer_level'] . '<br>';
-      if ( $user->roles[0] === 'dancer' ) {
-        echo '<u>Dancer fields</u><br>';
-        // Dance school name
-        echo 'Dance School name: ' . $user->nkms_dancer_fields['dancer_ds_name'];
-        echo '<br>';
-        // Dance school teacher name
-        echo 'Dance School teacher name: ' . $user->nkms_dancer_fields['dancer_ds_teacher_name'];
-        echo '<br>';
-        // Dance school teacher email
-        echo 'Dance School teacher email: ' . $user->nkms_dancer_fields['dancer_ds_teacher_email'];
-        echo '<br>';
-        // Age category
-        echo 'Age category: ' . $user->nkms_dancer_fields['dancer_age_category'];
-        echo '<br>';
-        // Dancer status
-        echo 'Dancer status: ' . $user->nkms_dancer_fields['dancer_status'];
-        echo '<br>';
-        // Dancer invites
-        echo '<u>Dancer invites:</u><br>';
-        // var_dump($user->nkms_dancer_fields['dancer_invites']['guardian']);
-        echo 'Guardian: ' . implode( ', ', $user->nkms_dancer_fields['dancer_invites']['guardian'] ) . '<br>';
-        echo 'Dance School: ' . implode( ', ', $user->nkms_dancer_fields['dancer_invites']['dance_school'] );
-        // print_r( $user->dancer_invites );
-        echo '<br>';
-        // Dancer Guardian list
-        echo 'Guardian ID: ' . implode( ', ', $user->nkms_dancer_fields['dancer_guardian_list']);
-        echo '<br>';
-        // Dancer Guardian name
-        echo 'Guardian Name: ' . $user->nkms_dancer_fields['dancer_guardian_name'];
-        echo '<br>';
-        // Dancer Guardian email
-        echo 'Guardian Email: ' . $user->nkms_dancer_fields['dancer_guardian_email'];
-        echo '<br>';
-        // Dancer Guardian phone number
-        echo 'Guardian Phone number: ' . $user->nkms_dancer_fields['dancer_guardian_phone_number'];
-        echo '<br>';
-        // Dancer Teacher
-        echo 'Teacher of: ' . implode( ', ', $user->nkms_dancer_fields['dancer_teacher_of']);
-        echo '<br>';
-        // Dancer Part of School
-        echo 'Part of: ' . implode( ', ', $user->nkms_dancer_fields['dancer_part_of']);
-        echo '<br>';
-      }
-      if ( $user->roles[0] === 'dance-school' ) {
-        echo '<u>Dance School fields</u><br>';
-        // DS name
-        echo 'Name: ' . $user->nkms_dance_school_fields['dance_school_name'];
-        echo '<br>';
-        // Dance school address
-        echo 'Address: ' . $user->nkms_dance_school_fields['dance_school_address'];
-        echo '<br>';
-        // Dance school phone number
-        echo 'Phone number: ' . $user->nkms_dance_school_fields['dance_school_phone_number'];
-        echo '<br>';
-        // Dance school description
-        echo 'Description: ' . $user->nkms_dance_school_fields['dance_school_description'];
-        echo '<br>';
-        // Dancers list
-        echo 'Dancers list: ' . implode( ', ', $user->nkms_dance_school_fields['dance_school_dancers_list'] );
-        echo '<br>';
-        // Dance groups list
-        echo 'Groups list: <br>';
-        $groups_list = $user->nkms_dance_school_fields['dance_school_groups_list'];
-        foreach ( $groups_list as $key=>$group ) {
-          echo $key . '. ' . $group->getGroupName();
-        }
-        echo '<br>';
-        // Dancer invites
-        echo 'Dancers invites: ' . implode( ', ', $user->nkms_dance_school_fields['dance_school_invites'] );
-        echo '<br>';
-        // DS currently looking
-        echo 'Currently looking: ';
-        // . implode( ', ', $user->nkms_dance_school_fields['dance_school_currently_viewing'] );
-        foreach ( $user->nkms_dance_school_fields['dance_school_currently_viewing'] as $key => $value ) {
-          echo '<br>' . $key . ': ' . $value;
-        }
-        echo '<br>';
-      }
-      if ( $user->roles[0] === 'guardian' ) {
-        echo '<u>Guardian fields</u><br>';
-        // Age category
-        echo 'Dancers list: ' . implode( ', ', $user->nkms_guardian_fields['guardian_dancers_list'] );
-        echo '<br>';
-      }
-    }
-  }
-}
 
 /*
  * Invite system
