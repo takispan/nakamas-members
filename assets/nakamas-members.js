@@ -57,6 +57,10 @@ jQuery(document).ready(function($) {
   **/
   $('form#update_profile').on('submit', function(e) {
     e.preventDefault();
+
+    // loader
+    $('.loader').css('display','flex');
+
     // Basic fields
     var user_id = $('input[name=update_profile_user_id]').val();
     var email = $('input[name=update_profile_email]').val();
@@ -102,10 +106,16 @@ jQuery(document).ready(function($) {
         update_profile_dance_school_description: dance_school_description,
       },
       success: function(response) {
-         $('form#update_profile .ajax-response').html( response.data );
+        $('.loader').hide();
+        $('form#update_profile .ajax-response').html( response.data );
+        $('form#update_profile .ajax-response').show();
+        setTimeout(function(){
+          $('form#update_profile .ajax-response').slideUp();
+        }, 3000);
       },
       error: function(response) {
-        $('form#update_profile .ajax-response').html( response.data );
+        $('.loader').hide();
+        $('form#update_profile .ajax-response').html( '<p class="text-danger">Error getting dancer data. Please try again.</p>' );
       }
     });
   });
@@ -148,6 +158,9 @@ jQuery(document).ready(function($) {
     var dancer_id = $('input[name=dance_school_add_dancers_dancer_id]').val();
     var dance_school_id = $('input[name=dance_school_add_dancers_ds_id]').val();
 
+    // loader
+    $('.loader').css('display','flex');
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -158,6 +171,7 @@ jQuery(document).ready(function($) {
         ds_add_dancer_dance_school_id: dance_school_id,
       },
       success: function(response) {
+        $('.loader').hide();
         $('form#add-dancers .ajax-response').html( response.data );
         $('form#add-dancers .ajax-response').show();
         setTimeout(function(){
@@ -166,6 +180,7 @@ jQuery(document).ready(function($) {
         // $(".ds-add-dancers-link").click( function() { $('label[for="ds-add-dancers"]').click(); });
       },
       error: function(response) {
+        $('.loader').hide();
         $('form#add-dancers .ajax-response').html( response.data );
       }
     });
@@ -194,6 +209,7 @@ jQuery(document).ready(function($) {
         window.location.reload();
       },
       error: function(response) {
+        $('.loader').hide();
         $('.ds-single-dancer').html( '<p class="text-danger">Error getting dancer data. Please try again.</p>' );
       }
     });
@@ -215,7 +231,7 @@ jQuery(document).ready(function($) {
         change_dancer_status_dancer_id: change_dancer_status_dancer_id,
       },
       success: function(response) {
-        $('.loader').css('display','none');
+        $('.loader').hide();
         $('.ds-single-dancer .ajax-response').html( response.data );
         setTimeout(function(){
           $('.ds-single-dancer .ajax-response').slideUp();
@@ -223,6 +239,7 @@ jQuery(document).ready(function($) {
         window.location.reload();
       },
       error: function(response) {
+        $('.loader').hide();
         $('.ds-single-dancer .ajax-response').html( '<p class="text-danger">An error occured. Dancer status was not changed.</p>' );
       }
     });
@@ -232,6 +249,9 @@ jQuery(document).ready(function($) {
   $('#remove-dancer-from-dancers-list').on('click', function(e) {
     var remove_dancer_single_dancer_id = $(this).attr('data-dancer-id');
     var remove_dancer_dance_school_id = $(this).attr('data-ds-id');
+
+    // loader
+    $('.loader').css('display','flex');
 
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
@@ -243,10 +263,13 @@ jQuery(document).ready(function($) {
         remove_dancer_dance_school_id: remove_dancer_dance_school_id,
       },
       success: function(response) {
-        console.log( response.data );
+        $('.loader').hide();
+        $('.ds-single-dancer .ajax-response').html( response.data );
+        $('label[for="ds-dancers"]').click();
       },
       error: function(response) {
-        console.log( response.data );
+        $('.loader').hide();
+        $('.ds-single-dancer .ajax-response').html( '<p class="text-danger">An error occured. Dancer was not removed.</p>' );
       }
     });
   });
@@ -283,6 +306,7 @@ jQuery(document).ready(function($) {
         }, 3000);
       },
       error: function(response) {
+        $('.loader').hide();
         $('#add-groups .ajax-response').html('<p class="text-danger">An error occured, group not added.</p>');
       }
     });

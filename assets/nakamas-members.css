@@ -4,6 +4,10 @@ html {overflow-x: hidden;}
 #nkms-acc-menu {
 	max-width: 65px;
 }
+#nkms-acc-menu img {
+	position: relative;
+	top: -5px;
+}
 #nkms-acc-menu > ul {
 	opacity: 0;
 	height: 0;

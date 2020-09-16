@@ -8,6 +8,7 @@
 
 
 <div class="nkms-tabs">
+  <div class="loader"><div class="lds-dual-ring"></div></div>
   <h3 style="font-weight:300;">Update Information for <span style="font-weight:600;"><?php echo $current_user->user_login ?></span></h3>
   <form method="post" id="update_profile" action="">
     <p>
