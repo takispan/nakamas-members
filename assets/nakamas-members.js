@@ -7,56 +7,40 @@ jQuery(document).ready(function($) {
     dateFormat: "dd/mm/yy",
     changeMonth: true,
     changeYear: true,
-    yearRange: "-100:+0", 
+    yearRange: "-100:+0",
   });
 
   // Remember tab after page reload
-  $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
-    var tabLink = $(e.target).attr('href');
-    console.log("activeTab: " + tabLink);
-    if ( tabLink == '#dance-school' ) {
-      $('#ds-tabs a[href="#ds-overview"]').tab('show');
-    }
-    if ( tabLink.startsWith('#ds') ) {
-      tabLink = '#dance-school';
-      tabLink2 = $(e.target).attr('href');
-      sessionStorage.setItem('activeTab', tabLink);
-      sessionStorage.setItem('activeTab2', tabLink2);
-    }
-    else {
-      sessionStorage.setItem('activeTab', tabLink);
-    }
-	});
-  // Retrieve last activeTab, default: dashboard
-	activeTab = sessionStorage.getItem('activeTab');
-  activeTab2 = sessionStorage.getItem('activeTab2');
-  if ( activeTab == '#dance-school' ) {
-    activeTab2 = sessionStorage.getItem('activeTab2');
-    $('#top-tabs a[href="' + activeTab + '"]').tab('show');
-    $('#ds-tabs a[href="' + activeTab2 + '"]').tab('show');
-  }
-  else if ( activeTab ) {
-    $('#top-tabs a[href="' + activeTab + '"]').tab('show');
-  }
-  else {
-    $('#top-tabs a[href="#dashboard"]').tab('show');
-  }
-
-  // remove add classes while navigating tabs
-  $('a[href="#ds-dancers"]').on('show.bs.tab', function(e) {
-    // window.location.href = window.location.href;
-    // $('#ds-tabs a[href="#ds-dancer-single"]').removeClass('active');
-    // $('#ds-tabs a.single-dancer').removeClass('active');
-
-  });
-  $('a[href="#ds-dance-groups"]').on('show.bs.tab', function(e) {
-    window.location.reload();
-  });
-  // $('a[href="#profile-picture"]').on('show.bs.tab', function(e) {
-  //   // window.location.reload();
-  //   $('#ds-tabs a[href="#profile"]').removeClass('active');
-  //   $('#ds-tabs a[href="#profile-picture"]').addClass('active');
-  // });
+  // $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+  //   var tabLink = $(e.target).attr('href');
+  //   console.log("activeTab: " + tabLink);
+  //   if ( tabLink == '#dance-school' ) {
+  //     $('#ds-tabs a[href="#ds-overview"]').tab('show');
+  //   }
+  //   if ( tabLink.startsWith('#ds') ) {
+  //     tabLink = '#dance-school';
+  //     tabLink2 = $(e.target).attr('href');
+  //     sessionStorage.setItem('activeTab', tabLink);
+  //     sessionStorage.setItem('activeTab2', tabLink2);
+  //   }
+  //   else {
+  //     sessionStorage.setItem('activeTab', tabLink);
+  //   }
+	// });
+  // // Retrieve last activeTab, default: dashboard
+	// activeTab = sessionStorage.getItem('activeTab');
+  // activeTab2 = sessionStorage.getItem('activeTab2');
+  // if ( activeTab == '#dance-school' ) {
+  //   activeTab2 = sessionStorage.getItem('activeTab2');
+  //   $('#top-tabs a[href="' + activeTab + '"]').tab('show');
+  //   $('#ds-tabs a[href="' + activeTab2 + '"]').tab('show');
+  // }
+  // else if ( activeTab ) {
+  //   $('#top-tabs a[href="' + activeTab + '"]').tab('show');
+  // }
+  // else {
+  //   $('#top-tabs a[href="#dashboard"]').tab('show');
+  // }
 
   // Send request to dancer in order to manage their account
   $('#wpua-upload-existing').on('click', function(e) {
@@ -174,7 +158,12 @@ jQuery(document).ready(function($) {
         ds_add_dancer_dance_school_id: dance_school_id,
       },
       success: function(response) {
-          $('form#add-dancers .ajax-response').html( response.data );
+        $('form#add-dancers .ajax-response').html( response.data );
+        $('form#add-dancers .ajax-response').show();
+        setTimeout(function(){
+          $('form#add-dancers .ajax-response').slideUp();
+        }, 3000);
+        // $(".ds-add-dancers-link").click( function() { $('label[for="ds-add-dancers"]').click(); });
       },
       error: function(response) {
         $('form#add-dancers .ajax-response').html( response.data );
@@ -187,6 +176,9 @@ jQuery(document).ready(function($) {
     var single_dancer_id = $(this).attr('data-dancer-id');
     var dance_school_id = $(this).attr('data-ds-id');
 
+    // loader
+    $('.loader').css('display','flex');
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -198,14 +190,11 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         $('.ds-single-dancer').html( response.data );
-        $('#ds-tabs a[href="#ds-dancers"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-dancer-single"]').addClass('active');
+        $('.loader').hide();
         window.location.reload();
       },
       error: function(response) {
         $('.ds-single-dancer').html( '<p class="text-danger">Error getting dancer data. Please try again.</p>' );
-        $('#ds-tabs a[href="#ds-dancers"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-dancer-single"]').addClass('active');
       }
     });
   });
@@ -213,6 +202,9 @@ jQuery(document).ready(function($) {
   // Change dancer status
   $('#change-dancer-status').on('click', function(e) {
     var change_dancer_status_dancer_id = $(this).attr('data-dancer-id');
+
+    // loader
+    $('.loader').css('display','flex');
 
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
@@ -223,15 +215,15 @@ jQuery(document).ready(function($) {
         change_dancer_status_dancer_id: change_dancer_status_dancer_id,
       },
       success: function(response) {
+        $('.loader').css('display','none');
         $('.ds-single-dancer .ajax-response').html( response.data );
-        $('#ds-tabs a[href="#ds-dancer-single"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-dancers"]').addClass('active');
+        setTimeout(function(){
+          $('.ds-single-dancer .ajax-response').slideUp();
+        }, 3000);
         window.location.reload();
-        // $( ".ds-single-dancer" ).load(" .ds-single-dancer > *" );
       },
       error: function(response) {
-        $('.ds-single-dancer .ajax-response').html( '<p class="text-danger">An error occured. Dancer was not removed.</p>' );
-        // window.location.reload();
+        $('.ds-single-dancer .ajax-response').html( '<p class="text-danger">An error occured. Dancer status was not changed.</p>' );
       }
     });
   });
@@ -252,7 +244,6 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         console.log( response.data );
-        window.location.reload();
       },
       error: function(response) {
         console.log( response.data );
@@ -269,6 +260,10 @@ jQuery(document).ready(function($) {
     var group_name = $('#add_group_name').val();
     var group_type = $('#add_group_type').val();
     var ds_id = $('input[name=dance_school_add_groups_submit_ds_id]').val();
+
+    // loader
+    $('.loader').css('display','flex');
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -280,14 +275,15 @@ jQuery(document).ready(function($) {
         dance_school_id: ds_id,
       },
       success: function(response) {
+        $('.loader').hide();
         $('#add-groups .ajax-response').html( response.data );
-        $('#ds-tabs a[href="#ds-groups"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-add-groups"]').addClass('active');
+        $('#add-groups .ajax-response').show();
+        setTimeout(function(){
+          $('#add-groups .ajax-response').slideUp();
+        }, 3000);
       },
       error: function(response) {
         $('#add-groups .ajax-response').html('<p class="text-danger">An error occured, group not added.</p>');
-        $('#ds-tabs a[href="#ds-groups"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-add-groups"]').addClass('active');
       }
     });
   });
@@ -296,6 +292,10 @@ jQuery(document).ready(function($) {
   $('.single-group').on('click', function(e) {
     var single_group_id = $(this).attr('data-group-id');
     var dance_school_id = $(this).attr('data-ds-id');
+
+    // loader
+    $('.loader').css('display','flex');
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -307,14 +307,11 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         $('.ds-single-group').html( response.data );
-        $('#ds-tabs a[href="#ds-dance-groups"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-group-single"]').addClass('active');
+        $('.loader').hide();
         window.location.reload();
       },
       error: function(response) {
         $('.ds-single-group').html( response.data );
-        $('#ds-tabs a[href="#ds-dance-groups"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-group-single"]').addClass('active');
       }
     });
   });
@@ -324,6 +321,10 @@ jQuery(document).ready(function($) {
     e.preventDefault();
     var dancer_id = $('#add_dancer_to_group').val();
     var dance_school_id = $('input[name=dance_school_group_add_dancers_dance_school_id]').val();
+
+    // loader
+    $('.loader').css('display','flex');
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -334,9 +335,12 @@ jQuery(document).ready(function($) {
         dance_school_id: dance_school_id,
       },
       success: function(response) {
+        $('.loader').hide();
         $('#add-group-dancer .ajax-response').html( response.data );
-        $('#ds-tabs a[href="#ds-group-add-dancers"]').removeClass('active');
-        $('#ds-tabs a[href="#ds-dance-groups"]').addClass('active');
+        $('#add-group-dancer .ajax-response').show();
+        setTimeout(function(){
+          $('#add-group-dancer .ajax-response').slideUp();
+        }, 3000);
       },
       error: function(response) {
         $('#add-group-dancer .ajax-response').html( response.data );
@@ -383,7 +387,7 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
         $('.group-details .ajax-response').html( response.data );
-        window.location.reload();
+        // window.location.reload();
       },
       error: function(response) {
         $('.group-details .ajax-response').html( '<p class="text-danger">An error occured, please try again later.</p>' );
@@ -454,4 +458,48 @@ jQuery(document).ready(function($) {
     console.log(age);
   });
 
+  // TABS
+
+  // profile
+  $(".pfp-link").click( function() {
+    $('label[for="pfp"]').click();
+  });
+
+  // ds-details
+  // $(".ds-details-link").click( function() {
+  //   $('label[for="ds-details"]').click();
+  // });
+
+  $(".ds-add-dancers-link").click( function() {
+    $('label[for="ds-add-dancers"]').click();
+  });
+
+  // single dancer
+  $(".single-dancer").click( function() {
+    $('label[for="ds-dancer-single"]').click();
+  });
+
+  // add group
+  $(".ds-add-groups-link").click( function() {
+    $('label[for="ds-add-groups"]').click();
+  });
+
+  // single group
+  $(".single-group").click( function() {
+    $('label[for="ds-group-single"]').click();
+  });
+
+  // add remove dancers from group
+  $(".ds-group-add-dancers-link").click( function() {
+    $('label[for="ds-group-add-dancers"]').click();
+  });
+  $(".ds-group-remove-dancers-link").click( function() {
+    $('label[for="ds-group-remove-dancers"]').click();
+  });
+
+
+
+  $(".ds-add-teachers-link").click( function() {
+    $('label[for="ds-add-teachers"]').click();
+  });
 });

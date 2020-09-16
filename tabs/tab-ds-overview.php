@@ -18,10 +18,10 @@
       $dancer = get_userdata( $dancer_id ); ?>
       <div class="dancer-invites"><p><?php echo $dancer->first_name . ' ' . $dancer->last_name . ' wants to join ' . $dance_school_fields['dance_school_name']; ?>.</p>
         <form method="post" id="dance_school_pending_memberships" class="invite-btn">
-          <input type="hidden" name="dance_school_request_to_join_dancer_id" value="<?php echo $dancer_id; ?>" />
-          <input type="hidden" name="dance_school_request_to_join_ds_id" value="<?php echo $dance_school->ID; ?>" />
-          <input type="submit" name="dance_school_request_to_join_accept" value="Accept" />
-          <input type="submit" name="dance_school_request_to_join_decline" value="Decline" />
+          <input type="hidden" name="dance_school_request_to_join_dancer_id" class="button" value="<?php echo $dancer_id; ?>" />
+          <input type="hidden" name="dance_school_request_to_join_ds_id" class="button" value="<?php echo $dance_school->ID; ?>" />
+          <input type="submit" name="dance_school_request_to_join_accept" class="button" value="Accept" />
+          <input type="submit" name="dance_school_request_to_join_decline" class="button" value="Decline" />
           <div class="ajax-response"></div>
         </form>
       </div>
@@ -46,5 +46,5 @@
       <?php echo $dance_school->nkms_dance_school_fields['dance_school_description']; ?>
     </span>
   </p>
-  <!-- <a data-toggle="tab" href="#ds-details" class="nkms-btn">Edit Details</a> -->
+  <!-- <a class="button ds-details-link">Edit Details</a> -->
 </div><!-- .nkms-tabs -->

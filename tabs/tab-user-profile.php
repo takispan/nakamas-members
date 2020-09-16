@@ -4,41 +4,6 @@
  *
  * Allow users to update their profiles from Frontend.
  */
-
-// $error = array();
-// /* If profile was saved, update profile. */
-// if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-//
-//     /* Update user password. */
-//     if ( ! empty($_POST['pass1'] ) && ! empty( $_POST['pass2'] ) ) {
-//         if ( $_POST['pass1'] == $_POST['pass2'] )
-//             wp_update_user( array( 'ID' => $current_user->ID, 'user_pass' => esc_attr( $_POST['pass1'] ) ) );
-//         else
-//             $error[] = 'The passwords you entered do not match.  Your password was not updated.';
-//     }
-//
-//     /* Update user information. */
-//     if ( ! empty( $_POST['email'] ) ) {
-//         if (!is_email(esc_attr( $_POST['email'] ))) {
-//             $error[] = 'The Email you entered is not valid.';
-//         }
-//         // CHECK IF EMAIL IS REGISTERED BY ANOTHER USER, NOT WORKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-//         // elseif (email_exists(esc_attr( $_POST['email'] )) != $current_user->ID ) {
-//         //     $error[] = 'This email is already used by another user, try a different one.';
-//         //     $error[] = 'email exists:' . email_exists( $_POST['email'] ) . ', email:' . esc_attr( $_POST['email'] ) . ' test1';
-//         // }
-//         else {
-//             wp_update_user( array( 'ID' => $current_user->ID, 'user_email' => esc_attr( $_POST['email'] ) ) );
-//         }
-//     }
-//
-//     if ( ! empty( $_POST['first-name'] ) ) {
-//       update_user_meta( $current_user->ID, 'first_name', esc_attr( $_POST['first-name'] ) );
-//     }
-//     if ( ! empty( $_POST['last-name'] ) ) {
-//       update_user_meta($current_user->ID, 'last_name', esc_attr( $_POST['last-name'] ) );
-//     }
-// }
 ?>
 
 
@@ -162,7 +127,7 @@
         echo '<label>Profile picture</label>';
       }
       ?>
-      <a data-toggle="tab" href="#profile-picture">
+      <a class="pfp-link">
         <?php echo get_wp_user_avatar( $current_user->ID, '256', '' ); ?>
       </a>
     </p>

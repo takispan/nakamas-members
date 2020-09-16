@@ -16,7 +16,7 @@
       </tr>
     <?php
     foreach ( $dance_school_groups_list as $key => $group ) {
-      echo '<tr><td>' . $group->getType() . '</td><td><a data-toggle="tab" href="#ds-group-single" class="single-group" data-ds-id="' . $dance_school->ID . '" data-group-id="' . $key . '">' . $group->getGroupName() . '</a></td><td>' . $group->getStatus() . '</td></tr>';
+      echo '<tr><td>' . $group->getType() . '</td><td><a class="single-group" data-ds-id="' . $dance_school->ID . '" data-group-id="' . $key . '">' . $group->getGroupName() . '</a></td><td>' . $group->getStatus() . '</td></tr>';
     }
     echo '</table>';
   } else {
@@ -24,5 +24,5 @@
     echo "<br>Create one by clicking the button below.</p>";
   }
   ?>
-  <a data-toggle="tab" href="#ds-add-groups" class="nkms-btn">Add Group</a>
+  <a class="button ds-add-groups-link">Add Group</a>
 </div><!-- .nkms-tabs -->

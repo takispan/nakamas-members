@@ -5,6 +5,7 @@
 ?>
 
 <div>
+  <div class="loader"><div class="lds-dual-ring"></div></div>
   <h3 style="font-weight:300;">Add a dance group for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <form id="add-groups" method="post" action="" class="ajax">
     <p>
@@ -27,7 +28,7 @@
     <p class="ajax-response"></p>
     <p>
       <input type="hidden" name="dance_school_add_groups_submit_ds_id" value="<?php echo $dance_school->ID; ?>" />
-      <input type="submit" name="dance_school_add_groups_submit" value="Add" />
+      <input type="submit" name="dance_school_add_groups_submit" value="Add" class="button" />
     </p>
   </form>
 </div><!-- .nkms-tabs -->

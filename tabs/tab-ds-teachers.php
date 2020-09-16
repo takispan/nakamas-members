@@ -7,7 +7,7 @@
 ?>
 
 <div class="teachers-list">
-  <h3 style="font-weight:300;">Teachers for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
+  <h3 style="font-weight:300;">Teachers of <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <?php
   if ( ! empty( $dance_school_teachers_list ) ) { ?>
     <table>
@@ -26,5 +26,5 @@
   	echo "<p>" . $dance_school->nkms_dance_school_fields['dance_school_name'] . " does not have any registered teachers.<br>Add one by clicking the button below.</p>";
   }
   ?>
-  <a data-toggle="tab" href="#ds-add-teachers" class="nkms-btn">Add Teacher</a>
+  <a class="button ds-add-teachers-link">Add Teacher</a>
 </div><!-- .nkms-tabs -->

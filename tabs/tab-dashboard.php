@@ -186,7 +186,4 @@ nkms_invitations();
   else :
       echo 'You need WooCommerce installed & activated';
   endif; ?>
-  <p style="margin-top: 55px;">
-    <a href="<?php echo wp_logout_url( home_url() ); ?>"><button>Logout</button></a>
-  </p>
 </div><!-- .nkms-tabs -->

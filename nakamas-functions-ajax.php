@@ -148,6 +148,7 @@ function ds_add_dancer() {
    // save dance school fields
    update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
    $single_dancer_data = '
+   <div class="loader"><div class="lds-dual-ring"></div></div>
    <h3 style="font-weight:300;">Dancer <span style="font-weight:600;">' . $dancer->first_name . ' ' . $dancer->last_name . '</span> for <span style="font-weight:600;">' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</span></h3>
    <div class="dancer-details">
      <p class="nkms-pfp">' . get_wp_user_avatar( $dancer_id, '256', '' ) . '</p>
@@ -157,12 +158,13 @@ function ds_add_dancer() {
      <p><span>Age category</span>' . $dancer->nkms_dancer_fields['dancer_age_category'] . '</p>
      <p><span>Level category</span>' . $dancer->nkms_dancer_fields['dancer_level'] . '</p>
    </div>
-   <button class="change-dancer-status" data-ds-id="' . $dance_school_id . '" data-dancer-id="' .  $dancer_id . '">Change Status</button>
-   <button class="remove-dancer" data-ds-id="' . $dance_school_id . '" data-dancer-id="' . $dancer_id . '">Remove Dancer</button>';
+   <p class="ajax-response"></p>
+   <button id="change-dancer-status" class="button" data-dancer-id="' .  $dancer_id . '">Change Status</button>
+   <button id="remove-dancer-from-dancers-list" class="button" data-ds-id="' . $dance_school_id . '" data-dancer-id="' . $dancer_id . '">Remove Dancer</button>';
    wp_send_json_success( $single_dancer_data );
  }
 
- //Change dancer status
+ // Change dancer status
  add_action( 'wp_ajax_ds_change_status', 'ds_change_status');
  function ds_change_status() {
    // get dancer object
@@ -259,18 +261,19 @@ function ds_add_dancer() {
      $print_dancers .= '</div>';
    }
    $single_group_data = '
+   <div class="loader"><div class="lds-dual-ring"></div></div>
    <h3 style="font-weight:300;">Dance Group <span style="font-weight:600;">' . $group->getGroupName() . '</span> in <span style="font-weight:600;">' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</span></h3>
    <div class="group-details">
      <p><span>Type</span>' . $group->getType() . '</p>
      <p><span>Name</span>' . $group->getGroupName() . '</p>
      <p><span>Status</span>' . $group->getStatus() . '</p>
-     <button class="change-group-status" data-ds-id="' . $dance_school_id . '" data-dancer-id="' .  $group_id . '">Change Status</button>
+     <button class="change-group-status button" data-ds-id="' . $dance_school_id . '" data-dancer-id="' .  $group_id . '">Change Status</button>
      <h4 style="font-weight: 300;">Dancers of <span style="font-weight:600;">' . $group->getGroupName() . '</span></h4>
      <p>' . $print_dancers . '</p>
-     <a data-toggle="tab" href="#ds-group-add-dancers" class="nkms-btn">Add Dancers</a>';
+     <a class="button ds-group-add-dancers-link">Add Dancers</a>';
 
    if ( ! empty( $group_dancers ) ) {
-     $single_group_data .= '<a style="margin-left:5px;" data-toggle="tab" href="#ds-group-remove-dancers" class="nkms-btn">Remove Dancers</a>';
+     $single_group_data .= ' <a class="button ds-group-remove-dancers-link">Remove Dancers</a>';
    }
    $single_group_data .= '</div>';
 

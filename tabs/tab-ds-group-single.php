@@ -10,13 +10,14 @@ if ( $group_id ) {
 ?>
 
 <div class="ds-single-group">
+  <div class="loader"><div class="lds-dual-ring"></div></div>
   <h3 style="font-weight:300;">Dance Group <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span> in <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <div class="group-details">
     <p><span>Type</span><?php echo $group->getType(); ?></p>
     <p><span>Name</span><?php echo $group->getGroupName(); ?></p>
     <p><span>Status</span><?php echo $group->getStatus(); ?></p>
     <p class="ajax-response"></p>
-    <button class="change-group-status" data-ds-id="<?php echo $dance_school_id; ?>" data-group-id="<?php echo $group_id; ?>">Change Status</button>
+    <button class="change-group-status button" data-ds-id="<?php echo $dance_school_id; ?>" data-group-id="<?php echo $group_id; ?>">Change Status</button>
     <h4 style="font-weight: 300;">Dancers of <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h4>
     <div class="group-dancers">
       <p>
@@ -35,9 +36,9 @@ if ( $group_id ) {
         ?>
       </p>
     </div>
-    <a data-toggle="tab" href="#ds-group-add-dancers" class="nkms-btn">Add Dancers</a>
-    <?php if ( ! empty($group_dancers) ) { ?>
-      <a data-toggle="tab" href="#ds-group-remove-dancers" class="nkms-btn">Remove Dancers</a>
+    <a class="button ds-group-add-dancers-link">Add Dancers</a>
+    <?php if ( ! empty( $group_dancers ) ) { ?>
+      <a class="button ds-group-remove-dancers-link">Remove Dancers</a>
     <?php } ?>
   </div>
 </div><!-- .nkms-tabs -->

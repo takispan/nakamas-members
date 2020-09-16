@@ -39,41 +39,38 @@ if ( nkms_is_teacher( $current_user->ID ) ) {
 get_header(); // Loads the header.php template. ?>
 
 <section id="content">
-  <div id="nkms-account">
+  <div id="nkms-account" class="x-container max width">
     <?php if ( ! is_user_logged_in() ) : ?>
       <p class="warning">
         <?php _e('You must be logged in to access your account', 'profile'); ?>
       </p><!-- .warning -->
     <?php else : ?>
       <!-- Tab links -->
-      <div id="top-tabs-wrapper">
-        <ul class="nav nav-tabs" id="top-tabs">
-          <li class="active"><a data-toggle="tab" href="#dashboard">Dashboard</a></li>
-          <?php
-          // if ( nkms_has_role( $current_user, 'dance-school') || nkms_is_teacher( $current_user->ID ) ) :
-          if ( nkms_can_manage_dance_school( nkms_is_teacher( $current_user->ID ), $current_user->ID ) ) : ?>
-            <li><a data-toggle="tab" href="#dance-school">Dance School</a></li>
-          <?php endif; ?>
-          <li><a data-toggle="tab" href="#profile">Profile</a></li>
-          <li style="display: none;"><a data-toggle="tab" href="#profile-picture">Profile picture</a></li>
-        </ul>
-      </div>
+
 
       <!-- Tab content -->
-      <div class="tab-content">
-        <div id="dashboard" class="tab-pane fade in active">
+      <div class="tabs">
+        <input type="radio" name="tabs" id="dashboard" checked="checked">
+        <label for="dashboard">Dashboard</label>
+        <div class="tab">
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
         </div>
         <?php if ( nkms_has_role( $current_user, 'dance-school') || nkms_is_teacher( $current_user->ID ) ) : ?>
-          <div id="dance-school" class="tab-pane fade">
+          <input type="radio" name="tabs" id="dance-school" checked="checked">
+          <label for="dance-school">Dance School</label>
+          <div class="tab">
             <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
           </div>
         <?php endif; ?>
 
-        <div id="profile" class="tab-pane fade">
+        <input type="radio" name="tabs" id="profile" checked="checked">
+        <label for="profile">Profile</label>
+        <div class="tab">
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
         </div>
-        <div id="profile-picture" class="tab-pane fade">
+        <input type="radio" name="tabs" id="pfp" checked="checked">
+        <label for="pfp" class="tab-hidden">Profile Picture</label>
+        <div class="tab">
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile-picture.php'); ?>
         </div>
       </div>

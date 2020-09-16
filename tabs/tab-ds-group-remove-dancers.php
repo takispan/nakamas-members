@@ -31,8 +31,8 @@
     <!-- info messages -->
     <p class="ajax-response"></p>
     <p>
-      <input type="text" name="dance_school_group_remove_dancers_dance_school_id" value="<?php echo $dance_school->ID; ?>" hidden />
-      <input type="submit" name="dance_school_group_remove_dancers_submit" value="Remove" class="nkms-btn" />
+      <input type="hidden" name="dance_school_group_remove_dancers_dance_school_id" value="<?php echo $dance_school->ID; ?>" />
+      <input type="submit" name="dance_school_group_remove_dancers_submit" value="Remove" class="button" />
     </p>
   </form>
 </div><!-- .nkms-tabs -->

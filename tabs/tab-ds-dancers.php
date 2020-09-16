@@ -19,7 +19,7 @@
     <?php
   	foreach ($dance_school_dancers_list as $dancer_id) {
   		$dancer = get_userdata( $dancer_id );
-      echo '<tr><td>' . $dancer_id . '</td><td><a data-toggle="tab" href="#ds-dancer-single" class="single-dancer" data-ds-id="' . $dance_school->ID . '" data-dancer-id="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</a></td><td>' . $dancer->nkms_dancer_fields['dancer_age_category'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_level'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_status'] . '</td></tr>';
+      echo '<tr><td>' . $dancer_id . '</td><td><a class="single-dancer" data-ds-id="' . $dance_school->ID . '" data-dancer-id="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</a></td><td>' . $dancer->nkms_dancer_fields['dancer_age_category'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_level'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_status'] . '</td></tr>';
   	 }
     echo '</table>';
   } else {
@@ -27,5 +27,5 @@
     echo "<br>Add one by clicking the button below.</p>";
   }
   ?>
-  <a data-toggle="tab" href="#ds-add-dancers" class="nkms-btn">Add Dancer</a>
+  <a class="button ds-add-dancers-link">Add Dancer</a>
 </div><!-- .nkms-tabs -->

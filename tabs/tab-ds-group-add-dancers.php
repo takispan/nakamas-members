@@ -8,10 +8,10 @@
  if ( $group_id ) {
    $group = $dance_school_groups_list[$group_id];
    $group_dancers = $group->getDancers();
-
 ?>
 
 <div>
+  <div class="loader"><div class="lds-dual-ring"></div></div>
   <h3 style="font-weight:300;">Add a dancer to <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h3>
   <form id="add-group-dancer" method="post" action="" class="ajax">
     <p>
@@ -33,8 +33,8 @@
     <!-- info messages -->
     <p class="ajax-response"></p>
     <p>
-      <input type="text" name="dance_school_group_add_dancers_dance_school_id" value="<?php echo $dance_school->ID; ?>" hidden />
-      <input type="submit" name="dance_school_group_add_dancers_submit" value="Add" class="nkms-btn" />
+      <input type="hidden" name="dance_school_group_add_dancers_dance_school_id" value="<?php echo $dance_school->ID; ?>" />
+      <input type="submit" name="dance_school_group_add_dancers_submit" value="Add" class="button" />
     </p>
   </form>
 </div><!-- .nkms-tabs -->

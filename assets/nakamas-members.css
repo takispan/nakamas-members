@@ -1,10 +1,37 @@
 html {overflow-x: hidden;}
 #content {padding-top: 0;}
 /* menu */
+#nkms-acc-menu {
+	max-width: 65px;
+}
+#nkms-acc-menu > ul {
+	opacity: 0;
+	height: 0;
+	width: 120px;
+	background: #fff;
+	box-shadow: 0 0 3px #ccc;
+	padding: 0;
+	margin: 0;
+	left: -9999px;
+	transition: all ease-in-out 0.3s;
+	list-style: none;
+}
 #nkms-acc-menu:hover ul {
 	opacity: 1;
-	top: 30px;
-	right: -14px;
+	top: 0;
+	left: 0;
+}
+#nkms-acc-menu ul li {
+	background: inherit;
+	box-shadow: 0 0 3px #ccc;
+}
+#nkms-acc-menu ul li a {
+	padding: 10px 15px;
+	display: block;
+	color: #777;
+}
+#nkms-acc-menu ul li a:hover {
+	color: #000;
 }
 
 /* Tabs */
@@ -156,6 +183,14 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 
 .wc-item-meta li p {clear: both;}
 
+
+/*
+ * FORMS / INPUT
+**/
+p textarea, p input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"],
+input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"],
+input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input, p select {width: 100%; border-radius: 0;}
+
 /* Datepicker */
 #ui-datepicker-div {
 	background: #fff;
@@ -198,4 +233,113 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 
 .ui-datepicker-calendar a:hover {
 	text-decoration: none;
+}
+
+/* messages */
+.text-danger {color: #f55;}
+.text-info {color: #0a7;}
+
+/* TABS */
+/**
+ * Tabs
+ */
+.tabs, .ds-tabs {
+	display: flex;
+	flex-wrap: wrap; // make sure it wraps
+}
+.tabs > label, .ds-tabs > label {
+	order: 1; // Put the labels first
+	display: block;
+	padding: 1rem 2rem;
+	margin-right: 0.2rem;
+	cursor: pointer;
+  font-weight: bold;
+  transition: background ease 0.2s;
+}
+.tabs .tab, .ds-tabs .ds-tab {
+  order: 99; // Put the tabs last
+  flex-grow: 1;
+	width: 100%;
+	display: none;
+  padding: 1rem;
+  background: #fff;
+}
+.tabs > input[type="radio"], .ds-tabs > input[type="radio"] {
+	display: none;
+}
+.tabs > input[type="radio"]:checked + label, .ds-tabs > input[type="radio"]:checked + label {
+	background: #fff;
+}
+.tabs > input[type="radio"]:checked + label + .tab, .ds-tabs > input[type="radio"]:checked + label + .ds-tab {
+	display: block;
+}
+
+@media (max-width: 45em) {
+  .tabs .tab, .tabs > label, .ds-tabs .ds-tab, .ds-tabs > label {
+    order: initial;
+  }
+  .tabs > label, .ds-tabs > label {
+    width: 100%;
+    margin-right: 0;
+    margin-top: 0.2rem;
+  }
+}
+
+/* extra for tabs */
+.tabs > input[type="radio"]:checked + label, .ds-tabs > input[type="radio"]:checked + label, .tabs > label:hover, .ds-tabs > label:hover {
+	/* color: #eee;
+	background: #333; */
+	color: #333;
+	box-shadow: inset 0 -3px #333;
+}
+
+.tab-hidden {display: none;}
+a {cursor: pointer;}
+.dance-school-h3 {
+	font-weight: 300;
+	margin: 0;
+	padding: 15px 0 30px 0;
+}
+.dance-school-h3 span {
+	font-weight: 600;
+}
+
+/* loader */
+.ds-tab > div {position: relative;}
+.loader {
+	background: #fffa;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	display: none;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #333;
+  border-color: #333 transparent #333 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

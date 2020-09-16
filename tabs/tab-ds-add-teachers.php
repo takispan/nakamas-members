@@ -15,7 +15,7 @@
     <div class="ajax-response"></div>
     <p>
       <input type="hidden" name="dance_school_add_teachers_ds_id" value="<?php echo $dance_school->ID; ?>" />
-      <input type="submit" name="dance_school_add_teachers_submit" value="Add" class="nkms-btn" />
+      <input type="submit" name="dance_school_add_teachers_submit" value="Add" class="button" />
     </p>
   </form>
 </div><!-- .nkms-tabs -->
