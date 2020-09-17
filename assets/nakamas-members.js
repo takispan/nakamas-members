@@ -10,37 +10,28 @@ jQuery(document).ready(function($) {
     yearRange: "-100:+0",
   });
 
-  // Remember tab after page reload
-  // $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
-  //   var tabLink = $(e.target).attr('href');
-  //   console.log("activeTab: " + tabLink);
-  //   if ( tabLink == '#dance-school' ) {
-  //     $('#ds-tabs a[href="#ds-overview"]').tab('show');
-  //   }
-  //   if ( tabLink.startsWith('#ds') ) {
-  //     tabLink = '#dance-school';
-  //     tabLink2 = $(e.target).attr('href');
-  //     sessionStorage.setItem('activeTab', tabLink);
-  //     sessionStorage.setItem('activeTab2', tabLink2);
-  //   }
-  //   else {
-  //     sessionStorage.setItem('activeTab', tabLink);
-  //   }
-	// });
-  // // Retrieve last activeTab, default: dashboard
-	// activeTab = sessionStorage.getItem('activeTab');
-  // activeTab2 = sessionStorage.getItem('activeTab2');
-  // if ( activeTab == '#dance-school' ) {
-  //   activeTab2 = sessionStorage.getItem('activeTab2');
-  //   $('#top-tabs a[href="' + activeTab + '"]').tab('show');
-  //   $('#ds-tabs a[href="' + activeTab2 + '"]').tab('show');
-  // }
-  // else if ( activeTab ) {
-  //   $('#top-tabs a[href="' + activeTab + '"]').tab('show');
-  // }
-  // else {
-  //   $('#top-tabs a[href="#dashboard"]').tab('show');
-  // }
+  // Remember tab after page reload ( only on webkit based browsers )
+  isWebkit = /(safari|chrome)/.test(navigator.userAgent.toLowerCase());
+  if ( isWebkit ){
+    $('.tabs > input').on('change', function(e) {
+      var tabLink = $( this ).attr('id');
+      console.log("activeTab: " + tabLink);
+      sessionStorage.setItem('activeTab', tabLink);
+  	});
+    $('.ds-tabs > input').on('change', function(e) {
+      var ds_tabLink = $( this ).attr('id');
+      console.log("active dsTab: " + ds_tabLink);
+
+      sessionStorage.setItem('activedsTab', ds_tabLink);
+    });
+    // Retrieve last activeTab
+  	activeTab = sessionStorage.getItem('activeTab');
+    $('label[for="' + activeTab + '"]').click();
+    if ( activeTab == 'dance-school' ) {
+      active_dsTab = sessionStorage.getItem('activedsTab');
+      $('label[for="' + active_dsTab + '"]').click();
+    }
+  }
 
   // Send request to dancer in order to manage their account
   $('#wpua-upload-existing').on('click', function(e) {
@@ -235,8 +226,8 @@ jQuery(document).ready(function($) {
         $('.ds-single-dancer .ajax-response').html( response.data );
         setTimeout(function(){
           $('.ds-single-dancer .ajax-response').slideUp();
+          window.location.reload();
         }, 3000);
-        window.location.reload();
       },
       error: function(response) {
         $('.loader').hide();
@@ -266,6 +257,7 @@ jQuery(document).ready(function($) {
         $('.loader').hide();
         $('.ds-single-dancer .ajax-response').html( response.data );
         $('label[for="ds-dancers"]').click();
+        window.location.reload();
       },
       error: function(response) {
         $('.loader').hide();
@@ -300,9 +292,10 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.loader').hide();
         $('#add-groups .ajax-response').html( response.data );
-        $('#add-groups .ajax-response').show();
         setTimeout(function(){
           $('#add-groups .ajax-response').slideUp();
+          $('label[for="ds-dance-groups"]').click();
+          window.location.reload();
         }, 3000);
       },
       error: function(response) {
@@ -336,6 +329,70 @@ jQuery(document).ready(function($) {
       },
       error: function(response) {
         $('.ds-single-group').html( response.data );
+      }
+    });
+  });
+
+  // Change group status
+  $('.change-group-status').on('click', function(e) {
+    var ds_group_change_status_group_id = $(this).attr('data-group-id');
+    var ds_group_change_status_dance_school_id = $(this).attr('data-ds-id');
+
+    // loader
+    $('.loader').css('display','flex');
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_group_change_status',
+        ds_group_change_status_group_id: ds_group_change_status_group_id,
+        ds_group_change_status_dance_school_id: ds_group_change_status_dance_school_id,
+      },
+      success: function(response) {
+        $('.loader').hide();
+        $('.group-details .ajax-response').html( response.data );
+        setTimeout(function(){
+          $('.group-details .ajax-response').slideUp();
+          window.location.reload();
+        }, 3000);
+      },
+      error: function(response) {
+        $('.group-details .ajax-response').html( '<p class="text-danger">An error occured, please try again later.</p>' );
+      }
+    });
+  });
+
+  // Remove group
+  $('.remove-group').on('click', function(e) {
+    var ds_group_remove_group_id = $(this).attr('data-group-id');
+    var ds_group_remove_dance_school_id = $(this).attr('data-ds-id');
+
+    // loader
+    $('.loader').css('display','flex');
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_remove_group',
+        ds_remove_group_group_id: ds_group_remove_group_id,
+        ds_remove_group_dance_school_id: ds_group_remove_dance_school_id,
+      },
+      success: function(response) {
+        $('.loader').hide();
+        $('.group-details .ajax-response').html( response.data );
+        $('.group-details .ajax-response').show();
+        setTimeout(function(){
+          $('.group-details .ajax-response').slideUp();
+          $('label[for="ds-dance-groups"]').click();
+          window.location.reload();
+        }, 3000);
+      },
+      error: function(response) {
+        $('.group-details .ajax-response').html( '<p class="text-danger">An error occured, please try again later.</p>' );
       }
     });
   });
@@ -377,6 +434,10 @@ jQuery(document).ready(function($) {
     e.preventDefault();
     var dancer_id = $('#remove_dancer_from_group').val();
     var dance_school_id = $('input[name=dance_school_group_remove_dancers_dance_school_id]').val();
+
+    // loader
+    $('.loader').css('display','flex');
+
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
       url: nkms_ajax.ajax_url,
@@ -387,34 +448,15 @@ jQuery(document).ready(function($) {
         dance_school_id: dance_school_id,
       },
       success: function(response) {
+        $('.loader').hide();
         $('#remove-group-dancer .ajax-response').html( response.data );
+        setTimeout(function(){
+          $('#remove-group-dancer .ajax-response').slideUp();
+          window.location.reload();
+        }, 3000);
       },
       error: function(response) {
         $('#remove-group-dancer .ajax-response').html( response.data );
-      }
-    });
-  });
-
-  // Change group status
-  $('.change-group-status').on('click', function(e) {
-    var ds_group_change_status_group_id = $(this).attr('data-group-id');
-    var ds_group_change_status_dance_school_id = $(this).attr('data-ds-id');
-
-    $.ajax({
-      _ajax_nonce: nkms_ajax.nonce,
-      url: nkms_ajax.ajax_url,
-      type: "POST",
-      data: {
-        action: 'ds_group_change_status',
-        ds_group_change_status_group_id: ds_group_change_status_group_id,
-        ds_group_change_status_dance_school_id: ds_group_change_status_dance_school_id,
-      },
-      success: function(response) {
-        $('.group-details .ajax-response').html( response.data );
-        // window.location.reload();
-      },
-      error: function(response) {
-        $('.group-details .ajax-response').html( '<p class="text-danger">An error occured, please try again later.</p>' );
       }
     });
   });

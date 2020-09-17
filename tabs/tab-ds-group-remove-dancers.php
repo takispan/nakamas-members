@@ -9,6 +9,7 @@
 
 ?>
 <div>
+  <div class="loader"><div class="lds-dual-ring"></div></div>
   <h3 style="font-weight:300;">Remove a dancer from <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h3>
   <form id="remove-group-dancer" method="post" action="" class="ajax">
     <p>

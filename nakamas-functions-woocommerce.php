@@ -42,7 +42,7 @@ function nkms_woo_required_fields( $fields ) {
 // };
 
 // Display a custom text field on product
-add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
+// add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
 function nkms_custom_woo_field() {
  woocommerce_wp_date_input(
    array(
@@ -59,10 +59,8 @@ function nkms_custom_woo_field() {
 // Hide Dancer Registration category if not needed
 add_filter( 'woocommerce_product_query_tax_query', 'nkms_hide_dancer_registration');
 function nkms_hide_dancer_registration ( $tquery ) {
-	$user = wp_get_current_user();
-	$blocked_user_roles = array( 'customer', 'subscriber', 'contributor', 'author', 'editor'  );
   $hidden_categories = array( 'dancer-registration' );
-  if ( is_shop() && ( ! is_user_logged_in() || is_user_logged_in() && count( array_intersect( $blocked_user_roles, $user->roles ) ) > 0 ) ) {
+  if ( is_shop() ) {
 		$tquery[] = array(
       'taxonomy' => 'product_cat',
 			'terms'    => $hidden_categories,
@@ -71,6 +69,31 @@ function nkms_hide_dancer_registration ( $tquery ) {
 		);
   }
   return $tquery;
+}
+
+// Change add to cart button
+add_filter('woocommerce_product_add_to_cart_text', 'woo_custom_product_add_to_cart_text');
+function woo_custom_product_add_to_cart_text() {
+	global $product;
+	$product_id = $product->get_id();
+	$product_categories = wc_get_product_category_list( $product_id );
+	// Check if event is for dancers so they can register
+	if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
+		return __('Register', 'woocommerce');
+	}
+	return __('Book', 'woocommerce');
+}
+
+add_filter('woocommerce_product_single_add_to_cart_text', 'woo_custom_cart_button_text');
+function woo_custom_cart_button_text() {
+	global $product;
+	$product_id = $product->get_id();
+	$product_categories = wc_get_product_category_list( $product_id );
+	// Check if event is for dancers so they can register
+	if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
+		return __('Register', 'woocommerce');
+	}
+	return __('Book', 'woocommerce');
 }
 
 // List active dancers (if solo) or active groups to register to events

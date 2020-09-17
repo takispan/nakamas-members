@@ -52,9 +52,11 @@ function nkms_fix_user_meta() {
   if ( isset( $_POST['admin_update_user_fields'] ) ) {
     $users_list = get_users();
     foreach ( $users_list as $user ) {
-      if ( $user->ID > 1 ) {
+      if ( $user->ID > 0 ) {
         // Basic fields
         $user_fields = $user->nkms_fields;
+        if ( ! is_array( $user_fields ) )
+          $user_fields = array();
         // if empty, initialize
         if ( empty( $user_fields['dob'] ) ) { $user_fields['dob'] = '17/12/1987'; }
         if ( empty ( $user_fields['country'] ) ) { $user_fields['country'] = 'GB'; }
@@ -69,6 +71,8 @@ function nkms_fix_user_meta() {
         if ( $user->roles[0] === 'dancer' ) {
           // Dancer fields
           $dancer_fields = $user->nkms_dancer_fields;
+          if ( ! is_array( $dancer_fields ) )
+            $dancer_fields = array();
           // if empty, initialize
           if ( empty ( $dancer_fields['dancer_ds_name'] ) ) { $dancer_fields['dancer_ds_name'] = ''; }
           if ( empty ( $dancer_fields['dancer_ds_teacher_name'] ) ) { $dancer_fields['dancer_ds_teacher_name'] = ''; }
@@ -76,13 +80,15 @@ function nkms_fix_user_meta() {
           if ( empty ( $dancer_fields['dancer_level'] ) ) { $dancer_fields['dancer_level'] = 'Novice'; }
           if ( empty ( $dancer_fields['dancer_age_category'] ) ) { $dancer_fields['dancer_age_category'] = '17&o'; }
           if ( empty ( $dancer_fields['dancer_status'] ) ) { $dancer_fields['dancer_status'] = 'Inactive'; }
-          if ( empty ( $dancer_fields['dancer_invites'] ) ) { $dancer_fields['dancer_invites'] = array( array(), array() ); }
-          if ( empty ( $dancer_fields['dancer_guardian_list'] ) ) { $dancer_fields['dancer_guardian_list'] = array(); }
+          if ( ! is_array ( $dancer_fields['dancer_invites'] ) ) { $dancer_fields['dancer_invites'] = array( 'dance_school' => array(), 'guardian' => array() ); }
+          if ( ! isset( $dancer_fields['dancer_invites']['dance_school'] ) ) { $dancer_fields['dancer_invites']['dance_school'] = array(); }
+          if ( ! isset( $dancer_fields['dancer_invites']['guardian'] ) ) { $dancer_fields['dancer_invites']['guardian'] = array(); }
+          if ( ! is_array ( $dancer_fields['dancer_guardian_list'] ) ) { $dancer_fields['dancer_guardian_list'] = array(); }
           if ( empty ( $dancer_fields['dancer_guardian_name'] ) ) { $dancer_fields['dancer_guardian_name'] = ''; }
           if ( empty ( $dancer_fields['dancer_guardian_email'] ) ) { $dancer_fields['dancer_guardian_email'] = ''; }
           if ( empty ( $dancer_fields['dancer_guardian_phone_number'] ) ) { $dancer_fields['dancer_guardian_phone_number'] = ''; }
-          if ( empty ( $dancer_fields['dancer_teacher_of'] ) ) { $dancer_fields['dancer_teacher_of'] = array(); }
-          if ( empty ( $dancer_fields['dancer_part_of'] ) ) { $dancer_fields['dancer_part_of'] = array(); }
+          if ( ! is_array ( $dancer_fields['dancer_teacher_of'] ) ) { $dancer_fields['dancer_teacher_of'] = array(); }
+          if ( ! is_array ( $dancer_fields['dancer_part_of'] ) ) { $dancer_fields['dancer_part_of'] = array(); }
           // save fields
           update_user_meta( $user->ID, 'nkms_dancer_fields', $dancer_fields );
         }
@@ -90,16 +96,18 @@ function nkms_fix_user_meta() {
         if ( $user->roles[0] === 'dance-school' ) {
           // Dance school fields
           $dance_school_fields = $user->nkms_dance_school_fields;
+          if ( ! is_array( $dance_school_fields ) )
+            $dance_school_fields = array();
           // if empty, initialize
           if ( empty ( $dance_school_fields['dance_school_name'] ) ) { $dance_school_fields['dance_school_name'] = ''; }
           if ( empty ( $dance_school_fields['dance_school_address'] ) ) { $dance_school_fields['dance_school_address'] = ''; }
           if ( empty ( $dance_school_fields['dance_school_phone_number'] ) ) { $dance_school_fields['dance_school_phone_number'] = ''; }
           if ( empty ( $dance_school_fields['dance_school_description'] ) ) { $dance_school_fields['dance_school_description'] = ''; }
-          if ( empty ( $dance_school_fields['dance_school_dancers_list'] ) ) { $dance_school_fields['dance_school_dancers_list'] = array(); }
-          if ( empty ( $dance_school_fields['dance_school_groups_list'] ) ) { $dance_school_fields['dance_school_groups_list'] = array(); }
-          if ( empty ( $dance_school_fields['dance_school_teachers_list'] ) ) { $dance_school_fields['dance_school_teachers_list'] = array(); }
-          if ( empty ( $dance_school_fields['dance_school_invites'] ) ) { $dance_school_fields['dance_school_invites'] = array(); }
-          if ( empty ( $dance_school_fields['dance_school_currently_viewing'] ) ) { $dance_school_fields['dance_school_currently_viewing'] = array( 'dancer' => 0, 'group' => 0 ); }
+          if ( ! is_array ( $dance_school_fields['dance_school_dancers_list'] ) ) { $dance_school_fields['dance_school_dancers_list'] = array(); }
+          if ( ! is_array ( $dance_school_fields['dance_school_groups_list'] ) ) { $dance_school_fields['dance_school_groups_list'] = array(); }
+          if ( ! is_array ( $dance_school_fields['dance_school_teachers_list'] ) ) { $dance_school_fields['dance_school_teachers_list'] = array(); }
+          if ( ! is_array ( $dance_school_fields['dance_school_invites'] ) ) { $dance_school_fields['dance_school_invites'] = array(); }
+          if ( ! is_array ( $dance_school_fields['dance_school_currently_viewing'] ) ) { $dance_school_fields['dance_school_currently_viewing'] = array( 'dancer' => 0, 'group' => 0 ); }
           // save fields
           update_user_meta( $user->ID, 'nkms_dance_school_fields', $dance_school_fields );
         }
@@ -107,9 +115,11 @@ function nkms_fix_user_meta() {
         if ( $user->roles[0] === 'guardian' ) {
           // Guardian fields
           $guardian_fields = $user->nkms_guardian_fields;
+          if ( ! is_array( $guardian_fields ) )
+            $guardian_fields = array();
           // if empty, initialize
-          if ( empty ( $guardian_fields['guardian_dancers_list'] ) ) { $guardian_fields['guardian_dancers_list'] = array(); }
-          if ( empty ( $guardian_fields['guardian_invites'] ) ) { $guardian_fields['guardian_invites'] = array(); }
+          if ( ! is_array ( $guardian_fields['guardian_dancers_list'] ) ) { $guardian_fields['guardian_dancers_list'] = array(); }
+          if ( ! is_array ( $guardian_fields['guardian_invites'] ) ) { $guardian_fields['guardian_invites'] = array(); }
           // save fields
           update_user_meta( $user->ID, 'nkms_guardian_fields', $guardian_fields );
         }

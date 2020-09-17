@@ -38,55 +38,6 @@ html {overflow-x: hidden;}
 	color: #000;
 }
 
-/* Tabs */
-/* #nkms-account, .nkms-tabs {
-	max-width: 1200px;
-	margin: 0 auto;
-	width: 100%;
-} */
-
-#top-tabs-wrapper, #ds-tabs-wrapper {
-	background: #f1f1f1;
-}
-
-#top-tabs, #ds-tabs {
-	max-width: 1200px;
-	margin: 0 auto;
-	border: 0;
-	overflow-y: scroll;
-	flex-wrap: nowrap;
-	scrollbar-width: none;
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
-#top-tabs::-webkit-scrollbar, #ds-tabs::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
-}
-
-#top-tabs > li, #ds-tabs > li {
-	line-height: 60px;
-	margin: 0;
-}
-/* #top-tabs > li:first-child {
-	margin-left: 0;
-} */
-#top-tabs li a, #ds-tabs li a {
-	display: flex;
-	text-decoration: none;
-	height: 100%;
-	display: flex;
-	padding: 0 15px;
-	width: max-content;
-}
-#top-tabs li a:hover, #ds-tabs li a:hover {
-	background: #cd2653;
-	color: #f1f1f1;
-}
-
-/* Possible CSS for tabs & content */
-.nkms-tabs > h3 {max-width: 1200px; margin: 0 auto; width: 100%; padding: 20px 15px;}
-.nkms-tabs > .tab-content, #dashboard, #profile, #profile-picture, #nkms-registration, #nkms-login {max-width: 1200px; margin: 0 auto; padding: 20px 15px;}
-.nkms-tabs .tab-content h3 {margin: 20px 0;}
-
 /* Invite system *
 .dancer-invitatons button {
 	border-radius: 50%;
@@ -138,6 +89,13 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 /* Profile picture */
 .wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
 #profile-picture .avatar {margin: 0;}
+
+/* #wpua-file-existing {
+	color: #ffffff;
+	border-color: rgb(10,10,10);
+	background-color: rgb(10,10,10);
+	text-shadow: 0 0.075em 0.075em rgba(0,0,0,0.5);
+} */
 
 /* Registration */
 #nkms_registration p {position: relative;}
