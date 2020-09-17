@@ -33,15 +33,181 @@ jQuery(document).ready(function($) {
     }
   }
 
-  // Send request to dancer in order to manage their account
+  // Go back to profile after uploading pfp
   $('#wpua-upload-existing').on('click', function(e) {
-    $('#top-tabs a[href="#profile"]').tab('show');
+    // $('#top-tabs a[href="#profile"]').tab('show');
   });
 
   // WOO - select all dancers
   $('#select-all-dancers').click(function(){
     $('input:checkbox').not(this).prop('checked', this.checked);
   });
+
+  /*
+   * INVITE SYSTEM
+  **/
+  // Dancer requests to join a dance school
+  $('form#dancer_requests_to_join_dance_school').on('submit', function(e) {
+    e.preventDefault();
+
+    var dance_school_id = $( 'select[name=dancer_request_to_join_dance_school_id]' ).val();
+    var dancer_id = $('input[name=dancer_request_to_join_dancer_id]').val();
+
+    // loader
+    $('.loader').css('display','flex');
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'dancer_requests_to_join_dance_school',
+        dancer_requests_to_join_dance_school_ds_id: dance_school_id,
+        dancer_requests_to_join_dance_school_dancer_id: dancer_id,
+      },
+      success: function(response) {
+        $('.loader').hide();
+        $('form#dancer_requests_to_join_dance_school .ajax-response').html( response.data );
+        $('form#dancer_requests_to_join_dance_school .ajax-response').show();
+        setTimeout(function(){
+          $('form#dancer_requests_to_join_dance_school .ajax-response').slideUp();
+        }, 3000);
+      },
+      error: function(response) {
+        $('.loader').hide();
+        $('form#dancer_requests_to_join_dance_school .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+      }
+    });
+  });
+
+  // Dancer accepts / declines dance school invite
+  $('#dancer_pending_invites').submit( function(e) {
+    e.preventDefault();
+    var dancer_id = $('input[name=dancer_invited_dancer_id]').val();
+    var dance_school_id = $( 'input[name=dancer_invited_dance_school_id]' ).val();
+    var submit = $(this).find("input[type=submit]:focus").val();
+
+    // loader
+    $('.loader').css('display','flex');
+
+    // if dance school is accepted
+    if ( submit == 'Accept' ) {
+      $.ajax({
+        _ajax_nonce: nkms_ajax.nonce,
+        url: nkms_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: 'dancer_accepts_dance_school_invite',
+          dancer_accepts_dance_school_invite_dancer_id: dancer_id,
+          dancer_accepts_dance_school_invite_ds_id: dance_school_id,
+        },
+        success: function(response) {
+          $('.loader').hide();
+          $('form#dancer_pending_invites .ajax-response').html( response.data );
+          $('form#dancer_pending_invites .ajax-response').show();
+          setTimeout(function(){
+            $('form#dancer_pending_invites .ajax-response').slideUp();
+          }, 3000);
+          window.location.reload();
+        },
+        error: function(response) {
+          $('.loader').hide();
+          $('form#dancer_pending_invites .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+        }
+      });
+    }
+    // if dance school is declined
+    if ( submit == 'Decline' ) {
+      $.ajax({
+        _ajax_nonce: nkms_ajax.nonce,
+        url: nkms_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: 'dancer_declines_dance_school_invite',
+          dancer_declines_dance_school_invite_dancer_id: dancer_id,
+          dancer_declines_dance_school_invite_ds_id: dance_school_id,
+        },
+        success: function(response) {
+          $('.loader').hide();
+          $('form#dancer_pending_invites .ajax-response').html( response.data );
+          $('form#dancer_pending_invites .ajax-response').show();
+          setTimeout(function(){
+            $('form#dancer_pending_invites .ajax-response').slideUp();
+          }, 3000);
+          window.location.reload();
+        },
+        error: function(response) {
+          $('.loader').hide();
+          $('form#dancer_pending_invites .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+        }
+      });
+    }
+  });
+
+  // Dance School accepts / declines dancer request to join
+  $('#dance_school_pending_memberships').submit( function(e) {
+    e.preventDefault();
+    var dancer_id = $('input[name=dance_school_request_to_join_dancer_id]').val();
+    var dance_school_id = $( 'input[name=dance_school_request_to_join_ds_id]' ).val();
+    var submit = $(this).find("input[type=submit]:focus").val();
+
+    // loader
+    $('.loader').css('display','flex');
+
+    // if dancer is accepted
+    if ( submit == 'Accept' ) {
+      $.ajax({
+        _ajax_nonce: nkms_ajax.nonce,
+        url: nkms_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: 'dance_school_accepts_dancer_invite',
+          dance_school_accepts_dancer_invite_dancer_id: dancer_id,
+          dance_school_accepts_dancer_invite_ds_id: dance_school_id,
+        },
+        success: function(response) {
+          $('.loader').hide();
+          $('form#dance_school_pending_memberships .ajax-response').html( response.data );
+          $('form#dance_school_pending_memberships .ajax-response').show();
+          setTimeout(function(){
+            $('form#dance_school_pending_memberships .ajax-response').slideUp();
+          }, 3000);
+          window.location.reload();
+        },
+        error: function(response) {
+          $('.loader').hide();
+          $('form#dance_school_pending_memberships .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+        }
+      });
+    }
+    // if dancer is declined
+    if ( submit == 'Decline' ) {
+      $.ajax({
+        _ajax_nonce: nkms_ajax.nonce,
+        url: nkms_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: 'dance_school_declines_dancer_invite',
+          dance_school_declines_dancer_invite_dancer_id: dancer_id,
+          dance_school_declines_dancer_invite_ds_id: dance_school_id,
+        },
+        success: function(response) {
+          $('.loader').hide();
+          $('form#dance_school_pending_memberships .ajax-response').html( response.data );
+          $('form#dance_school_pending_memberships .ajax-response').show();
+          setTimeout(function(){
+            $('form#dance_school_pending_memberships .ajax-response').slideUp();
+          }, 3000);
+          window.location.reload();
+        },
+        error: function(response) {
+          $('.loader').hide();
+          $('form#dance_school_pending_memberships .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+        }
+      });
+    }
+  });
+
 
   /*
    * UPDATE PROFILE
@@ -224,6 +390,7 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.loader').hide();
         $('.ds-single-dancer .ajax-response').html( response.data );
+        $('.ds-single-dancer .ajax-response').show();
         setTimeout(function(){
           $('.ds-single-dancer .ajax-response').slideUp();
           window.location.reload();
@@ -256,12 +423,18 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.loader').hide();
         $('.ds-single-dancer .ajax-response').html( response.data );
-        $('label[for="ds-dancers"]').click();
-        window.location.reload();
+        setTimeout(function(){
+          $('.ds-single-dancer .ajax-response').slideUp();
+        }, 3000);
+        // $('label[for="ds-dancers"]').click();
+        // window.location.reload();
       },
       error: function(response) {
         $('.loader').hide();
         $('.ds-single-dancer .ajax-response').html( '<p class="text-danger">An error occured. Dancer was not removed.</p>' );
+        setTimeout(function(){
+          $('.ds-single-dancer .ajax-response').slideUp();
+        }, 3000);
       }
     });
   });

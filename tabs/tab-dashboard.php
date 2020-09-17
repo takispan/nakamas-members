@@ -5,7 +5,7 @@
  * Allow users to update their profiles from Frontend.
  *
  */
-nkms_invitations();
+// nkms_invitations();
 ?>
 <div class="nkms-tabs">
   <h3 style="font-weight:300;">Dashboard of <span style="font-weight:600;"><?php echo $current_user->user_login; ?></span></h3>
@@ -43,6 +43,7 @@ nkms_invitations();
           $guardian = get_userdata( $guardian_id ); ?>
           <div><p><?php echo $guardian->first_name . " " . $guardian->last_name; ?> wants to manage your account.</p>
             <form method="post" class="invite-btn">
+              <div class="ajax-response"></div>
               <input type="hidden" name="guardian_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
               <input type="hidden" name="guardian_invite_guardian_id" value="<?php echo $guardian_id; ?>" />
               <input type="submit" name="guardian_dancer_invite_accept" value="Accept" />
@@ -64,11 +65,12 @@ nkms_invitations();
         foreach ( $dancer_invites_dance_school as $dance_school_id ) {
           $ds = get_userdata( $dance_school_id ); ?>
           <div class="dancer-invites"><p>You have been invited to join <?php echo $ds->nkms_dance_school_fields['dance_school_name']; ?>.</p>
-            <form method="post" class="invite-btn">
-              <input type="hidden" name="dancer_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
-              <input type="hidden" name="dancer_invite_dance_school_id" value="<?php echo $ds->ID; ?>" />
-              <input type="submit" name="dancer_invite_accept" value="Accept" />
-              <input type="submit" name="dancer_invite_dismiss" value="Decline" />
+            <form method="post" id="dancer_pending_invites" class="invite-btn">
+              <div class="ajax-response"></div>
+              <input type="hidden" name="dancer_invited_dancer_id" value="<?php echo $dancer->ID; ?>" />
+              <input type="hidden" name="dancer_invited_dance_school_id" value="<?php echo $ds->ID; ?>" />
+              <input type="submit" name="dancer_invited_accept" class="button" value="Accept" />
+              <input type="submit" name="dancer_invited_decline" class="button" value="Decline" />
             </form>
           </div>
           <?php
@@ -83,26 +85,29 @@ nkms_invitations();
       if ( nkms_can_manage_dancer( $dancer->ID, $current_user->ID ) ) :
         $part_of_ds = $dancer->nkms_dancer_fields['dancer_part_of'];
         if ( empty( $part_of_ds ) ) : ?>
-          <h4>Request to join a dance school</h4>
-          <?php
-          $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
-          // sort($dance_schools_list);
-          // print_r($dance_schools_list);
-          ?>
-          <form method="post" id="dancer_requests_to_join_dance_school" class="invite-btn">
-            <p><select id="dancer_requests_to_join_dance_school_id" name="dancer_request_to_join_dance_school_id"><option selected disabled hidden>Select dance school</option>
+          <div>
+            <div class="loader"><div class="lds-dual-ring"></div></div>
+            <h4>Request to join a dance school</h4>
             <?php
-            foreach ( $dance_schools_list as $ds ) {
-              if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
-                echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
-              }
-            }
+            $dance_schools_list = get_users( array( 'role__in' => 'dance-school' ) );
+            // sort($dance_schools_list);
+            // print_r($dance_schools_list);
             ?>
-            </select></p>
-            <div class="ajax-response"></div>
-            <input type="hidden" name="dancer_request_to_join_dancer_id" value="<?php echo $dancer->ID; ?>" />
-            <input type="submit" name="dancer_request_to_join_submit" value="Request" />
-          </form>
+            <form method="post" id="dancer_requests_to_join_dance_school" class="invite-btn">
+              <p><select id="dancer_requests_to_join_dance_school_id" name="dancer_request_to_join_dance_school_id"><option selected disabled hidden>Select dance school</option>
+              <?php
+              foreach ( $dance_schools_list as $ds ) {
+                if ( ! empty( $ds->nkms_dance_school_fields['dance_school_name'] ) ) {
+                  echo '<option value="' . $ds->ID . '">' . $ds->nkms_dance_school_fields['dance_school_name'] . '</option>';
+                }
+              }
+              ?>
+              </select></p>
+              <div class="ajax-response"></div>
+              <input type="hidden" name="dancer_request_to_join_dancer_id" value="<?php echo $dancer->ID; ?>" />
+              <input type="submit" name="dancer_request_to_join_submit" class="button" value="Request" />
+            </form>
+          </div>
         <?php else :
           $dance_school_id = $part_of_ds[0];
           $dance_school = get_userdata( $dance_school_id ); ?>

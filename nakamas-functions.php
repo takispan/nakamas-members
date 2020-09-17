@@ -311,88 +311,26 @@ function nkms_invitations() {
     update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
   }
 
-  // Dancer requests to join a dance school
-  if ( isset( $_POST['dancer_request_to_join_submit'] ) ) {
-    $dance_school_id = intval( $_POST['dancer_request_to_join_dance_school_id'] );
-    $dancer_id = intval( $_POST['dancer_request_to_join_dancer_id'] );
-
-    if ( $dance_school_id ) {
-      $dance_school = get_userdata( $dance_school_id );
-      $dance_school_fields = $dance_school->nkms_dance_school_fields;
-      $ds_invites_list = $dance_school_fields['dance_school_invites'];
-      if ( ! in_array( $dancer_id, $ds_invites_list ) ) {
-        array_push( $ds_invites_list, $dancer_id );
-        $dance_school_fields['dance_school_invites'] = $ds_invites_list;
-        update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
-      }
-    }
-  }
-  // Dance School accepts dancer
-  if ( isset( $_POST['dance_school_request_to_join_accept'] ) ) {
-    $dance_school_id = intval( $_POST['dance_school_request_to_join_ds_id'] );
-    $dancer_id = intval( $_POST['dance_school_request_to_join_dancer_id'] );
-
-    if ( $dance_school_id ) {
-      $dance_school = get_userdata( $dance_school_id );
-      $dance_school_fields = $dance_school->nkms_dance_school_fields;
-      $ds_invites_list = $dance_school_fields['dance_school_invites'];
-      if ( in_array( $dancer_id, $ds_invites_list ) ) {
-        $ds_invites_list = array_diff( $ds_invites_list, [$dancer_id] );
-        $dance_school_fields['dance_school_invites'] = $ds_invites_list;
-        $dancers_list = $dance_school_fields['dance_school_dancers_list'];
-        if ( ! in_array( $dancer_id, $dancers_list ) ) {
-          array_push( $dancers_list, $dancer_id );
-          $dance_school_fields['dance_school_dancers_list'] = $dancers_list;
-        }
-        $dancer = get_userdata( $dancer_id );
-        $dancer_fields = $dancer->nkms_dancer_fields;
-        $part_of_ds = $dancer_fields['dancer_part_of'];
-        if ( ! in_array( $dance_school_id, $part_of_ds ) ) {
-          array_push( $part_of_ds, $dance_school_id );
-          $dancer_fields['dancer_part_of'] = $part_of_ds;
-        }
-        update_user_meta( $dancer->ID, 'nkms_dancer_fields', $dancer_fields );
-        update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
-      }
-    }
-  }
-  // Dance School declines dancer
-  if ( isset( $_POST['dance_school_request_to_join_decline'] ) ) {
-    $dance_school_id = intval( $_POST['dance_school_request_to_join_ds_id'] );
-    $dancer_id = intval( $_POST['dance_school_request_to_join_dancer_id'] );
-
-    if ( $dance_school_id ) {
-      $dance_school = get_userdata( $dance_school_id );
-      $dance_school_fields = $dance_school->nkms_dance_school_fields;
-      $ds_invites_list = $dance_school_fields['dance_school_invites'];
-      if ( in_array( $dancer_id, $ds_invites_list ) ) {
-        $ds_invites_list = array_diff( $ds_invites_list, [$dancer_id] );
-        $dance_school_fields['dance_school_invites'] = $ds_invites_list;
-        update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
-      }
-    }
-  }
-
   // Dancer accepts invite from dance school
-  if ( isset( $_POST['dancer_invite_accept'] ) ) {
-    // get dancer & dance school objects
-    $dance_school_id = intval( $_POST['dancer_invite_dance_school_id'] );
-    $dance_school = get_user_by( 'id', $dance_school_id );
-    $dancer_id = intval( $_POST['dancer_invite_dancer_id'] );
-    $dancer = get_user_by( 'id', $dancer_id );
-
-    // add dancer to dance school list of dancers
-    $dance_school_fields = $dance_school->nkms_dance_school_fields;
-    if ( ! in_array( $dancer_id, $dance_school_fields['dance_school_dancers_list'] ) ) {
-      array_push( $dance_school_fields['dance_school_dancers_list'], $dancer_id );
-    }
-    update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
-
-    // remove dance school id from dancer_invites
-    $dancer_fields = $dancer->nkms_dancer_fields;
-    $dancer_fields['dancer_invites']['dance_school'] = array_diff( $dancer_fields['dancer_invites']['dance_school'], [$dance_school_id] );
-    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
-  }
+  // if ( isset( $_POST['dancer_invite_accept'] ) ) {
+  //   // get dancer & dance school objects
+  //   $dance_school_id = intval( $_POST['dancer_invite_dance_school_id'] );
+  //   $dance_school = get_user_by( 'id', $dance_school_id );
+  //   $dancer_id = intval( $_POST['dancer_invite_dancer_id'] );
+  //   $dancer = get_user_by( 'id', $dancer_id );
+  //
+  //   // add dancer to dance school list of dancers
+  //   $dance_school_fields = $dance_school->nkms_dance_school_fields;
+  //   if ( ! in_array( $dancer_id, $dance_school_fields['dance_school_dancers_list'] ) ) {
+  //     array_push( $dance_school_fields['dance_school_dancers_list'], $dancer_id );
+  //   }
+  //   update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+  //
+  //   // remove dance school id from dancer_invites
+  //   $dancer_fields = $dancer->nkms_dancer_fields;
+  //   $dancer_fields['dancer_invites']['dance_school'] = array_diff( $dancer_fields['dancer_invites']['dance_school'], [$dance_school_id] );
+  //   update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+  // }
 }
 
 /*

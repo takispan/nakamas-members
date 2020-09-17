@@ -64,6 +64,150 @@
     }
  }
 
+ /*
+  * INVITE SYSTEM
+ **/
+// Dancer requests to join a dance school
+add_action( 'wp_ajax_dancer_requests_to_join_dance_school', 'dancer_requests_to_join_dance_school' );
+function dancer_requests_to_join_dance_school() {
+  $dance_school_id = intval( $_POST['dancer_requests_to_join_dance_school_ds_id'] );
+  $dancer_id = intval( $_POST['dancer_requests_to_join_dance_school_dancer_id'] );
+
+  if ( $dance_school_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    $ds_invites_list = $dance_school_fields['dance_school_invites'];
+    if ( ! in_array( $dancer_id, $ds_invites_list ) ) {
+      array_push( $ds_invites_list, $dancer_id );
+      $dance_school_fields['dance_school_invites'] = $ds_invites_list;
+      $db_result = update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
+      if ( $db_result ) {
+        wp_send_json_success( '<p class="text-info">Request sent to ' . $dance_school_fields['dance_school_name'] . '</p>' );
+      }
+      else {
+        wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+      }
+    }
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">Please select a Dance school.</p>' );
+  }
+}
+
+// Dancer accepts invite to join dance school
+add_action( 'wp_ajax_dancer_accepts_dance_school_invite', 'dancer_accepts_dance_school_invite' );
+function dancer_accepts_dance_school_invite() {
+  $dancer_id = intval( $_POST['dancer_accepts_dance_school_invite_dancer_id'] );
+  $dance_school_id = intval( $_POST['dancer_accepts_dance_school_invite_ds_id'] );
+
+  $dance_school = get_userdata( $dance_school_id );
+  $dancer = get_userdata( $dancer_id );
+
+  if ( $dance_school_id && $dancer_id ) {
+    // add dancer to dance school list of dancers
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    if ( ! in_array( $dancer_id, $dance_school_fields['dance_school_dancers_list'] ) ) {
+      array_push( $dance_school_fields['dance_school_dancers_list'], $dancer_id );
+    }
+    update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+
+    // remove dance school id from dancer_invites
+    $dancer_fields = $dancer->nkms_dancer_fields;
+    $dancer_fields['dancer_invites']['dance_school'] = array_diff( $dancer_fields['dancer_invites']['dance_school'], [$dance_school_id] );
+    $part_of_ds = $dancer_fields['dancer_part_of'];
+    if ( ! in_array( $dance_school_id, $part_of_ds ) ) {
+      array_push( $part_of_ds, $dance_school_id );
+      $dancer_fields['dancer_part_of'] = $part_of_ds;
+    }
+    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+    wp_send_json_success( '<p class="text-info">Invite accepted.</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
+// Dancer declines invite to join dance school
+add_action( 'wp_ajax_dancer_declines_dance_school_invite', 'dancer_declines_dance_school_invite' );
+function dancer_declines_dance_school_invite() {
+  $dancer_id = intval( $_POST['dancer_declines_dance_school_invite_dancer_id'] );
+  $dance_school_id = intval( $_POST['dancer_declines_dance_school_invite_ds_id'] );
+
+  $dance_school = get_userdata( $dance_school_id );
+  $dancer = get_userdata( $dancer_id );
+
+  if ( $dance_school_id && $dancer_id ) {
+    // remove dance school id from dancer_invites
+    $dancer_fields = $dancer->nkms_dancer_fields;
+    $dancer_fields['dancer_invites']['dance_school'] = array_diff( $dancer_fields['dancer_invites']['dance_school'], [$dance_school_id] );
+    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+    wp_send_json_success( '<p class="text-info">Invite declined.</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
+// Dance School accepts dancer
+add_action( 'wp_ajax_dance_school_accepts_dancer_invite', 'dance_school_accepts_dancer_invite' );
+function dance_school_accepts_dancer_invite() {
+  $dancer_id = intval( $_POST['dance_school_accepts_dancer_invite_dancer_id'] );
+  $dance_school_id = intval( $_POST['dance_school_accepts_dancer_invite_ds_id'] );
+
+  if ( $dance_school_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    $ds_invites_list = $dance_school_fields['dance_school_invites'];
+    if ( in_array( $dancer_id, $ds_invites_list ) ) {
+      $ds_invites_list = array_diff( $ds_invites_list, [$dancer_id] );
+      $dance_school_fields['dance_school_invites'] = $ds_invites_list;
+      $dancers_list = $dance_school_fields['dance_school_dancers_list'];
+      if ( ! in_array( $dancer_id, $dancers_list ) ) {
+        array_push( $dancers_list, $dancer_id );
+        $dance_school_fields['dance_school_dancers_list'] = $dancers_list;
+      }
+      $dancer = get_userdata( $dancer_id );
+      $dancer_fields = $dancer->nkms_dancer_fields;
+      $part_of_ds = $dancer_fields['dancer_part_of'];
+      if ( ! in_array( $dance_school_id, $part_of_ds ) ) {
+        array_push( $part_of_ds, $dance_school_id );
+        $dancer_fields['dancer_part_of'] = $part_of_ds;
+      }
+      update_user_meta( $dancer->ID, 'nkms_dancer_fields', $dancer_fields );
+      update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
+      wp_send_json_success( '<p class="text-info">Dancer added.</p>' );
+    }
+    else {
+      wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+    }
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
+// Dance School declines dancer
+add_action( 'wp_ajax_dance_school_declines_dancer_invite', 'dance_school_declines_dancer_invite' );
+function dance_school_declines_dancer_invite() {
+  $dancer_id = intval( $_POST['dance_school_declines_dancer_invite_dancer_id'] );
+  $dance_school_id = intval( $_POST['dance_school_declines_dancer_invite_ds_id'] );
+
+  if ( $dance_school_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    $ds_invites_list = $dance_school_fields['dance_school_invites'];
+    if ( in_array( $dancer_id, $ds_invites_list ) ) {
+      $ds_invites_list = array_diff( $ds_invites_list, [$dancer_id] );
+      $dance_school_fields['dance_school_invites'] = $ds_invites_list;
+      update_user_meta( $dance_school->ID, 'nkms_dance_school_fields', $dance_school_fields );
+      wp_send_json_success( '<p class="text-info">Dancer declined.</p>' );
+    }
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
  // Guardian - Request to manage dancer
 add_action( 'wp_ajax_guardian_invite_to_manage_dancer', 'guardian_invite_to_manage_dancer' );
 function guardian_invite_to_manage_dancer() {
@@ -198,17 +342,23 @@ function ds_add_dancer() {
      $new_dancers_list = array_diff( $dancers_list, [$dancer_id] );
      $dance_school_fields['dance_school_dancers_list'] = $new_dancers_list;
      $dancer = get_userdata( $dancer_id );
-     $dancer_fields = $dancer->nkms_dancer_fields;
-     $part_of_ds = $dancer_fields['dancer_part_of'];
-     if ( in_array( $part_of_ds, $dance_school_id ) ) {
-       array_diff( $part_of_ds, [$dance_school_id] );
-       $dancer_fields['dancer_part_of'] = $part_of_ds;
-       update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+     $status = $dancer->nkms_dancer_fields['dancer_status'];
+     if ( $status == 'Inactive' ) {
+       $dancer_fields = $dancer->nkms_dancer_fields;
+       $part_of_ds = $dancer_fields['dancer_part_of'];
+       if ( in_array( $dance_school_id, $part_of_ds ) ) {
+         $part_of_ds = array_diff( $part_of_ds, [$dance_school_id] );
+         $dancer_fields['dancer_part_of'] = $part_of_ds;
+         update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+       }
+       update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+       wp_send_json_success('<p class="text-info">Dancer was removed.</p>');
      }
-     update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
-     wp_send_json_sucess('<p class="text-info">Dancer was removed.</p>');
+     else {
+       wp_send_json_success('<p class="text-danger">Dancer must be inactive in order to be removed.</p>');
+     }
    }
-   wp_send_json_error();
+   wp_send_json_success('<p class="text-danger">An error occured. Please try again.</p>');
  }
 
  // Add group to dance school list of groups
