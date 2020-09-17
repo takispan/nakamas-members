@@ -56,19 +56,19 @@ get_header(); // Loads the header.php template. ?>
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-dashboard.php'); ?>
         </div>
         <?php if ( nkms_has_role( $current_user, 'dance-school') || nkms_is_teacher( $current_user->ID ) ) : ?>
-          <input type="radio" name="tabs" id="dance-school" checked="checked">
+          <input type="radio" name="tabs" id="dance-school">
           <label for="dance-school">Dance School</label>
           <div class="tab">
             <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-danceschool.php'); ?>
           </div>
         <?php endif; ?>
 
-        <input type="radio" name="tabs" id="profile" checked="checked">
+        <input type="radio" name="tabs" id="profile">
         <label for="profile">Profile</label>
         <div class="tab">
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile.php'); ?>
         </div>
-        <input type="radio" name="tabs" id="pfp" checked="checked">
+        <input type="radio" name="tabs" id="pfp">
         <label for="pfp" class="tab-hidden">Profile Picture</label>
         <div class="tab">
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile-picture.php'); ?>

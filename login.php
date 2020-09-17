@@ -23,21 +23,22 @@ if( $_POST ) {
   }
 }
 get_header(); ?>
-<div id="nkms-login">
-  <h2>Login</h2>
-<?php
 
-if( $_POST ) {
-  if ( is_wp_error( $user_verify ) ) {
-    echo "<p style='color:red;'><strong>Invalid login details</strong></p>";
-  }
-  else {
-    echo "<h4>Login successful! If you're not redirected automatically click <a href='" . home_url().'/profile' . "'>here</a>.</h4>";
-    exit();
-  }
-}
-?>
-  <div class="woocommerce">
+<section id="content">
+  <div id="nkms-login" class="x-container max width woocommerce">
+      <h2>Login</h2>
+    <?php
+
+    if( $_POST ) {
+      if ( is_wp_error( $user_verify ) ) {
+        echo "<p style='color:red;'><strong>Invalid login details</strong></p>";
+      }
+      else {
+        echo "<h4>Login successful! If you're not redirected automatically click <a href='" . home_url().'/profile' . "'>here</a>.</h4>";
+        exit();
+      }
+    }
+    ?>
     <form id="login-form" name="form" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
       <p>
         <label for="username">Username</label>
@@ -45,13 +46,13 @@ if( $_POST ) {
       </p>
       <p>
         <label for="password">Password</label>
-        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="login_password" id="password" autocomplete="current-password" >
+        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="login_password" id="password" autocomplete="current-password">
       </p>
       <p>
         <input type="submit" id="login_submit" name="login_submit" value="Login" class="btn btn-primary btn-login">
       </p>
     </form>
   </div>
-</div><!-- #nkms-account -->
+</section><!-- #content -->
 
 <?php get_footer(); // Loads the footer.php template. ?>

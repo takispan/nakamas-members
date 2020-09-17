@@ -1,5 +1,4 @@
 html {overflow-x: hidden;}
-#content {padding-top: 0;}
 /* menu */
 #nkms-acc-menu {
 	max-width: 65px;
@@ -36,6 +35,11 @@ html {overflow-x: hidden;}
 }
 #nkms-acc-menu ul li a:hover {
 	color: #000;
+}
+
+/* Soar ID */
+.soar-mid > h4 {
+	margin-top: 0;
 }
 
 /* Invite system *
@@ -101,16 +105,19 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 #nkms_registration p {position: relative;}
 .show-password-input {
 	position: absolute;
-	opacity: 1;
+	opacity: 0.5;
 	z-index: 9999;
 	right: 0;
-	top: 1.7em;
+	top: -0.75em;
 	cursor: pointer;
 	width: 50px;
-	height: 50px;}
+	height: 35px;
+	background: url(../assets/images/invisible.png) no-repeat center center;
+}
+.show-password-input.display-password {background: url(../assets/images/visibility.png) no-repeat center center;}
 
 /* WooCommerce */
-.woocommerce form .password-input, .woocommerce-page form .password-input {width: 100%;}
+.woocommerce form .password-input, .woocommerce-page form .password-input {position: relative; width: 100%;}
 
 .optional {display: none;}
 .register-group-names {
@@ -149,7 +156,7 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 /*
  * FORMS / INPUT
 **/
-p textarea, p input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"],
+p textarea, p input[type="text"], p input[type="password"], input[type="datetime"], input[type="datetime-local"],
 input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"],
 input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input, p select {width: 100%; border-radius: 0;}
 
@@ -207,10 +214,10 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
  */
 .tabs, .ds-tabs {
 	display: flex;
-	flex-wrap: wrap; // make sure it wraps
+	flex-wrap: wrap; /* make sure it wraps */
 }
 .tabs > label, .ds-tabs > label {
-	order: 1; // Put the labels first
+	order: 1; /* Put the labels first */
 	display: block;
 	padding: 1rem 2rem;
 	margin-right: 0.2rem;
@@ -219,7 +226,7 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
   transition: background ease 0.2s;
 }
 .tabs .tab, .ds-tabs .ds-tab {
-  order: 99; // Put the tabs last
+  order: 99; /* Put the tabs last */
   flex-grow: 1;
 	width: 100%;
 	display: none;
@@ -255,7 +262,7 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 	box-shadow: inset 0 -3px #333;
 }
 
-.tab-hidden {display: none;}
+label.tab-hidden {display: none;}
 a {cursor: pointer;}
 .dance-school-h3 {
 	font-weight: 300;

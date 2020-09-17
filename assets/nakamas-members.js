@@ -292,10 +292,9 @@ jQuery(document).ready(function($) {
       success: function(response) {
         $('.loader').hide();
         $('#add-groups .ajax-response').html( response.data );
+        $('#add-groups .ajax-response').show();
         setTimeout(function(){
           $('#add-groups .ajax-response').slideUp();
-          $('label[for="ds-dance-groups"]').click();
-          window.location.reload();
         }, 3000);
       },
       error: function(response) {
