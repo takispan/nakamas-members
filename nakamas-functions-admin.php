@@ -34,14 +34,15 @@ function nkms_dance_groups_init() {
 
 // Add admin pages
 function my_admin_menu() {
-  add_menu_page( 'Nakamas Members', 'Soar', 'manage_options', 'nkms-members', 'my_admin_page_contents', 'dashicons-admin-users', 3 );
+  add_menu_page( 'Nakamas Members', 'Soar', 'manage_options', 'nkms-members', 'nkms_admin_contents', 'dashicons-admin-users', 3 );
+  add_submenu_page( 'nkms-members', 'Groups', 'Groups', 'manage_options', 'nkms-groups', 'nkms_admin_groups' );
 }
 
 add_action( 'admin_menu', 'my_admin_menu' );
-function my_admin_page_contents() {
-  echo '<h1>Welcome to Nakamas Members</h1>';
-  echo '<form method="post"><input type="submit" name="admin_update_user_fields" value="Display Soar fields" /></form>';
-  nkms_fix_user_meta();
+function nkms_admin_contents() { ?>
+  <h1>Welcome to Nakamas Members</h1>
+  <form method="post"><input type="submit" name="admin_update_user_fields" value="Display Soar fields" /></form>
+  <?php nkms_fix_user_meta();
   // echo '<form action="nkms_fix_user_meta()" method="post">'
   //     . '<button type="submit">Show users</button>'
   //     . '</form>';
