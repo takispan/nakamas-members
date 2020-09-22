@@ -82,6 +82,13 @@ $dance_school_teachers_list = $dance_school->nkms_dance_school_fields['dance_sch
     <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-group-single.php'); ?>
   </div>
 
+  <!-- Tab content - Change level category of group-->
+  <input type="radio" name="ds-tabs" id="ds-group-change-level-category">
+  <label for="ds-group-change-level-category" class="tab-hidden">Change level category of group</label>
+  <div class="ds-tab">
+    <?php include( plugin_dir_path( __FILE__ ) . 'tab-ds-group-change-level-category.php'); ?>
+  </div>
+
   <!-- Tab content - Add dancers to group-->
   <input type="radio" name="ds-tabs" id="ds-group-add-dancers">
   <label for="ds-group-add-dancers" class="tab-hidden">Add dancers to group</label>

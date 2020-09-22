@@ -1,40 +1,53 @@
 html {overflow-x: hidden;}
 /* menu */
-#nkms-acc-menu {
-	max-width: 65px;
+@media only screen and (min-width: 980px) {
+	#nkms-acc-menu {
+		max-width: 65px;
+	}
+	#nkms-acc-menu img {
+		position: relative;
+		top: -5px;
+	}
+	#nkms-acc-menu > ul {
+		opacity: 0;
+		height: 0;
+		width: 120px;
+		background: #fff;
+		box-shadow: 0 0 3px #ccc;
+		padding: 0;
+		margin: 0;
+		left: -9999px;
+		transition: all ease-in-out 0.3s;
+		list-style: none;
+	}
+	#nkms-acc-menu:hover ul {
+		opacity: 1;
+		top: 0;
+		left: 0;
+	}
+	#nkms-acc-menu ul li {
+		background: inherit;
+		box-shadow: 0 0 3px #ccc;
+	}
+	#nkms-acc-menu ul li a {
+		padding: 10px 15px;
+		display: block;
+		color: #777;
+	}
+	#nkms-acc-menu ul li a:hover {
+		color: #000;
+	}
 }
-#nkms-acc-menu img {
-	position: relative;
-	top: -5px;
-}
-#nkms-acc-menu > ul {
-	opacity: 0;
-	height: 0;
-	width: 120px;
-	background: #fff;
-	box-shadow: 0 0 3px #ccc;
-	padding: 0;
-	margin: 0;
-	left: -9999px;
-	transition: all ease-in-out 0.3s;
-	list-style: none;
-}
-#nkms-acc-menu:hover ul {
-	opacity: 1;
-	top: 0;
-	left: 0;
-}
-#nkms-acc-menu ul li {
-	background: inherit;
-	box-shadow: 0 0 3px #ccc;
-}
-#nkms-acc-menu ul li a {
-	padding: 10px 15px;
-	display: block;
-	color: #777;
-}
-#nkms-acc-menu ul li a:hover {
-	color: #000;
+
+/* mobile menu *
+@media only screen and (max-width: 979px) {
+	#nkms-acc-menu {
+		max-width: 100%;
+		display: list-item;
+	}
+	#nkms-acc-menu > ul {
+		margin: 0;
+	}
 }
 
 /* Soar ID */
@@ -66,11 +79,7 @@ html {overflow-x: hidden;}
 }
 
 /* Buttons */
-.nkms-btn {display: inline-block;}
-
-input.nkms-btn, nkms-btn {
-	padding: 1em 1.5em;
-}
+.tabs .button {margin: 1px 0;}
 
 input.nkms-btn, a.nkms-btn {
 	padding: 1em 1.5em;
@@ -93,7 +102,7 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 /* Profile picture */
 .wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
 #profile-picture .avatar {margin: 0;}
-
+#wpua-images-existing {display: none !important;}
 /* #wpua-file-existing {
 	color: #ffffff;
 	border-color: rgb(10,10,10);
@@ -151,7 +160,7 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 #register-dancers {margin-bottom: 35px;}
 
 .wc-item-meta li p {clear: both;}
-
+.nkms-event-date p {font-size: 1.7em;}
 
 /*
  * FORMS / INPUT
@@ -225,12 +234,12 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
   font-weight: bold;
   transition: background ease 0.2s;
 }
+.tabs .tab {padding: 1rem;}
 .tabs .tab, .ds-tabs .ds-tab {
   order: 99; /* Put the tabs last */
   flex-grow: 1;
 	width: 100%;
 	display: none;
-  padding: 1rem;
   background: #fff;
 }
 .tabs > input[type="radio"], .ds-tabs > input[type="radio"] {

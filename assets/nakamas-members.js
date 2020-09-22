@@ -447,6 +447,7 @@ jQuery(document).ready(function($) {
     e.preventDefault();
     var group_name = $('#add_group_name').val();
     var group_type = $('#add_group_type').val();
+    var group_level = $('#add_group_change_level_category_of_group').val();
     var ds_id = $('input[name=dance_school_add_groups_submit_ds_id]').val();
 
     // loader
@@ -458,9 +459,10 @@ jQuery(document).ready(function($) {
       type: "POST",
       data: {
         action: 'ds_add_group',
-        group_name: group_name,
-        group_type: group_type,
-        dance_school_id: ds_id,
+        add_group_group_name: group_name,
+        add_group_group_type: group_type,
+        add_group_group_level: group_level,
+        add_group_dance_school_id: ds_id,
       },
       success: function(response) {
         $('.loader').hide();
@@ -565,6 +567,38 @@ jQuery(document).ready(function($) {
       },
       error: function(response) {
         $('.group-details .ajax-response').html( '<p class="text-danger">An error occured, please try again later.</p>' );
+      }
+    });
+  });
+
+  // Change level category of group
+  $('form#change-group-level-category').on('submit', function(e) {
+    e.preventDefault();
+    var level_category = $('#change_level_category_of_group').val();
+    var dance_school_id = $('input[name=dance_school_group_change_level_category_dance_school_id]').val();
+
+    // loader
+    $('.loader').css('display','flex');
+
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'ds_group_change_level_category',
+        group_change_level_category: level_category,
+        group_change_level_category_dance_school_id: dance_school_id,
+      },
+      success: function(response) {
+        $('.loader').hide();
+        $('#change-group-level-category .ajax-response').html( response.data );
+        $('#change-group-level-category .ajax-response').show();
+        setTimeout(function(){
+          $('#change-group-level-category .ajax-response').slideUp();
+        }, 3000);
+      },
+      error: function(response) {
+        $('#change-group-level-category .ajax-response').html( response.data );
       }
     });
   });
@@ -725,6 +759,11 @@ jQuery(document).ready(function($) {
   // single group
   $(".single-group").click( function() {
     $('label[for="ds-group-single"]').click();
+  });
+
+  // change level category of group
+  $(".ds-group-change-level-category-link").click( function() {
+    $('label[for="ds-group-change-level-category"]').click();
   });
 
   // add remove dancers from group

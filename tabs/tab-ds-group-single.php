@@ -15,9 +15,12 @@ if ( $group_id ) {
   <div class="group-details">
     <p><span>Type</span><?php echo $group->getType(); ?></p>
     <p><span>Name</span><?php echo $group->getGroupName(); ?></p>
+    <p><span>Age category</span><?php echo $group->getAgeCategory(); ?></p>
+    <p><span>Level category</span><?php echo $group->getLevelCategory(); ?></p>
     <p><span>Status</span><?php echo $group->getStatus(); ?></p>
     <p class="ajax-response"></p>
     <button class="change-group-status button" data-ds-id="<?php echo $dance_school_id; ?>" data-group-id="<?php echo $group_id; ?>">Change Status</button>
+    <a class="button ds-group-change-level-category-link">Change Level Category</a>
     <button class="remove-group button" data-ds-id="<?php echo $dance_school_id; ?>" data-group-id="<?php echo $group_id; ?>">Remove Group</button>
     <h4 style="font-weight: 300;">Dancers of <span style="font-weight:600;"><?php echo $group->getGroupName(); ?></span></h4>
     <div class="group-dancers">

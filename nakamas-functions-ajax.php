@@ -364,11 +364,13 @@ function ds_add_dancer() {
  // Add group to dance school list of groups
  add_action( 'wp_ajax_ds_add_group', 'ds_add_group' );
  function ds_add_group() {
-   $group_name = $_POST['group_name'];
+   $group_name = $_POST['add_group_group_name'];
    if ( ! $group_name ) { wp_send_json_success( "<p class='text-danger'>Group name cannot be empty.</p>" ); }
-   $group_type = $_POST['group_type'];
+   $group_type = $_POST['add_group_group_type'];
    if ( ! $group_type ) { wp_send_json_success( "<p class='text-danger'>Group type must be selected.</p>" ); }
-   $dance_school_id = intval( $_POST['dance_school_id'] );
+   $dance_school_id = intval( $_POST['add_group_dance_school_id'] );
+   $group_level = $_POST['add_group_group_level'];
+   if ( ! $group_level ) { wp_send_json_success( "<p class='text-danger'>Group leve category must be selected.</p>" ); }
 
    $dance_school = get_userdata( $dance_school_id );
    $dance_school_fields = $dance_school->nkms_dance_school_fields;
@@ -376,10 +378,15 @@ function ds_add_dancer() {
    $last = key( $dance_school_fields['dance_school_groups_list'] );
    $last++;
 
-   $ds_new_group = new DanceGroup( $dance_school_id, $last, $group_name, $group_type );
+   $ds_new_group = new DanceGroup( $dance_school_id, $last, $group_name, $group_type, $group_level );
    $dance_school_fields['dance_school_groups_list'][$last] = $ds_new_group;
-   update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
-   wp_send_json_success("<p class='text-info'>Group added successfully.</p>");
+   $success = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+   if ( $success ) {
+     wp_send_json_success("<p class='text-info'>Group added successfully.</p>");
+   }
+   else {
+     wp_send_json_success("<p class='text-danger'>An error occured, please try again.</p>");
+   }
  }
 
  // Pass group id to populate single group tab
@@ -416,8 +423,11 @@ function ds_add_dancer() {
    <div class="group-details">
      <p><span>Type</span>' . $group->getType() . '</p>
      <p><span>Name</span>' . $group->getGroupName() . '</p>
+     <p><span>Age category</span>' . $group->getAgeCategory() . '</p>
+     <p><span>Level category</span>' . $group->getLevelCategory() . '</p>
      <p><span>Status</span>' . $group->getStatus() . '</p>
      <button class="change-group-status button" data-ds-id="' . $dance_school_id . '" data-dancer-id="' .  $group_id . '">Change Status</button>
+     <a class="button ds-group-change-level-category-link">Change Level Category</a>
      <button class="remove-group button" data-ds-id="' . $dance_school_id . '" data-group-id="' .  $group_id . '">Remove Group</button>
      <h4 style="font-weight: 300;">Dancers of <span style="font-weight:600;">' . $group->getGroupName() . '</span></h4>
      <p>' . $print_dancers . '</p>
@@ -490,6 +500,32 @@ function ds_add_dancer() {
    	}
  }
 
+ // Change level category group
+ add_action( 'wp_ajax_ds_group_change_level_category', 'ds_group_change_level_category' );
+ function ds_group_change_level_category() {
+   	$level_category = $_POST['group_change_level_category'];
+    $dance_school_id = intval( $_POST['group_change_level_category_dance_school_id'] );
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    $group_id = $dance_school_fields['dance_school_currently_viewing']['group'];
+    $group = $dance_school_fields['dance_school_groups_list'][$group_id];
+
+ 		$success = $group->changeLevelCategory( $level_category );
+ 		if ( $success ) {
+      $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+      $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+      if ( $db_result ) {
+        wp_send_json_success( '<p class="text-info">Level category changed to ' . $group->getLevelCategory() . '.</p>' );
+      }
+      else {
+        wp_send_json_success( '<p class="text-danger">An error occured, please try again.</p>' );
+      }
+ 		}
+    else {
+      wp_send_json_success( '<p class="text-danger">An error occured, please try again.</p>' );
+    }
+ }
+
  // Add dancer to group
  add_action( 'wp_ajax_ds_add_group_dancer', 'ds_add_group_dancer' );
  function ds_add_group_dancer() {
@@ -502,6 +538,7 @@ function ds_add_dancer() {
     $group = $dance_school_fields['dance_school_groups_list'][$group_id];
    	if ( ! empty( $dancer_id ) ) {
    		$success = $group->addDancer( $dancer_id );
+      $age_cat = $group->changeAgeCategory();
    		if ( $success ) {
         $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
         $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );

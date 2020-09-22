@@ -11,12 +11,18 @@
     <table>
       <tr>
         <th>Type</th>
-        <th>Group Name</th>
+        <th>Group name</th>
+        <th>Age category</th>
+        <th>Level category</th>
         <th>Status</th>
       </tr>
     <?php
     foreach ( $dance_school_groups_list as $key => $group ) {
-      echo '<tr><td>' . $group->getType() . '</td><td><a class="single-group" data-ds-id="' . $dance_school->ID . '" data-group-id="' . $key . '">' . $group->getGroupName() . '</a></td><td>' . $group->getStatus() . '</td></tr>';
+      echo '<tr><td>' . $group->getType() . '</td>
+      <td><a class="single-group" data-ds-id="' . $dance_school->ID . '" data-group-id="' . $key . '">' . $group->getGroupName() . '</a></td>
+      <td>' . $group->getAgeCategory() . '</td>
+      <td>' . $group->getLevelCategory() . '</td>
+      <td>' . $group->getStatus() . '</td></tr>';
     }
     echo '</table>';
   } else {

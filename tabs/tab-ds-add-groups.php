@@ -9,11 +9,11 @@
   <h3 style="font-weight:300;">Add a dance group for <span style="font-weight:600;"><?php echo $dance_school->nkms_dance_school_fields['dance_school_name']; ?></span></h3>
   <form id="add-groups" method="post" action="" class="ajax">
     <p>
-      <label for="dance_school_add_groups"><?php esc_html_e( 'Group name', 'nkms' ); ?></label>
+      <label for="dance_school_add_groups">Group name</label>
 			<input id="add_group_name" type="text" name="dance_school_add_group_name" value="" class="regular-text" />
     </p>
     <p>
-      <label for="dance_school_add_groups"><?php esc_html_e( 'Group type', 'nkms' ); ?></label>
+      <label for="dance_school_add_groups">Group type</label>
 			<select id="add_group_type" type="text" name="dance_school_add_group_type" value="">
         <option value="" selected disabled hidden>Select group type</option>
         <option value="Duo">Duo</option>
@@ -22,6 +22,16 @@
         <option value="Team">Team</option>
         <option value="Parent Team">Parent Team</option>
         <option value="Super Crew">Super Crew</option>
+      </select>
+    </p>
+    <p>
+      <label for="add_group_change_level_category_of_group">Level category</label>
+			<select id="add_group_change_level_category_of_group">
+        <option value="" selected disabled hidden>Select a level category</option>
+        <option value="Newcomer">Newcomer</option>
+        <option value="Novice">Novice</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
       </select>
     </p>
     <!-- info messages -->

@@ -73,6 +73,17 @@ get_header(); // Loads the header.php template. ?>
         <div class="tab">
           <?php include( plugin_dir_path( __FILE__ ) . 'tabs/tab-user-profile-picture.php'); ?>
         </div>
+        <?php
+        // if ( nkms_has_role( $current_user, 'dancer') || nkms_has_role( $current_user, 'guardian') ) : ?>
+          <!-- <input type="radio" name="tabs" id="events-register">
+          <label for="events-register">Registrations</label>
+          <div class="tab">
+            <?php
+            // include( plugin_dir_path( __FILE__ ) . 'tabs/tab-events-register.php'); ?>
+          </div> -->
+        <?php
+      // endif; ?>
+
       </div>
     <?php endif; ?>
   </div><!-- #nkms-account -->
