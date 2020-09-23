@@ -261,56 +261,6 @@ function nkms_is_teacher( $user_id ) {
  * Invite system
  */
 function nkms_invitations() {
-  // Dancer accepts invite from guardian
-  if ( isset ( $_POST['guardian_dancer_invite_accept'] ) ) {
-    $dancer_id = intval( $_POST['guardian_invite_dancer_id'] );
-    $dancer = get_userdata( $dancer_id );
-    $guardian_id = intval( $_POST['guardian_invite_guardian_id'] );
-    $guardian = get_userdata( $guardian_id );
-    $dancer_fields = $dancer->nkms_dancer_fields;
-
-    // get dancer_invites['guardian'] array from dancer fields
-    $guardian_invites = $dancer_fields['dancer_invites']['guardian'];
-    // get dancer_guardian_list array from dancer fields
-    $dancer_guardian_list = $dancer_fields['dancer_guardian_list'];
-    // add guardian_id to dancer_guardian_list
-    if ( ! in_array( $guardian_id, $dancer_guardian_list ) ) {
-      array_push( $dancer_guardian_list, $guardian_id );
-    }
-    $dancer_fields['dancer_guardian_list'] = $dancer_guardian_list;
-    //remove invite from array
-    $guardian_invites = array_diff( $guardian_invites, [$guardian_id] );
-    $dancer_fields['dancer_invites']['guardian'] = $guardian_invites;
-    // save dancer_guardian_list
-    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
-    // get guardian_dancers_list from guardian fields
-    $guardian_fields = $guardian->nkms_guardian_fields;
-    $guardian_dancers_list = $guardian_fields['guardian_dancers_list'];
-    // add dancer_id to guardian_dancers_list
-    if ( ! in_array( $dancer_id, $guardian_dancers_list ) ) {
-      array_push( $guardian_dancers_list, $dancer_id );
-    }
-    $guardian_fields['guardian_dancers_list'] = $guardian_dancers_list;
-    // save guardian_dancers_list
-    update_user_meta( $guardian_id, 'nkms_guardian_fields', $guardian_fields );
-  }
-  // Dancer declines invite from guardian
-  if ( isset ( $_POST['guardian_dancer_invite_decline'] ) ) {
-    $dancer_id = intval( $_POST['guardian_invite_dancer_id'] );
-    $dancer = get_user_by( 'id', $dancer_id );
-    $guardian_id = intval( $_POST['guardian_invite_guardian_id'] );
-    $guardian = get_user_by( 'id', $guardian_id );
-    $dancer_fields = $dancer->nkms_dancer_fields;
-
-    // get dancer_invites['guardian'] array from dancer fields
-    $guardian_invites = $dancer_fields['dancer_invites']['guardian'];
-    // get dancer_guardian_list array from dancer fields
-    $guardian_invites = array_diff( $guardian_invites, [$guardian_id] );
-    $dancer_fields['dancer_invites']['guardian'] = $guardian_invites;
-    // save dancer_guardian_list
-    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
-  }
-
   // Dancer accepts invite from dance school
   // if ( isset( $_POST['dancer_invite_accept'] ) ) {
   //   // get dancer & dance school objects

@@ -8,6 +8,7 @@
 // nkms_invitations();
 ?>
 <div class="nkms-tabs">
+  <div class="loader"><div class="lds-dual-ring"></div></div>
   <h3 style="font-weight:300;">Dashboard of <span style="font-weight:600;"><?php echo $current_user->user_login; ?></span></h3>
   <div class="soar-mid">
 		<h4><span>Soar ID</span> <?php echo $current_user->ID; ?></h4>
@@ -19,10 +20,10 @@
           <h4>Manage a dancer</h4>
           <p>You are not managing a dancer at the moment. Add their ID below in order to control their dashboard.</p>
           <form method="post" id="guardian-add-dancer-to-manage">
-            <p><input type="hidden" name="guardian_id" value="<?php echo get_current_user_id(); ?>" />
-            <p><input type="text" name="guardian_dancer_id_to_manage" value="" /></p>
+            <p><input type="hidden" name="guardian_manage_dancer_guardian_id" value="<?php echo get_current_user_id(); ?>" />
+            <p><input type="text" name="guardian_manage_dancer_dancer_id" value="" /></p>
             <p class="ajax-response"></p>
-            <p><input type="submit" name="guardian_dancer_to_manage_submit" value="Submit" /></p>
+            <p><input type="submit" name="guardian_manage_dancer__submit" value="Submit" /></p>
           </form>
     <?php else : ?>
       <h3 style="font-weight:300;">Managing dashboard of <span style="font-weight:600;"><?php echo $dancer->user_login; ?></span></h3>
@@ -34,30 +35,6 @@
   <?php if ( nkms_can_manage_dancer( $dancer_id, $current_user->ID ) ) : ?>
     <div class="dancer-invitatons">
       <?php
-      // nkms_fix_user_meta();
-      // IF $dancer has dancer_invites['guardian']
-      $dancer_invites_guardian = $dancer->nkms_dancer_fields['dancer_invites']['guardian'];
-      if ( ! empty( $dancer_invites_guardian ) ) {
-        echo '<h4>Guardian invites</h4>';
-        foreach ( $dancer_invites_guardian as $guardian_id ) {
-          $guardian = get_userdata( $guardian_id ); ?>
-          <div><p><?php echo $guardian->first_name . " " . $guardian->last_name; ?> wants to manage your account.</p>
-            <form method="post" class="invite-btn">
-              <div class="ajax-response"></div>
-              <input type="hidden" name="guardian_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
-              <input type="hidden" name="guardian_invite_guardian_id" value="<?php echo $guardian_id; ?>" />
-              <input type="submit" name="guardian_dancer_invite_accept" value="Accept" />
-              <input type="submit" name="guardian_dancer_invite_decline" value="Decline" />
-            </form>
-          </div>
-          <?php
-        }
-      }
-      // else {
-      //   echo '<h4>Guardian invites</h4>';
-      //   echo '<p>You do not have any invites.</p>';
-      // }
-
       // IF $dancer has dancer_invites['dance-school']
       $dancer_invites_dance_school = $dancer->nkms_dancer_fields['dancer_invites']['dance_school'];
       if ( ! empty( $dancer_invites_dance_school ) ) {
@@ -112,8 +89,45 @@
           $dance_school_id = $part_of_ds[0];
           $dance_school = get_userdata( $dance_school_id ); ?>
           <p>Dancer representing <span><?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?></span></p>
+          <button id="dancer_leave_dance_school_button" class="button">Leave Dance School</button>
+          <div id="dancer_leave_dance_school_confirmation" class="nkms-modal">
+            <div class="nkms-modal-contents">
+              <form method="post" id="dancer_leave_dance_school">
+                <p>Are you sure you want to leave <?php echo $dance_school->nkms_dance_school_fields['dance_school_name'] ?>?</p>
+                <div class="ajax-response"></div>
+                <input type="hidden" name="dancer_leave_dance_school_dancer_id" value="<?php echo $dancer->ID; ?>" />
+                <input type="hidden" name="dancer_leave_dance_school_dance_school_id" value="<?php echo $dance_school->ID; ?>" />
+                <input type="submit" name="dancer_leave_dance_school_leave" value="Leave" />
+                <input type="submit" name="dancer_leave_dance_school_stay" value="Stay" />
+              </form>
+            </div>
+          </div>
         <?php endif; ?>
       <?php endif; ?>
+      <?php
+      // IF $dancer has dancer_invites['guardian']
+      $dancer_invites_guardian = $dancer->nkms_dancer_fields['dancer_invites']['guardian'];
+      if ( ! empty( $dancer_invites_guardian ) ) {
+        echo '<h4>Guardian invites</h4>';
+        foreach ( $dancer_invites_guardian as $guardian_id ) {
+          $guardian = get_userdata( $guardian_id ); ?>
+          <div><p><?php echo $guardian->first_name . " " . $guardian->last_name; ?> wants to manage your account.</p>
+            <form method="post" id="dancer_pending_invites_guardian">
+              <div class="ajax-response"></div>
+              <input type="hidden" name="guardian_invite_dancer_id" value="<?php echo $dancer->ID; ?>" />
+              <input type="hidden" name="guardian_invite_guardian_id" value="<?php echo $guardian_id; ?>" />
+              <input type="submit" name="guardian_dancer_invite_accept" value="Accept" />
+              <input type="submit" name="guardian_dancer_invite_decline" value="Decline" />
+            </form>
+          </div>
+          <?php
+        }
+      }
+      // else {
+      //   echo '<h4>Guardian invites</h4>';
+      //   echo '<p>You do not have any invites.</p>';
+      // }
+      ?>
     </div>
   <?php endif; ?>
 

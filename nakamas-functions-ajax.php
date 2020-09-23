@@ -64,6 +64,37 @@
     }
  }
 
+/*
+ * DANCER LEAVES DANCE SCHOOL
+**/
+add_action( 'wp_ajax_dancer_leaves_dance_school', 'dancer_leaves_dance_school' );
+function dancer_leaves_dance_school() {
+  $dance_school_id = intval( $_POST['dancer_leaves_dance_school_ds_id'] );
+  $dancer_id = intval( $_POST['dancer_leaves_dance_school_dancer_id'] );
+
+  if ( $dance_school_id && $dancer_id ) {
+    $dancer = get_userdata( $dancer_id );
+    $dancer_fields = $dancer->nkms_dancer_fields;
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+
+    $ds_dancers_list = $dance_school_fields['dance_school_dancers_list'];
+    if ( in_array( $dancer_id, $ds_dancers_list ) ) {
+      $dance_school_fields['dance_school_dancers_list'] = array_diff( $ds_dancers_list, [$dancer_id] );
+
+      $part_of_ds = $dancer_fields['dancer_part_of'];
+      $dancer_fields['dancer_part_of'] = array_diff( $part_of_ds, [$dance_school_id] );
+      update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+      update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+      wp_send_json_success( '<p class="text-info">Dancer left ' . $dance_school_fields['dance_school_name'] . '</p>' );
+    }
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
  /*
   * INVITE SYSTEM
  **/
@@ -208,13 +239,13 @@ function dance_school_declines_dancer_invite() {
   }
 }
 
- // Guardian - Request to manage dancer
+// Guardian - Request to manage dancer
 add_action( 'wp_ajax_guardian_invite_to_manage_dancer', 'guardian_invite_to_manage_dancer' );
 function guardian_invite_to_manage_dancer() {
   // get dancer & guardian objects
-  $dancer_id = intval( $_POST['dancer_id'] );
+  $dancer_id = intval( $_POST['guardian_manage_dancer_dancer_id'] );
   $dancer = get_user_by( 'id', $dancer_id );
-  $guardian_id = intval( $_POST['guardian_id'] );
+  $guardian_id = intval( $_POST['guardian_manage_dancer_guardian_id'] );
   $guardian = get_user_by( 'id', $guardian_id );
 
   // check if input is dancer
@@ -235,6 +266,71 @@ function guardian_invite_to_manage_dancer() {
   }
   else {
     wp_send_json_success("<p class='text-danger'>Invalid dancer ID.</p>");
+  }
+}
+
+// Dancer accepts invite from guardian
+add_action( 'wp_ajax_dancer_accepts_guardian_invite', 'dancer_accepts_guardian_invite' );
+function dancer_accepts_guardian_invite() {
+  $dancer_id = intval( $_POST['dancer_accepts_guardian_invite_dancer_id'] );
+  $guardian_id = intval( $_POST['dancer_accepts_guardian_invite_guardian_id'] );
+
+  if ( $dancer_id && $guardian_id ) {
+    $guardian = get_userdata( $guardian_id );
+    $dancer = get_userdata( $dancer_id );
+    $dancer_fields = $dancer->nkms_dancer_fields;
+    // get dancer_invites['guardian'] array from dancer fields
+    $guardian_invites = $dancer_fields['dancer_invites']['guardian'];
+    // get dancer_guardian_list array from dancer fields
+    $dancer_guardian_list = $dancer_fields['dancer_guardian_list'];
+    // add guardian_id to dancer_guardian_list
+    if ( ! in_array( $guardian_id, $dancer_guardian_list ) ) {
+      array_push( $dancer_guardian_list, $guardian_id );
+    }
+    $dancer_fields['dancer_guardian_list'] = $dancer_guardian_list;
+    //remove invite from array
+    $guardian_invites = array_diff( $guardian_invites, [$guardian_id] );
+    $dancer_fields['dancer_invites']['guardian'] = $guardian_invites;
+    // save dancer_guardian_list
+    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+    // get guardian_dancers_list from guardian fields
+    $guardian_fields = $guardian->nkms_guardian_fields;
+    $guardian_dancers_list = $guardian_fields['guardian_dancers_list'];
+    // add dancer_id to guardian_dancers_list
+    if ( ! in_array( $dancer_id, $guardian_dancers_list ) ) {
+      array_push( $guardian_dancers_list, $dancer_id );
+    }
+    $guardian_fields['guardian_dancers_list'] = $guardian_dancers_list;
+    // save guardian_dancers_list
+    update_user_meta( $guardian_id, 'nkms_guardian_fields', $guardian_fields );
+    wp_send_json_success( '<p class="text-info">Invite accepted.</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
+// Dancer declines invite from guardian
+add_action( 'wp_ajax_dancer_declines_guardian_invite', 'dancer_declines_guardian_invite' );
+function dancer_declines_guardian_invite() {
+  $dancer_id = intval( $_POST['dancer_declines_guardian_invite_dancer_id'] );
+  $guardian_id = intval( $_POST['dancer_declines_guardian_invite_guardian_id'] );
+
+  if ( $dancer_id && $guardian_id ) {
+    $dancer = get_user_by( 'id', $dancer_id );
+    $dancer_fields = $dancer->nkms_dancer_fields;
+
+    // get dancer_invites['guardian'] array from dancer fields
+    $guardian_invites = $dancer_fields['dancer_invites']['guardian'];
+    // get dancer_guardian_list array from dancer fields
+    $guardian_invites = array_diff( $guardian_invites, [$guardian_id] );
+    $dancer_fields['dancer_invites']['guardian'] = $guardian_invites;
+    // save dancer_guardian_list
+    update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+    wp_send_json_success( '<p class="text-info">Invite declined.</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
   }
 }
 

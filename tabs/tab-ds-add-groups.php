@@ -21,7 +21,7 @@
         <option value="Trio/Quad">Trio/Quad</option>
         <option value="Team">Team</option>
         <option value="Parent Team">Parent Team</option>
-        <option value="Super Crew">Super Crew</option>
+        <option value="Mega Crew">Mega Crew</option>
       </select>
     </p>
     <p>

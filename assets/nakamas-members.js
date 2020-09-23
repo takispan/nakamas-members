@@ -43,6 +43,52 @@ jQuery(document).ready(function($) {
     $('input:checkbox').not(this).prop('checked', this.checked);
   });
 
+  // dancer leaves dance school
+  $('#dancer_leave_dance_school_button').click(function(){
+    $('#dancer_leave_dance_school_confirmation').show();
+  });
+
+  /*
+   * DANCER LEAVES DANCE SCHOOL
+  **/
+  $('form#dancer_leave_dance_school').on('submit', function(e) {
+    e.preventDefault();
+    var dancer_id = $('input[name=dancer_leave_dance_school_dancer_id]').val();
+    var dance_school_id = $( 'input[name=dancer_leave_dance_school_dance_school_id]' ).val();
+    var submit = $(this).find("input[type=submit]:focus").val();
+
+    if ( submit == 'Stay' ) {
+      $('#dancer_leave_dance_school_confirmation').hide();
+    }
+
+    if ( submit == 'Leave' ) {
+      $.ajax({
+        _ajax_nonce: nkms_ajax.nonce,
+        url: nkms_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: 'dancer_leaves_dance_school',
+          dancer_leaves_dance_school_ds_id: dance_school_id,
+          dancer_leaves_dance_school_dancer_id: dancer_id,
+        },
+        success: function(response) {
+          $('form#dancer_leave_dance_school .ajax-response').html( response.data );
+          setTimeout(function(){
+            $('form#dancer_leave_dance_school .ajax-response').slideUp();
+            window.location.reload();
+          }, 3000);
+        },
+        error: function(response) {
+          $('form#dancer_leave_dance_school .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+          setTimeout(function(){
+            $('form#dancer_leave_dance_school .ajax-response').slideUp();
+            window.location.reload();
+          }, 3000);
+        }
+      });
+    }
+  });
+
   /*
    * INVITE SYSTEM
   **/
@@ -208,6 +254,103 @@ jQuery(document).ready(function($) {
     }
   });
 
+   // Guardian requests to manage dancer
+   $('form#guardian-add-dancer-to-manage').on('submit', function(e) {
+     e.preventDefault();
+     var dancer_id = $('input[name=guardian_manage_dancer_dancer_id]').val();
+     var guardian_id = $('input[name=guardian_manage_dancer_guardian_id]').val();
+
+     // loader
+     $('.loader').css('display','flex');
+
+     $.ajax({
+       _ajax_nonce: nkms_ajax.nonce,
+       url: nkms_ajax.ajax_url,
+       type: "POST",
+       data: {
+         action: 'guardian_invite_to_manage_dancer',
+         guardian_manage_dancer_dancer_id: dancer_id,
+         guardian_manage_dancer_guardian_id: guardian_id,
+       },
+       success: function(response) {
+          $('.loader').hide();
+          $('form#guardian-add-dancer-to-manage .ajax-response').html( response.data );
+          $('form#guardian-add-dancer-to-manage .ajax-response').show();
+          setTimeout(function(){
+            $('form#guardian-add-dancer-to-manage .ajax-response').slideUp();
+          }, 3000);
+       },
+       error: function(response) {
+         $('form#guardian-add-dancer-to-manage .ajax-response').html( response.data );
+       }
+     });
+   });
+
+   // Dancer accepts / declines guardian invite
+   $('#dancer_pending_invites_guardian').submit( function(e) {
+     e.preventDefault();
+     var dancer_id = $('input[name=guardian_invite_dancer_id]').val();
+     var guardian_id = $( 'input[name=guardian_invite_guardian_id]' ).val();
+     var submit = $(this).find("input[type=submit]:focus").val();
+
+     // loader
+     $('.loader').css('display','flex');
+
+     // if guardian is accepted
+     if ( submit == 'Accept' ) {
+       $.ajax({
+         _ajax_nonce: nkms_ajax.nonce,
+         url: nkms_ajax.ajax_url,
+         type: "POST",
+         data: {
+           action: 'dancer_accepts_guardian_invite',
+           dancer_accepts_guardian_invite_dancer_id: dancer_id,
+           dancer_accepts_guardian_invite_guardian_id: guardian_id,
+         },
+         success: function(response) {
+           $('.loader').hide();
+           $('form#dancer_pending_invites_guardian .ajax-response').html( response.data );
+           $('form#dancer_pending_invites_guardian .ajax-response').show();
+           setTimeout(function(){
+             $('form#dancer_pending_invites_guardian .ajax-response').slideUp();
+           }, 3000);
+           window.location.reload();
+         },
+         error: function(response) {
+           $('.loader').hide();
+           $('form#dancer_pending_invites_guardian .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+         }
+       });
+     }
+     // if guardian is declined
+     if ( submit == 'Decline' ) {
+         console.log('Declined');
+       $.ajax({
+         _ajax_nonce: nkms_ajax.nonce,
+         url: nkms_ajax.ajax_url,
+         type: "POST",
+         data: {
+           action: 'dancer_declines_guardian_invite',
+           dancer_declines_guardian_invite_dancer_id: dancer_id,
+           dancer_declines_guardian_invite_guardian_id: guardian_id,
+         },
+         success: function(response) {
+           $('.loader').hide();
+           $('form#dancer_pending_invites_guardian .ajax-response').html( response.data );
+           $('form#dancer_pending_invites_guardian .ajax-response').show();
+           setTimeout(function(){
+             $('form#dancer_pending_invites_guardian .ajax-response').slideUp();
+           }, 3000);
+           window.location.reload();
+         },
+         error: function(response) {
+           $('.loader').hide();
+           $('form#dancer_pending_invites_guardian .ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+         }
+       });
+     }
+   });
+
 
   /*
    * UPDATE PROFILE
@@ -276,34 +419,6 @@ jQuery(document).ready(function($) {
       }
     });
   });
-
-
-  /*
-   * GUARDIANS
-  **/
-   // Send request to dancer in order to manage their account
-   $('form#guardian-add-dancer-to-manage').on('submit', function(e) {
-     e.preventDefault();
-     var dancer_id = $('input[name=guardian_dancer_id_to_manage]').val();
-     var guardian_id = $('input[name=guardian_id]').val();
-
-     $.ajax({
-       _ajax_nonce: nkms_ajax.nonce,
-       url: nkms_ajax.ajax_url,
-       type: "POST",
-       data: {
-         action: 'guardian_invite_to_manage_dancer',
-         dancer_id: dancer_id,
-         guardian_id: guardian_id,
-       },
-       success: function(response) {
-          $('form#guardian-add-dancer-to-manage .ajax-response').html( response.data );
-       },
-       error: function(response) {
-         $('form#guardian-add-dancer-to-manage .ajax-response').html( response.data );
-       }
-     });
-   });
 
   /*
    * DANCERS

@@ -180,7 +180,7 @@ function nkms_register_dancers_to_events() {
         $dancer = get_userdata( $dancer_id );
         if ( $dancer->nkms_dancer_fields['dancer_status'] == 'Active' ) {
           array_push( $registered_dancers, $dancer->ID );
-          echo '<p class="register-solo-dancers"><label>' . '<input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</label></p>';
+          echo '<p class="register-solo-dancers"><label><input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</label></p>';
         }
       }
       // Groups
@@ -206,7 +206,7 @@ function nkms_register_dancers_to_events() {
             foreach ( $group_dancers as $dancer_id ) {
               $dancer = get_userdata( $dancer_id );
               if ( $dancer->nkms_dancer_fields['dancer_status'] == 'Active' ) {
-                echo '<p class="register-group-dancers"><label>' . '<input type="checkbox" name="registered_groups[]" value="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</label></p>';
+                echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_groups[]" value="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</label></p>';
               }
             }
           }
@@ -225,14 +225,35 @@ function nkms_register_dancers_to_events() {
     }
   }
   elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'guardian' ) ) {
-    $dancer_id = wp_get_current_user()->nkms_guardian_fields['guardian_dancers_list'][0];
-    echo '<p style="display:none;"><label>' . '<input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
-    echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
+		$guardian_dancers_list = wp_get_current_user()->nkms_guardian_fields['guardian_dancers_list'];
+		if ( ! empty( $guardian_dancers_list ) ) {
+			echo '<h3>Registreting for</h3>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Solo">Solo</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Duo">Duo</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent-Child">Parent / Child</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Trio-Quad">Trio / Quad</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Team">Team</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent Team">Parent Team</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Mega Crew">Mega Crew</label></p>';
+			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Battle">Battle</label></p>';
+			$dancer_id = $guardian_dancers_list[0];
+			echo '<p style="display:none;"><label><input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
+			echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
+		}
   }
   elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'dancer' ) ) {
+		echo '<h3>Registreting for</h3>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Solo">Solo</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Duo">Duo</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent-Child">Parent / Child</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Trio-Quad">Trio / Quad</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Team">Team</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent Team">Parent Team</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Mega Crew">Mega Crew</label></p>';
+		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Battle">Battle</label></p>';
     $dancer_id = get_current_user_id();
     echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
-    echo '<p style="display:none;"><label>' . '<input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
+    echo '<p style="display:none;"><label><input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
 
   }
 }
@@ -244,8 +265,20 @@ function nkms_add_to_cart_validation( $passed, $product_id, $quantity, $variatio
   if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
     if ( empty( $_POST['registered_dancers'] ) ) {
       $passed = false;
-      wc_add_notice( 'You must select at least one dancer to register.', 'error' );
+			if ( nkms_has_role( wp_get_current_user(), 'guardian' ) ) {
+				wc_add_notice( 'You are not managing any dancers to register.', 'error' );
+			}
+			else {
+				wc_add_notice( 'You must select at least one dancer to register.', 'error' );
+			}
     }
+		if ( nkms_has_role( wp_get_current_user(), 'guardian' ) || nkms_has_role( wp_get_current_user(), 'dancer' ) ) {
+			if ( empty( $_POST['registered_types'] ) ) {
+	      $passed = false;
+				wc_add_notice( 'You must select at least one type to register for.', 'error' );
+	    }
+		}
+
   }
   return $passed;
 }
@@ -262,6 +295,7 @@ function nkms_add_group_cart( $cart_item_data, $product_id, $variation_id ) {
         $registered_dancers[$key] = $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name;
       }
       $cart_item_data['registered_dancers'] = $registered_dancers;
+			$total_dancers = sizeof( $_POST['registered_dancers'] );
     }
     // get groups
     if ( isset( $_POST['register_groups_array'] ) ) {
@@ -280,8 +314,13 @@ function nkms_add_group_cart( $cart_item_data, $product_id, $variation_id ) {
         $registered_groups[$group->getGroupName()] = $group_members;
       }
       $cart_item_data['registered_groups'] = $registered_groups;
-    }
-    $total_dancers = sizeof( array_unique( array_merge( $_POST['registered_dancers'], $_POST['registered_groups'] ) ) );
+			$total_dancers = sizeof( array_unique( array_merge( $_POST['registered_dancers'], $_POST['registered_groups'] ) ) );
+		}
+		// get type
+		if ( isset( $_POST['registered_types'] ) ) {
+			$types = $_POST['registered_types'];
+			$cart_item_data['registered_types'] = $types;
+		}
     $cart_item_data['registered_dancers_num'] = $total_dancers;
   }
   return $cart_item_data;
@@ -324,6 +363,15 @@ add_filter( 'woocommerce_get_item_data', 'nkms_display_dancers_in_cart', 10, 2 )
 function nkms_display_dancers_in_cart( $item_data, $cart_item ) {
   $prod_id = $cart_item['product_id'];
   $product = wc_get_product( $prod_id );
+	// Types
+	if ( ! empty( $cart_item['registered_types'] ) ) {
+		$types = implode( ', ', $cart_item['registered_types'] );
+		$item_data[] = array(
+			'key'     => 'Type',
+			'value'   => $types,
+			'display' => '',
+		);
+	}
   // Solo dancers
   if ( ! empty( $cart_item['registered_dancers'] ) ) {
     $dancers_str_tmp = implode( "<br>", $cart_item['registered_dancers'] );
@@ -371,6 +419,11 @@ function nkms_display_dancers_in_cart( $item_data, $cart_item ) {
 add_action( 'woocommerce_checkout_create_order_line_item', 'nkms_save_registered_dancers', 10, 4 );
 function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) {
   foreach( $item as $cart_item_key1 => $value1 ) {
+		// Types
+		if ( isset( $values['registered_types'] ) ) {
+			$types = implode( ", ", $values['registered_types'] );
+			$item->add_meta_data( 'Type', $types, true );
+		}
     if ( isset( $values['registered_dancers'] ) ) {
       // foreach ( $values['registered_dancers'] as $dancer ) {
       //   $dancers_str .= $dancer;
