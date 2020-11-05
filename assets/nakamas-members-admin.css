@@ -1,0 +1,52 @@
+
+
+/*
+ *
+**/
+table {width: 100%; text-align: left; font-size: 1.2em; line-height: 1.5em; max-height: 100px; scroll-behavior: auto;}
+table tr:nth-child(2n) {background: #e5e5e5;}
+table th {background-color: #333; color: #ccc; border: 1px solid #333; padding: 5px;}
+table td {padding: 5px;}
+table .role {text-transform: capitalize;}
+
+/* User fields */
+.basic-fields, .dancer-fields, .dance-school-fields {
+	color: #999;
+	padding-right: 10px;
+	width: 100px;
+	display: inline-block;
+}
+
+.dancer-fields {
+	width: 175px;
+}
+
+.nkms-toggle {
+	height: 30px;
+	line-height: 30px;
+	padding: 10px;
+	font-size: 1.2em;
+	background: #333;
+	margin: 5px 0;
+	color: #f1f1f1;
+}
+
+.nkms-toggle-content {
+	display: none;
+	padding: 10px;
+}
+.nkms-toggle-content input[type="submit"] {
+	background: #333;
+	color: #eee;
+	border: 0;
+	padding: 10px;
+}
+.nkms-toggle:hover, .nkms-toggle-content input[type="submit"]:hover {
+	cursor: pointer;
+}
+
+
+@media only screen and (max-width: 782px) {
+	#all_groups {width: calc(100% - 25px);}
+	table, tbody, tr, th, td {display: block; width: 100%}
+}

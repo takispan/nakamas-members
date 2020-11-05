@@ -67,6 +67,26 @@ function nkms_assets() {
 	wp_localize_script( 'nkms-js', 'nkms_ajax', $js_values );
 }
 
+// Admin scripts
+add_action( 'admin_enqueue_scripts', 'nkms_select2_enq' );
+function nkms_select2_enq() {
+
+  wp_register_style( 'select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css' );
+	wp_register_script( 'nkms-admin-js', plugins_url( '/assets/nakamas-members-admin.js', __FILE__ ), array( 'jquery', 'select2' ), '20201021', true );
+  wp_register_style( 'nkms-admin-css', plugins_url( '/assets/nakamas-members-admin.css', __FILE__ ), array(), '20200404', 'all' );
+
+  wp_enqueue_style( 'select2' );
+  wp_enqueue_script( 'select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js', array('jquery') );
+	wp_enqueue_script( 'nkms-admin-js' );
+  wp_enqueue_style( 'nkms-admin-css' );
+
+
+  $js_values = array(
+		'ajax_url' => admin_url( 'admin-ajax.php' ),
+	);
+	wp_localize_script( 'nkms-admin-js', 'nkms_ajax', $js_values );
+}
+
 /*
  * Ajax in WP
  *
@@ -84,6 +104,12 @@ include( 'nakamas-functions-woocommerce.php' );
  *
 **/
 include( 'nakamas-functions-admin.php' );
+
+/*
+ * Helper
+ *
+**/
+include( 'nakamas-functions-helper.php' );
 
 /*
  * Create user roles & capabilities

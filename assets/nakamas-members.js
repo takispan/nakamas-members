@@ -889,9 +889,8 @@ jQuery(document).ready(function($) {
     $('label[for="ds-group-remove-dancers"]').click();
   });
 
-
-
   $(".ds-add-teachers-link").click( function() {
     $('label[for="ds-add-teachers"]').click();
   });
+
 });
