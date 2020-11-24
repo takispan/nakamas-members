@@ -9,16 +9,28 @@ table th {background-color: #333; color: #ccc; border: 1px solid #333; padding: 
 table td {padding: 5px;}
 table .role {text-transform: capitalize;}
 
+h3 {font-size: 1.7em;}
+h4 {font-size: 1.3em;}
+
+#nkms_user_results, #nkms_groups_results {
+	font-size: 1.2em;
+	line-height: 1.5em;
+}
+#nkms_user_results p, #nkms_groups_results p {
+	font-size: 1em;
+	line-height: 1.5em;
+}
+
 /* User fields */
-.basic-fields, .dancer-fields, .dance-school-fields {
+.basic-fields, .dancer-fields, .dance-school-fields, .group-fields {
 	color: #999;
 	padding-right: 10px;
-	width: 100px;
+	width: 125px;
 	display: inline-block;
 }
 
 .dancer-fields {
-	width: 175px;
+	width: 215px;
 }
 
 .nkms-toggle {

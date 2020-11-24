@@ -18,6 +18,49 @@ function nkms_get_all_guardians() {
   return $users;
 }
 
+// Get all Groups
+function nkms_get_all_groups() {
+  $dance_schools_list = nkms_get_all_dance_schools();
+  $groups_list = array();
+  foreach ( $dance_schools_list as $dance_school_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $groups_list_of_dance_school = $dance_school->nkms_dance_school_fields['dance_school_groups_list'];
+    foreach ( $groups_list_of_dance_school as $group_id => $group ) {
+      $groups_list[$dance_school_id . '-' . $group_id] = $group;
+    }
+  }
+  if ( ! empty( $groups_list ) ) {
+    return $groups_list;
+  }
+  else {
+    return false;
+  }
+}
+
+// Get Dancers list of Dance School
+function nkms_get_dancers_of_dance_school( $dance_school_id ) {
+  if ( $dance_school_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $dancers_list = $dance_school->nkms_dance_school_fields['dance_school_dancers_list'];
+    return $dancers_list;
+  }
+  else {
+    return false;
+  }
+}
+
+// Get Groups list of Dance School
+function nkms_get_groups_of_dance_school( $dance_school_id ) {
+  if ( $dance_school_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $groups_list = $dance_school->nkms_dance_school_fields['dance_school_groups_list'];
+    return $groups_list;
+  }
+  else {
+    return false;
+  }
+}
+
 // Add dancer to Dance School
 function nkms_add_dancer_to_dance_school( $dance_school_id, $dancer_id ) {
   $dancer_request = nkms_dancer_requests_to_join_dance_school( $dance_school_id, $dancer_id );
@@ -29,6 +72,8 @@ function nkms_add_dancer_to_dance_school( $dance_school_id, $dancer_id ) {
     return false;
   }
 }
+
+// Remove dancer from Dance School
 
 // Dancer request to join Dance School
 function nkms_dancer_requests_to_join_dance_school( $dance_school_id, $dancer_id ) {

@@ -1,5 +1,5 @@
 html {overflow-x: hidden;}
-/* menu */
+/* menu *
 @media only screen and (min-width: 980px) {
 	#nkms-acc-menu {
 		max-width: 65px;
@@ -12,8 +12,6 @@ html {overflow-x: hidden;}
 		opacity: 0;
 		height: 0;
 		width: 120px;
-		background: #fff;
-		box-shadow: 0 0 3px #ccc;
 		padding: 0;
 		margin: 0;
 		left: -9999px;
@@ -71,7 +69,6 @@ html {overflow-x: hidden;}
 /* Single dancer */
 .dancer-details p span, .group-details p span {
 	display: flex;
-	color: #999;
 }
 
 .nkms-pfp img {
@@ -83,21 +80,18 @@ html {overflow-x: hidden;}
 
 input.nkms-btn, a.nkms-btn {
 	padding: 1em 1.5em;
-	background: #cd2653;
-	color: #fff;
 	text-transform: uppercase;
 	font-weight: 600;
 	text-decoration: none;
   transition: opacity 0.15s linear;
 }
 a.nkms-btn:hover {
-	color: #fff;
 	text-decoration: underline;
   transition: opacity 0.15s linear;
 }
 
 /* Update profile */
-input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
+input[type="text"]:disabled {opacity: 0.5; cursor: not-allowed;}
 
 /* Profile picture */
 .wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
@@ -118,15 +112,12 @@ input[type="text"]:disabled {background: #efefef; cursor: not-allowed;}
 	height: 100%;
 	left: 0;
 	top: 0;
-	background: #fff;
-	background: #fffd;
 	z-index: 999;
 	display: none;
 }
 
 .nkms-modal-contents {
 	position: absolute;
-	background-color: #fefefe;
 	padding: 15px;
 	box-shadow: 0 0 10px #000;
 	text-align: center;
@@ -196,7 +187,6 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 
 /* Datepicker */
 #ui-datepicker-div {
-	background: #fff;
 	box-shadow: 0 0 5px 0 #000;
 }
 
@@ -265,13 +255,12 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
   flex-grow: 1;
 	width: 100%;
 	display: none;
-  background: #fff;
 }
 .tabs > input[type="radio"], .ds-tabs > input[type="radio"] {
 	display: none;
 }
 .tabs > input[type="radio"]:checked + label, .ds-tabs > input[type="radio"]:checked + label {
-	background: #fff;
+	box-shadow: inset 3px 0 0 0 #fff;
 }
 .tabs > input[type="radio"]:checked + label + .tab, .ds-tabs > input[type="radio"]:checked + label + .ds-tab {
 	display: block;
@@ -292,8 +281,7 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 .tabs > input[type="radio"]:checked + label, .ds-tabs > input[type="radio"]:checked + label, .tabs > label:hover, .ds-tabs > label:hover {
 	/* color: #eee;
 	background: #333; */
-	color: #333;
-	box-shadow: inset 0 -3px #333;
+	box-shadow: inset 0 -3px #999;
 }
 
 label.tab-hidden {display: none;}
@@ -310,7 +298,6 @@ a {cursor: pointer;}
 /* loader */
 .ds-tab > div {position: relative;}
 .loader {
-	background: #fffa;
 	position: absolute;
 	height: 100%;
 	width: 100%;

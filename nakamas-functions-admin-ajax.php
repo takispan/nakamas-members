@@ -67,11 +67,46 @@
  /*
   * INVITE SYSTEM
  **/
-// Dancer requests to join a dance school
-add_action( 'wp_ajax_dancer_requests_to_join_dance_school', 'dancer_requests_to_join_dance_school' );
+// Add Dancer to Dance School
+add_action( 'wp_ajax_admin_add_dancer_to_dance_school', 'admin_add_dancer_to_dance_school' );
 function admin_add_dancer_to_dance_school() {
   $dance_school_id = intval( $_POST['admin_add_dancer_to_dance_school_dance_school_id'] );
   $dancer_id = intval( $_POST['admin_add_dancer_to_dance_school_dancer_id'] );
+
+  $update = nkms_add_dancer_to_dance_school( $dance_school_id, $dancer_id );
+  if ( $update ) {
+    wp_send_json_success( '<p class="text-info">Dancer added.</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
+// Remove Dancer from Dance School
+// Populate 2nd select when Dance School is selected (to select Dancer from Dance School)
+add_action( 'wp_ajax_admin_get_dancers_of_dance_school', 'admin_get_dancers_of_dance_school' );
+function admin_get_dancers_of_dance_school() {
+  $dance_school_id = intval( $_POST['admin_get_dancers_of_dance_school_dance_school_id'] );
+
+  $dancers_list = nkms_get_dancers_of_dance_school( $dance_school_id );
+  if ( $dancers_list ) {
+    $return = '<option value="" selected disabled hidden>Select a dancer</option>';
+    foreach ( $dancers_list as $dancer_id ) {
+      $dancer = get_userdata( $dancer_id );
+      $return .= '<option value="' . $dancer_id . '">' . $dancer_id . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
+    }
+    wp_send_json_success( $return );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
+// Submit form
+add_action( 'wp_ajax_admin_remove_dancer_from_dance_school', 'admin_remove_dancer_from_dance_school' );
+function admin_remove_dancer_from_dance_school() {
+  $dance_school_id = intval( $_POST['admin_remove_dancer_from_dance_school_dance_school_id'] );
+  $dancer_id = intval( $_POST['admin_remove_dancer_from_dance_school_dancer_id'] );
 
   $update = nkms_add_dancer_to_dance_school( $dance_school_id, $dancer_id );
   if ( $update ) {

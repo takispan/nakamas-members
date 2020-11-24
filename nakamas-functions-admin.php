@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Flushing Rewrite on plugin Activation
+ * Admin Pages
  *
  * To get permalinks to work when you activate the plugin use the following example,
  * paying attention to how my_cpt_init() is called in the register_activation_hook callback:
@@ -80,10 +80,6 @@ function nkms_admin_contents() { ?>
     </table>
   </div>
   <?php
-  // nkms_display_all_user_meta();
-  // echo '<form action="nkms_fix_user_meta()" method="post">'
-  //     . '<button type="submit">Show users</button>'
-  //     . '</form>';
 }
 
 /*
@@ -135,10 +131,6 @@ function nkms_admin_groups() { ?>
     </table>
   </div>
   <?php
-  // nkms_display_all_user_meta();
-  // echo '<form action="nkms_fix_user_meta()" method="post">'
-  //     . '<button type="submit">Show users</button>'
-  //     . '</form>';
 }
 
 // Select2 user results
@@ -146,19 +138,19 @@ add_action( 'wp_ajax_nkms_get_custom_users', 'nkms_get_custom_users' );
 function nkms_get_custom_users(){
 	// we will pass post IDs and titles to this array
 	$return = array();
-
   $users_list = get_users('orderby=ID');
+
   foreach ( $users_list as $user ) {
     if ( nkms_has_role( $user, 'dancer') || nkms_has_role( $user, 'dance-school') || nkms_has_role( $user, 'guardian') ) {
-      $user_name = $user->ID . ': ' . $user->first_name . ' ' . $user->last_name;
-      $query = $_GET['query'];
-      // if ( ! $query ) {
-      //   $return[] = array( $user->ID, $user_name ); // array( User ID, User First & Last Name )
-      // }
-      // elseif ( stripos( $user_name, $query ) !== false ) {
-      if ( stripos( $user_name, $query ) !== false ) {
-        // ( mb_strlen( $search_results->post->post_title ) > 50 ) ? mb_substr( $search_results->post->post_title, 0, 49 ) . '...' : $search_results->post->post_title;
-        $return[] = array( $user->ID, $user_name ); // array( User ID, User First & Last Name )
+      $full_name = $user->ID . ': ' . $user->first_name . ' ' . $user->last_name;
+      if ( nkms_has_role( $user, 'dance-school') ) {
+        $full_name .= ' (' . $user->nkms_dance_school_fields['dance_school_name'] . ')';
+      }
+      $query = $_GET['users_query'];
+      if ( stripos( $full_name, $query ) !== false ) {
+        // ( mb_strlen( $full_name ) > 50 ) ? mb_substr( $full_name, 0, 49 ) . '...' : $full_name;
+        // array( User ID, User First & Last Name )
+        $return[] = array( $user->ID, $full_name );
       }
     }
   }
@@ -176,16 +168,14 @@ function nkms_get_dance_groups(){
   foreach ( $users_list as $user ) {
     if ( nkms_has_role( $user, 'dance-school') ) {
       $groups = $user->nkms_dance_school_fields['dance_school_groups_list'];
-      $query = $_GET['query'];
-      // if ( ! $query ) {
-      //   $return[] = array( $user->ID, $user_name ); // array( User ID, User First & Last Name )
-      // }
-      // elseif ( stripos( $user_name, $query ) !== false ) {
+      $query = $_GET['groups_query'];
       if ( $groups ) {
         foreach ( $groups as $group_id => $group ) {
-          if ( stripos( $group->getGroupName(), $query ) !== false ) {
-            // ( mb_strlen( $search_results->post->post_title ) > 50 ) ? mb_substr( $search_results->post->post_title, 0, 49 ) . '...' : $search_results->post->post_title;
-            $return[] = array( $user->ID . '-' . $group_id, $group->getGroupName(), $group->getType(), $group->getLevelCategory(), $group->getAgeCategory() ); // array( User-Group ID, Group Name, Group Type, Group Level, Group Age Category )
+          $group_id_with_name = $user->ID . '-' . $group_id . ': ' . $group->getGroupName();
+          if ( stripos( $group_id_with_name, $query ) !== false ) {
+            // ( mb_strlen( $group->getGroupName() ) > 50 ) ? mb_substr( $group->getGroupName(), 0, 49 ) . '...' : $group->getGroupName();
+            // array( User-Group ID, Group Name )
+            $return[] = array( $user->ID . '-' . $group_id, $group_id_with_name );
           }
         }
       }
@@ -228,8 +218,8 @@ function nkms_admin_actions() { ?>
         }
         ?>
       </select></p>
-      <p><input type="submit" value="Submit"/></p>
       <div class="admin-ajax-response"></div>
+      <p><input type="submit" value="Submit"/></p>
     </form>
   </div>
   <!-- Remove Dancer from Dance School -->
@@ -247,15 +237,15 @@ function nkms_admin_actions() { ?>
         }
         ?>
       </select></p>
-      <p><label for="add_dancer_to_dance_school_dancer">Select dancer</label></p>
-      <p><select id="add_dancer_to_dance_school_dancer" name="add_dancer_to_dance_school_dancer">
-        <option value="" selected disabled hidden>Select a dancer</option>
+      <p><label for="remove_dancer_from_dance_school_dancer">Select dancer</label></p>
+      <p><select id="remove_dancer_from_dance_school_dancer" name="remove_dancer_from_dance_school_dancer" disabled>
+        <option value="" selected disabled hidden>Select a dance school first</option>
         <?php
         // function to get Dance Schools only
-        $dancers_list = nkms_get_all_dancers();
-        foreach ( $dancers_list as $dancer ) {
-          echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
-        }
+        // $dancers_list = nkms_get_all_dancers();
+        // foreach ( $dancers_list as $dancer ) {
+        //   echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
+        // }
         ?>
       </select></p>
       <p><input type="submit" value="Submit"/></p>
@@ -404,6 +394,23 @@ function nkms_user_results() {
   }
 }
 
+/*
+ * DISPLAY ALL GROUP METADATA
+**/
+add_action( 'wp_ajax_nkms_groups_results', 'nkms_groups_results' );
+function nkms_groups_results() {
+  $user_id = intval( $_POST['nkms_select_groups_user_id'] );
+  $group_id = intval( $_POST['nkms_select_groups_group_id'] );
+
+  if ( $user_id ) {
+    $groupdata = nkms_get_all_group_data( $user_id, $group_id );
+    wp_send_json_success( '<p class="text-danger">' . $groupdata . '</p>' );
+  }
+  else {
+    wp_send_json_success( '<p class="text-danger">An error occured. Please try again.</p>' );
+  }
+}
+
 /* Fix user meta
 function nkms_fix_user_meta() {
   if ( isset( $_POST['admin_update_user_fields'] ) ) {
@@ -490,151 +497,172 @@ function nkms_fix_user_meta() {
 
 // Display all user meta
 function nkms_get_all_user_meta( $user ) {
-    // $users_list = get_users();
-    // foreach ( $users_list as $user ) {
-    $return = '';
-      if ( $user->ID > 1 ) {
-        $return .= get_wp_user_avatar( $user->ID, '256', '' );
-        $return .= '<h1><strong>' . $user->ID . ': ' . $user->first_name . ' ' . $user->last_name . '</strong></h1>';
-        // $return .= '<h1><strong>' . $user->ID . ': ' . $user->roles[0] . '</strong></h1>';
-        // Full Name
-        $fullname = $user->first_name . ' ' . $user->last_name;
-        // Basic fields
-        $user_fields = $user->nkms_fields;
-        $return .= '<h3>Basic fields</h3>';
-        // Display Basic fields
-        $return .= '<span class="basic-fields">Full Name</span>' . $fullname . '<br>';
-        $return .= '<span class="basic-fields">Date of Birth</span>' . $user_fields['dob'] . '<br>';
-        $return .= '<span class="basic-fields">Country</span>' . $user_fields['country'] . '<br>';
-        $return .= '<span class="basic-fields">City</span>' . $user_fields['city'] . '<br>';
-        $return .= '<span class="basic-fields">Address</span>' . $user_fields['address'] . '<br>';
-        $return .= '<span class="basic-fields">Postcode</span>' . $user_fields['postcode'] . '<br>';
-        $return .= '<span class="basic-fields">Phone number</span>' . $user_fields['phone_number'] . '<br>';
+  $return = '';
+  if ( $user->ID > 1 ) {
+    $return .= get_wp_user_avatar( $user->ID, '256', '' );
+    $return .= '<h1><strong>' . $user->ID . ': ' . $user->first_name . ' ' . $user->last_name . '</strong></h1>';
+    // $return .= '<h1><strong>' . $user->ID . ': ' . $user->roles[0] . '</strong></h1>';
+    // Full Name
+    $fullname = $user->first_name . ' ' . $user->last_name;
+    // Basic fields
+    $user_fields = $user->nkms_fields;
+    $return .= '<h3>Basic fields</h3>';
+    // Display Basic fields
+    $return .= '<span class="basic-fields">Full Name</span>' . $fullname . '<br>';
+    $return .= '<span class="basic-fields">Date of Birth</span>' . $user_fields['dob'] . '<br>';
+    $return .= '<span class="basic-fields">Country</span>' . $user_fields['country'] . '<br>';
+    $return .= '<span class="basic-fields">City</span>' . $user_fields['city'] . '<br>';
+    $return .= '<span class="basic-fields">Address</span>' . $user_fields['address'] . '<br>';
+    $return .= '<span class="basic-fields">Postcode</span>' . $user_fields['postcode'] . '<br>';
+    $return .= '<span class="basic-fields">Phone number</span>' . $user_fields['phone_number'] . '<br>';
 
-        // Dancer
-        if ( $user->roles[0] === 'dancer' ) {
-          // Dancer fields
-          $dancer_fields = $user->nkms_dancer_fields;
-          $return .= '<h3>Dancer fields</h3>';
-          // Display Dancer fields
-          $return .= '<span class="dancer-fields">Dancer status</span>' . $dancer_fields['dancer_status'] . '<br>';
-          $return .= '<span class="dancer-fields">Level category</span>' . $dancer_fields['dancer_level'] . '<br>';
-          $return .= '<span class="dancer-fields">Age category</span>' . $dancer_fields['dancer_age_category'] . '<br>';
-          $return .= '<span class="dancer-fields">Dance School name</span>' . $dancer_fields['dancer_ds_name'] . '<br>';
-          $return .= '<span class="dancer-fields">Dance School teacher name</span>' . $dancer_fields['dancer_ds_teacher_name'] . '<br>';
-          $return .= '<span class="dancer-fields">Dance School teacher email</span>' . $dancer_fields['dancer_ds_teacher_email'] . '<br>';
-          // Guardian
-          if ( is_array( $dancer_fields['dancer_guardian_list'] ) && ! empty( $dancer_fields['dancer_guardian_list'] ) ) {
-            $guardians = array();
-            foreach ( $dancer_fields['dancer_guardian_list'] as $guardian_id) {
-              $guardian = get_userdata( $guardian_id );
-              $guardian_name = $guardian->first_name . ' ' . $guardian->last_name;
-              array_push( $guardians, $guardian_name );
-            }
-            if ( ! empty( $guardians ) ) {
-              $return .= '<span class="dancer-fields">Guardian</span>' . implode( ', ', $guardians ) . '<br>';
-            }
-          }
-          // Guardian Name
-          if ( ! empty( $dancer_fields['dancer_guardian_name'] ) ) {
-            $return .= '<span class="dancer-fields">Guardian Name</span>' . $dancer_fields['dancer_guardian_name'] . '<br>';
-          }
-          // Guardian Email
-          if ( ! empty( $dancer_fields['dancer_guardian_email'] ) ) {
-            $return .= '<span class="dancer-fields">Guardian Email</span>' . $dancer_fields['dancer_guardian_email'] . '<br>';
-          }
-          // Guardian Phone Number
-          if ( ! empty( $dancer_fields['dancer_guardian_phone_number'] ) ) {
-            $return .= '<span class="dancer-fields">Guardian Phone number</span>' . $dancer_fields['dancer_guardian_phone_number'] . '<br>';
-          }
-          // Teacher of Dance School
-          if ( is_array( $dancer_fields['dancer_teacher_of'] ) && ! empty( $dancer_fields['dancer_teacher_of'] ) ) {
-            $teacher_part_of = array();
-            foreach ( $dancer_fields['dancer_teacher_of'] as $ds_id) {
-              $part_of_ds_user = get_userdata( $ds_id );
-              $part_of_ds_name = $part_of_ds_user->nkms_dance_school_fields['dance_school_name'];
-              array_push( $teacher_part_of, $part_of_ds_name );
-            }
-            if ( ! empty( $teacher_part_of ) ) {
-              $return .= '<span class="dancer-fields">Teacher of</span>' . implode( ', ', $teacher_part_of ) . '<br>';
-            }
-          }
-          // Dancer part of Dance School
-          if ( is_array( $dancer_fields['dancer_part_of'] ) && ! empty( $dancer_fields['dancer_part_of'] ) ) {
-            $dancer_part_of = array();
-            foreach ( $dancer_fields['dancer_part_of'] as $ds_id) {
-              $part_of_ds_user = get_userdata( $ds_id );
-              $part_of_ds_name = $part_of_ds_user->nkms_dance_school_fields['dance_school_name'];
-              array_push( $dancer_part_of, $part_of_ds_name );
-            }
-            if ( ! empty( $dancer_part_of ) ) {
-              $return .= '<span class="dancer-fields">Part of</span>' . implode( ', ', $dancer_part_of ) . '<br>';
-            }
-          }
+    // Dancer
+    if ( nkms_has_role( $user, 'dancer' ) ) {
+      // Dancer fields
+      $dancer_fields = $user->nkms_dancer_fields;
+      $return .= '<h3>Dancer fields</h3>';
+      // Display Dancer fields
+      $return .= '<span class="dancer-fields">Dancer status</span>' . $dancer_fields['dancer_status'] . '<br>';
+      $return .= '<span class="dancer-fields">Level category</span>' . $dancer_fields['dancer_level'] . '<br>';
+      $return .= '<span class="dancer-fields">Age category</span>' . $dancer_fields['dancer_age_category'] . '<br>';
+      $return .= '<span class="dancer-fields">Dance School name</span>' . $dancer_fields['dancer_ds_name'] . '<br>';
+      $return .= '<span class="dancer-fields">Dance School teacher name</span>' . $dancer_fields['dancer_ds_teacher_name'] . '<br>';
+      $return .= '<span class="dancer-fields">Dance School teacher email</span>' . $dancer_fields['dancer_ds_teacher_email'] . '<br>';
+      // Guardian
+      if ( is_array( $dancer_fields['dancer_guardian_list'] ) && ! empty( $dancer_fields['dancer_guardian_list'] ) ) {
+        $guardians = array();
+        foreach ( $dancer_fields['dancer_guardian_list'] as $guardian_id) {
+          $guardian = get_userdata( $guardian_id );
+          $guardian_name = $guardian->first_name . ' ' . $guardian->last_name;
+          array_push( $guardians, $guardian_name );
+        }
+        if ( ! empty( $guardians ) ) {
+          $return .= '<span class="dancer-fields">Guardian</span>' . implode( ', ', $guardians ) . '<br>';
+        }
+      }
+      // Guardian Name
+      if ( ! empty( $dancer_fields['dancer_guardian_name'] ) ) {
+        $return .= '<span class="dancer-fields">Guardian Name</span>' . $dancer_fields['dancer_guardian_name'] . '<br>';
+      }
+      // Guardian Email
+      if ( ! empty( $dancer_fields['dancer_guardian_email'] ) ) {
+        $return .= '<span class="dancer-fields">Guardian Email</span>' . $dancer_fields['dancer_guardian_email'] . '<br>';
+      }
+      // Guardian Phone Number
+      if ( ! empty( $dancer_fields['dancer_guardian_phone_number'] ) ) {
+        $return .= '<span class="dancer-fields">Guardian Phone number</span>' . $dancer_fields['dancer_guardian_phone_number'] . '<br>';
+      }
+      // Teacher of Dance School
+      if ( is_array( $dancer_fields['dancer_teacher_of'] ) && ! empty( $dancer_fields['dancer_teacher_of'] ) ) {
+        $teacher_part_of = array();
+        foreach ( $dancer_fields['dancer_teacher_of'] as $ds_id) {
+          $part_of_ds_user = get_userdata( $ds_id );
+          $part_of_ds_name = $part_of_ds_user->nkms_dance_school_fields['dance_school_name'];
+          array_push( $teacher_part_of, $part_of_ds_name );
+        }
+        if ( ! empty( $teacher_part_of ) ) {
+          $return .= '<span class="dancer-fields">Teacher of</span>' . implode( ', ', $teacher_part_of ) . '<br>';
+        }
+      }
+      // Dancer part of Dance School
+      if ( is_array( $dancer_fields['dancer_part_of'] ) && ! empty( $dancer_fields['dancer_part_of'] ) ) {
+        $dancer_part_of = array();
+        foreach ( $dancer_fields['dancer_part_of'] as $ds_id) {
+          $part_of_ds_user = get_userdata( $ds_id );
+          $part_of_ds_name = $part_of_ds_user->nkms_dance_school_fields['dance_school_name'];
+          array_push( $dancer_part_of, $part_of_ds_name );
+        }
+        if ( ! empty( $dancer_part_of ) ) {
+          $return .= '<span class="dancer-fields">Part of</span>' . implode( ', ', $dancer_part_of ) . '<br>';
+        }
+      }
 
-          // Dancer invites
-          // $return .= '<h4>Dancer invites</h4>';
-          // $return .= 'Guardian: ' . implode( ', ', $dancer_fields['dancer_invites']['guardian'] ) . '<br>';
-          // $return .= 'Dance School: ' . implode( ', ', $dancer_fields['dancer_invites']['dance_school'] ) . '<br>';
-        }
-        // Dance school
-        if ( $user->roles[0] === 'dance-school' ) {
-          // Dance school fields
-          $dance_school_fields = $user->nkms_dance_school_fields;
-          $return .= '<h3>Dance School fields</h3>';
-          // Display Dance school fields
-          $return .= '<span class="dance-school-fields">Name</span>' . $dance_school_fields['dance_school_name'] . '<br>';
-          $return .= '<span class="dance-school-fields">Address</span>' . $dance_school_fields['dance_school_address'] . '<br>';
-          $return .= '<span class="dance-school-fields">Phone number</span>' . $dance_school_fields['dance_school_phone_number'] . '<br>';
-          $return .= '<span class="dance-school-fields">Description</span>' . $dance_school_fields['dance_school_description'] . '<br>';
-          $return .= '<h4>Dancers list</h4>';
-          // . implode( ', ', $dance_school_fields['dance_school_dancers_list'] ) . '<br>';
-          $dancers_list = $dance_school_fields['dance_school_dancers_list'];
-          foreach ( $dancers_list as $dancer_id ) {
-            $dancer = get_userdata ( $dancer_id );
-            $return .= $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<br>';
-          }
-          $return .= '<h4>Groups list</h4>';
-          $groups_list = $dance_school_fields['dance_school_groups_list'];
-          foreach ( $groups_list as $key => $group ) {
-            $return .= '<p><strong>' . $group->getGroupName() . '</strong><br>';
-            $group_dancers = $group->getDancers();
-            foreach ( $group_dancers as $dancer_id ) {
-              $dancer = get_userdata( $dancer_id );
-              $return .= '<span style="padding-left: 0px;">' . $dancer_id . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<span><br>';
-            }
-            $return .= '</p>';
-          }
-          // $return .= 'Dancers invites: ' . implode( ', ', $dance_school_fields['dance_school_invites'] ) . '<br>';
-          // $return .= '<u>Currently looking:</u>';
-          // foreach ( $dance_school_fields['dance_school_currently_viewing'] as $key => $value ) {
-          //   $return .= '<br>' . $key . ': ' . $value;
-          // }
-          $return .= '<br>';
-        }
-        // Guardian
-        if ( $user->roles[0] === 'guardian' ) {
-          // Guardian fields
-          $guardian_fields = $user->nkms_guardian_fields;
-          $return .= '<h3>Guardian fields</h3>';
-          // Dancer part of Dance School
-          if ( is_array( $guardian_fields['guardian_dancers_list'] ) && ! empty( $guardian_fields['guardian_dancers_list'] ) ) {
-            $guardians_dancers = array();
-            foreach ( $guardian_fields['guardian_dancers_list'] as $dancer_id) {
-              $dancer = get_userdata( $dancer_id );
-              $dancer_name = $dancer->first_name . ' ' . $dancer->last_name;
-              array_push( $guardians_dancers, $dancer_name );
-            }
-            if ( ! empty( $guardians_dancers ) ) {
-              $return .= '<span class="dancer-fields">Dancers list</span>' . implode( ', ', $guardians_dancers ) . '<br>';
-            }
-          }
-          else {
-            $return .= 'Guardian is not managing any dancers.';
-          }
-          // $return .= 'Invites list: ' . implode( ', ', $guardian_fields['guardian_invites'] ) . '<br>';
-        }
-      return $return;
-      // }
+      // Dancer invites
+      // $return .= '<h4>Dancer invites</h4>';
+      // $return .= 'Guardian: ' . implode( ', ', $dancer_fields['dancer_invites']['guardian'] ) . '<br>';
+      // $return .= 'Dance School: ' . implode( ', ', $dancer_fields['dancer_invites']['dance_school'] ) . '<br>';
     }
+    // Dance school
+    if ( nkms_has_role( $user, 'dance-school') ) {
+      // Dance school fields
+      $dance_school_fields = $user->nkms_dance_school_fields;
+      $return .= '<h3>Dance School fields</h3>';
+      // Display Dance school fields
+      $return .= '<span class="dance-school-fields">Name</span>' . $dance_school_fields['dance_school_name'] . '<br>';
+      $return .= '<span class="dance-school-fields">Address</span>' . $dance_school_fields['dance_school_address'] . '<br>';
+      $return .= '<span class="dance-school-fields">Phone number</span>' . $dance_school_fields['dance_school_phone_number'] . '<br>';
+      $return .= '<span class="dance-school-fields">Description</span>' . $dance_school_fields['dance_school_description'] . '<br>';
+      $return .= '<h4>Dancers list</h4>';
+      // . implode( ', ', $dance_school_fields['dance_school_dancers_list'] ) . '<br>';
+      $dancers_list = $dance_school_fields['dance_school_dancers_list'];
+      // asort( $dancers_list );
+      foreach ( $dancers_list as $dancer_id ) {
+        $dancer = get_userdata ( $dancer_id );
+        $return .= $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<br>';
+      }
+      $return .= '<h4>Groups list</h4>';
+      $groups_list = $dance_school_fields['dance_school_groups_list'];
+      foreach ( $groups_list as $key => $group ) {
+        $return .= '<p><strong>' . $group->getGroupName() . '</strong><br>';
+        $group_dancers = $group->getDancers();
+        // asort( $group_dancers );
+        foreach ( $group_dancers as $dancer_id ) {
+          $dancer = get_userdata( $dancer_id );
+          $return .= '<span style="padding-left: 0px;">' . $dancer_id . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<span><br>';
+        }
+        $return .= '</p>';
+      }
+      $return .= '<br>';
+    }
+    // Guardian
+    if ( nkms_has_role( $user, 'guardian') ) {
+      // Guardian fields
+      $guardian_fields = $user->nkms_guardian_fields;
+      $return .= '<h3>Guardian fields</h3>';
+      // Dancer part of Dance School
+      if ( is_array( $guardian_fields['guardian_dancers_list'] ) && ! empty( $guardian_fields['guardian_dancers_list'] ) ) {
+        $guardians_dancers = array();
+        foreach ( $guardian_fields['guardian_dancers_list'] as $dancer_id) {
+          $dancer = get_userdata( $dancer_id );
+          $dancer_name = $dancer->first_name . ' ' . $dancer->last_name;
+          array_push( $guardians_dancers, $dancer_name );
+        }
+        if ( ! empty( $guardians_dancers ) ) {
+          $return .= '<span class="dancer-fields">Dancers list</span>' . implode( ', ', $guardians_dancers ) . '<br>';
+        }
+      }
+      else {
+        $return .= 'Guardian is not managing any dancers.';
+      }
+    }
+    return $return;
+  }
+}
+
+// Display all group data
+function nkms_get_all_group_data( $user_id, $group_id ) {
+  $return = '';
+  $user = get_userdata( $user_id );
+
+  // Dance school
+  if ( nkms_has_role( $user, 'dance-school') ) {
+    // Dance school fields
+    $dance_school_fields = $user->nkms_dance_school_fields;
+    $group = $dance_school_fields['dance_school_groups_list'][$group_id];
+    $return .= '<h3>' . $user_id . '-' . $group_id . ': ' . $group->getGroupName() . '</h3>';
+    // Display Dance school fields
+    $return .= '<span class="group-fields">Type</span>' . $group->getType() . '<br>';
+    $return .= '<span class="group-fields">Level category</span>' . $group->getLevelCategory() . '<br>';
+    $return .= '<span class="group-fields">Age category</span>' . $group->getAgeCategory() . '<br>';
+    $return .= '<span class="group-fields">Part of</span>' . $dance_school_fields['dance_school_name'] . '<br>';
+    $return .= '<h4>Dancers list</h4>';
+    // . implode( ', ', $dance_school_fields['dance_school_dancers_list'] ) . '<br>';
+    $dancers_list = $group->getDancers();
+    foreach ( $dancers_list as $dancer_id ) {
+      $dancer = get_userdata ( $dancer_id );
+      $return .= $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<br>';
+    }
+    $return .= '<br>';
+  }
+  return $return;
 }

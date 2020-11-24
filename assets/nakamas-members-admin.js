@@ -24,8 +24,8 @@ jQuery(document).ready(function($) {
   			delay: 250, // delay in ms while typing when to perform a AJAX search
   			data: function (params) {
     				return {
-      				query: params.term, // search query
-      				action: 'nkms_get_custom_users' // AJAX action for admin-ajax.php
+      				users_query: params.term, // search query
+      				action: 'nkms_get_custom_users' // AJAX action for nakamas-functions-admin.php
     				};
   			},
   			processResults: function( data ) {
@@ -73,16 +73,16 @@ jQuery(document).ready(function($) {
   			delay: 250, // delay in ms while typing when to perform a AJAX search
   			data: function (params) {
     				return {
-      				query: params.term, // search query
-      				action: 'nkms_get_dance_groups' // AJAX action for admin-ajax.php
+      				groups_query: params.term, // search query
+      				action: 'nkms_get_dance_groups' // AJAX action for nakamas-functions-admin.php
     				};
   			},
   			processResults: function( data ) {
 				var options = [];
 				if ( data ) {
-					// data is the array of arrays, and each of them contains ID and the name of user
+					// data is the array of arrays, and each of them contains ID, name of group, type etc
 					$.each( data, function( index, text ) { // do not forget that "index" is just auto incremented value
-						options.push( { id: text[0], text: text[1]  } );
+						options.push( { id: text[0], text: text[1] } );
 					});
 				}
 				return {
@@ -95,7 +95,10 @@ jQuery(document).ready(function($) {
 	});
 
   $('#nkms_select2_groups').on('change', function() {
-    var user_id = $('#nkms_select2_groups').val();
+    var both_id = $('#nkms_select2_groups').val();
+		var both_id_array = both_id.split('-', );
+		var user_id = both_id_array[0];
+		var group_id = both_id_array[1];
 
     $.ajax({
       _ajax_nonce: nkms_ajax.nonce,
@@ -103,7 +106,8 @@ jQuery(document).ready(function($) {
       type: "POST",
       data: {
         action: 'nkms_groups_results',
-        nkms_select_users_user_id: user_id,
+        nkms_select_groups_user_id: user_id,
+        nkms_select_groups_group_id: group_id,
       },
       success: function(response) {
          $('#nkms_groups_results').html( response.data );
@@ -114,6 +118,7 @@ jQuery(document).ready(function($) {
     });
 
   });
+
 
 	// Toggle behavior
 	$('#add_dancer_to_dance_school_toggle').on('click', function() {
@@ -157,37 +162,66 @@ jQuery(document).ready(function($) {
       },
       success: function(response) {
          $('#add_dancer_to_dance_school .admin-ajax-response').html( response.data );
+				 $('#add_dancer_to_dance_school .admin-ajax-response').show();
+				 setTimeout(function(){
+					 $('#add_dancer_to_dance_school .admin-ajax-response').slideUp();
+				 }, 5000);
       },
       error: function(response) {
         $('#add_dancer_to_dance_school .admin-ajax-response').html( response.data );
+				$('#add_dancer_to_dance_school .admin-ajax-response').show();
+				// setTimeout(function(){
+				// 	$('#add_dancer_to_dance_school .admin-ajax-response').slideUp();
+				// }, 3000);
       }
     });
 
   });
 
 	// Remove dancer from dance school
+	// Populate 2nd select with Dancers from Dance School only
+	$('#remove_dancer_from_dance_school_ds').on('change', function(e) {
+		var dance_school_id = $('#remove_dancer_from_dance_school_ds').val();
+
+		$.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'admin_get_dancers_of_dance_school',
+        admin_get_dancers_of_dance_school_dance_school_id: dance_school_id,
+      },
+      success: function(response) {
+         $('#remove_dancer_from_dance_school_dancer').removeAttr( 'disabled' );
+				 $('#remove_dancer_from_dance_school_dancer').html( response.data );
+      },
+      error: function(response) {
+        $('#add_dancer_to_dance_school .admin-ajax-response').html( '<p class="text-danger">An error occured. Please try again.</p>' );
+      }
+    });
+	});
+	// submit form
 	$('#remove_dancer_from_dance_school > form').on('submit', function(e) {
 		e.preventDefault();
 		var dance_school_id = $('#remove_dancer_from_dance_school_ds').val();
 		var dancer_id = $('#remove_dancer_from_dance_school_dancer').val();
-		console.log(dance_school_id + ' / ' +dancer_id);
 
-    // $.ajax({
-    //   _ajax_nonce: nkms_ajax.nonce,
-    //   url: nkms_ajax.ajax_url,
-    //   type: "POST",
-    //   data: {
-    //     action: 'admin_add_dancer_to_dance_school',
-    //     admin_add_dancer_to_dance_school_dance_school_id: dance_school_id,
-		// 		admin_add_dancer_to_dance_school_dancer_id: dancer_id
-    //   },
-    //   success: function(response) {
-    //      $('#add_dancer_to_dance_school .admin-ajax-response').html( response.data );
-    //   },
-    //   error: function(response) {
-    //     $('#add_dancer_to_dance_school .admin-ajax-response').html( response.data );
-    //   }
-    // });
+    $.ajax({
+      _ajax_nonce: nkms_ajax.nonce,
+      url: nkms_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: 'admin_remove_dancer_from_dance_school',
+        admin_remove_dancer_from_dance_school_ds_dance_school_id: dance_school_id,
+				admin_remove_dancer_from_dance_school_ds_dancer_id: dancer_id
+      },
+      success: function(response) {
+         $('#remove_dancer_from_dance_school .admin-ajax-response').html( response.data );
+      },
+      error: function(response) {
+        $('#remove_dancer_from_dance_school .admin-ajax-response').html( response.data );
+      }
+    });
 
   });
 

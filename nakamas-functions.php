@@ -106,6 +106,12 @@ include( 'nakamas-functions-woocommerce.php' );
 include( 'nakamas-functions-admin.php' );
 
 /*
+ * Admin Ajax
+ *
+**/
+include( 'nakamas-functions-admin-ajax.php' );
+
+/*
  * Helper
  *
 **/
@@ -163,19 +169,19 @@ function nkms_avatar_filter() {
 }
 
 // Add menu items
-add_filter( 'wp_nav_menu_items', 'lunchbox_add_loginout_link', 10, 2 );
-function lunchbox_add_loginout_link( $items, $args ) {
+add_filter( 'wp_nav_menu_items', 'nkms_add_loginout_link', 10, 2 );
+function nkms_add_loginout_link( $items, $args ) {
     // If menu primary menu is set & user is logged in.
     if ( is_user_logged_in() && $args->theme_location == 'primary' ) {
-      $items .= '<li id="nkms-acc-menu"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/images/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
-              . '<ul><li><a href="'. site_url('login/') .'">Soar Account</a></li>'
-              . '<li><a href="'. wp_logout_url( home_url() ) .'">Log Out</a></li></ul></li>';
+      $items .= '<li id="nkms-acc-menu" class="menu-item menu-item-has-children"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/images/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
+              . '<ul class="sub-menu"><li  class="menu-item"><a href="'. site_url('login/') .'">Soar Account</a></li>'
+              . '<li  class="menu-item"><a href="'. wp_logout_url( home_url() ) .'">Log Out</a></li></ul></li>';
     }
     // Else display login menu item.
     elseif ( ! is_user_logged_in() && $args->theme_location == 'primary' ) {
-      $items .= '<li id="nkms-acc-menu"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/images/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
-              . '<ul><li><a href="'. site_url('login/') .'">Login</a></li>'
-              . '<li><a href="'. site_url('register/') .'">Sign Up</a></li></ul></li>';
+      $items .= '<li id="nkms-acc-menu" class="menu-item menu-item-has-children"><a href="'. site_url('login/') .'"><img src="'. plugins_url('assets/images/nkms-account.png', __FILE__ ) . '" width="25" height="25" /></a>'
+              . '<ul class="sub-menu"><li  class="menu-item"><a href="'. site_url('login/') .'">Login</a></li>'
+              . '<li  class="menu-item"><a href="'. site_url('register/') .'">Sign Up</a></li></ul></li>';
     }
     return $items;
 }
