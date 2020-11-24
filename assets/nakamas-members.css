@@ -170,26 +170,11 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 /* Datepicker */
 #ui-datepicker-div {
 	box-shadow: 0 0 5px 0 #000;
-}
-
-.ui-datepicker-prev, .ui-datepicker-next {
-	width: 50%;
-	display: inline-block;
-	padding: 0 10px;
-	cursor: pointer;
-}
-
-.ui-datepicker-next {
-	text-align: right;
-}
-
-.ui-datepicker-prev span, .ui-datepicker-next span {
-	font-size: 0.75em;
+	background: #333;
 }
 
 .ui-datepicker-title {
 	text-align: center;
-	font-size: 1.2em;
 	padding: 10px 0;
 }
 
@@ -198,16 +183,13 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 }
 
 .ui-datepicker-calendar th, .ui-datepicker-calendar td {
-	border: 0;
+	/* border: 0; */
 	text-align: center;
 }
 
-.ui-datepicker-calendar a {
-	text-decoration: none;
-}
-
-.ui-datepicker-calendar a:hover {
-	text-decoration: none;
+.ui-datepicker-calendar td:hover {
+	background: #222;
+	cursor: pointer;
 }
 
 /* messages */
