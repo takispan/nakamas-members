@@ -1,50 +1,17 @@
 html {overflow-x: hidden;}
-/* menu *
-@media only screen and (min-width: 980px) {
-	#nkms-acc-menu {
-		max-width: 65px;
-	}
-	#nkms-acc-menu img {
-		position: relative;
-		top: -5px;
-	}
-	#nkms-acc-menu > ul {
-		opacity: 0;
-		height: 0;
-		width: 120px;
-		padding: 0;
-		margin: 0;
-		left: -9999px;
-		transition: all ease-in-out 0.3s;
-		list-style: none;
-	}
-	#nkms-acc-menu:hover ul {
-		opacity: 1;
-		top: 0;
-		left: 0;
-	}
-	#nkms-acc-menu ul li {
-		background: inherit;
-		box-shadow: 0 0 3px #ccc;
-	}
-	#nkms-acc-menu ul li a {
-		padding: 10px 15px;
-		display: block;
-		color: #777;
-	}
-	#nkms-acc-menu ul li a:hover {
-		color: #000;
-	}
+/* menu */
+#nkms-acc-menu img {
+	width: 32px;
+}
+#nkms-acc-menu:hover img {
+	opacity: 1;
 }
 
-/* mobile menu *
-@media only screen and (max-width: 979px) {
-	#nkms-acc-menu {
-		max-width: 100%;
-		display: list-item;
-	}
-	#nkms-acc-menu > ul {
-		margin: 0;
+@media only screen and (min-width: 980px) {
+	#nkms-acc-menu img {
+		margin-top: -7px;
+		position: relative;
+		opacity: 0.75;
 	}
 }
 
@@ -127,19 +94,33 @@ input[type="text"]:disabled {opacity: 0.5; cursor: not-allowed;}
 }
 
 /* Registration */
+#nkms-login {
+	margin: 2em auto;
+	padding: 1em;
+	background: #333;
+}
+#nkms-login h2 {
+	margin: 0.2em 0 0.5em 0;
+}
 #nkms_registration p {position: relative;}
 .show-password-input {
 	position: absolute;
 	opacity: 0.5;
-	z-index: 9999;
+	/* z-index: 9999; */
 	right: 0;
-	top: -0.75em;
+	font-size: 1.2em;
 	cursor: pointer;
 	width: 50px;
-	height: 35px;
+	height: 2.65em;
 	background: url(../assets/images/invisible.png) no-repeat center center;
 }
 .show-password-input.display-password {background: url(../assets/images/visibility.png) no-repeat center center;}
+#nkms-login input[type="submit"] {
+	text-transform: uppercase;
+	font-size: 1em;
+	font-family: ;
+	font-weight: 700;
+}
 
 /* WooCommerce */
 .woocommerce form .password-input, .woocommerce-page form .password-input {position: relative; width: 100%;}
