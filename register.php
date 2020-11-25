@@ -10,7 +10,7 @@ if ( is_user_logged_in() ) {
 }
 get_header(); ?>
 <section id="content">
-  <div id="nkms-login" class="x-container max width">
+  <div id="nkms-login" class="x-container max width woocommerce">
     <h2>Sign up</h2>
     <?php nkms_custom_registration(); ?>
     <form id="nkms_registration" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
@@ -20,7 +20,7 @@ get_header(); ?>
       </p>
       <p>
         <label for="reg_password">Password</label>
-        <input type="password" name="reg_password"  placeholder="Password" id="password" autocomplete="current-password" >
+        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="reg_password" placeholder="Password" id="password" autocomplete="current-password" >
       </p>
       <p>
         <label for="reg_first_name">First Name</label>

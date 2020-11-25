@@ -42,11 +42,11 @@ get_header(); ?>
     <form id="login-form" name="form" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
       <p>
         <label for="username">Username</label>
-        <input id="username" type="text" name="login_username">
+        <input id="username" type="text" name="login_username" placeholder="Username">
       </p>
       <p>
         <label for="password">Password</label>
-        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="login_password" id="password" autocomplete="current-password">
+        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="login_password" placeholder="Password" id="password" autocomplete="current-password">
       </p>
       <p>
         <input type="submit" id="login_submit" name="login_submit" value="Login" class="btn btn-primary btn-login">
