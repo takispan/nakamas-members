@@ -15,6 +15,11 @@ html {overflow-x: hidden;}
 	}
 }
 
+/* nkms account */
+#nkms-account {
+	margin: 1rem auto;
+}
+
 /* Soar ID */
 .soar-mid > h4 {
 	margin-top: 0;
@@ -44,6 +49,11 @@ html {overflow-x: hidden;}
 
 /* Buttons */
 .tabs .button {margin: 1px 0;}
+.button {
+	text-transform: uppercase;
+	font-weight: 600;
+	font-size: 14px;
+}
 
 input.nkms-btn, a.nkms-btn {
 	padding: 1em 1.5em;
@@ -172,6 +182,9 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 	box-shadow: 0 0 5px 0 #000;
 	background: #333;
 }
+.ui-datepicker-prev, .ui-datepicker-next {
+	display: none;
+}
 
 .ui-datepicker-title {
 	text-align: center;
@@ -204,20 +217,34 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 	display: flex;
 	flex-wrap: wrap; /* make sure it wraps */
 }
+.ds-tabs {
+	margin-left: -1rem;
+	margin-right: -1rem;
+	background: #222;
+}
 .tabs > label, .ds-tabs > label {
 	order: 1; /* Put the labels first */
 	display: block;
-	padding: 1rem 2rem;
+	padding: 0.75em;
 	margin-right: 0.2rem;
 	cursor: pointer;
-  font-weight: bold;
-  transition: background ease 0.2s;
+	font-weight: 600;
+	transition: background ease 0.2s;
+	flex-grow: 1;
+	background-color: #333;
+	color: #ccc;
+	font-size: 14px;
+	line-height: 2em;
+	text-transform: uppercase;
+	text-align: center;
+	opacity: 0.5;
 }
-.tabs .tab {padding: 1rem;}
 .tabs .tab, .ds-tabs .ds-tab {
   order: 99; /* Put the tabs last */
   flex-grow: 1;
 	width: 100%;
+	background: #333;
+	padding: 1rem;
 	display: none;
 }
 .tabs > input[type="radio"], .ds-tabs > input[type="radio"] {
@@ -225,6 +252,7 @@ input[type="url"], input[type="search"], input[type="tel"], input[type="color"],
 }
 .tabs > input[type="radio"]:checked + label, .ds-tabs > input[type="radio"]:checked + label {
 	box-shadow: inset 3px 0 0 0 #fff;
+	opacity: 1;
 }
 .tabs > input[type="radio"]:checked + label + .tab, .ds-tabs > input[type="radio"]:checked + label + .ds-tab {
 	display: block;
