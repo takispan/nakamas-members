@@ -587,6 +587,7 @@ function user_initialization( $user_id ) {
       'dancer_guardian_phone_number' => $dancer_guardian_phone_number,
       'dancer_teacher_of' => array(),
       'dancer_part_of' => array(),
+      'dancer_registered_to' => array(),
     );
     update_user_meta( $user_id, 'nkms_dancer_fields', $nkms_dancer_fields );
   }

@@ -46,21 +46,10 @@ function nkms_admin_contents() { ?>
     <p><label for="nkms_select2_users">Search for Users:</label><br>
     <select id="nkms_select2_users" name="nkms_select2_users[]" style="width: 100%;">
       <option>Select a user...</option>
-      <?php
-      // $users_list = get_users('orderby=ID');
-      // foreach ( $users_list as $user ) {
-      //   if ( nkms_has_role( $user, 'dancer') || nkms_has_role( $user, 'dance-school') || nkms_has_role( $user, 'guardian') ) {
-      //     echo '<option value="' . $user->ID . '">' . $user->ID . ': ' . $user->first_name . ' ' . $user->last_name . '</option>';
-      //   }
-      // }
-      ?>
-    </select>
-    <?php
-    // var_dump($user_array); ?>
-    <!-- <input type="submit" name="admin_update_user_fields" value="Display Soar fields" /> -->
+    </select></p>
   </form>
   <div id="nkms_user_results"></div>
-  <div id="all_custom_users">
+  <div id="all_custom_users" class="nkms-admin">
     <table cellspacing="0" cellpadding="0">
       <tr>
         <th>Soar ID</th>
@@ -92,21 +81,10 @@ function nkms_admin_groups() { ?>
     <p><label for="nkms_select2_users">Search for Groups:</label><br>
     <select id="nkms_select2_groups" name="nkms_select2_groups[]" style="width: 100%;">
       <option>Select a group...</option>
-      <?php
-      // $users_list = get_users('orderby=ID');
-      // foreach ( $users_list as $user ) {
-      //   if ( nkms_has_role( $user, 'dancer') || nkms_has_role( $user, 'dance-school') || nkms_has_role( $user, 'guardian') ) {
-      //     echo '<option value="' . $user->ID . '">' . $user->ID . ': ' . $user->first_name . ' ' . $user->last_name . '</option>';
-      //   }
-      // }
-      ?>
     </select>
-    <?php
-    // var_dump($user_array); ?>
-    <!-- <input type="submit" name="admin_update_user_fields" value="Display Soar fields" /> -->
   </form>
   <div id="nkms_groups_results"></div>
-  <div id="all_groups">
+  <div id="all_groups" class="nkms-admin">
     <table cellspacing="0" cellpadding="0">
       <tr>
         <th width="7%">Group ID</th>
@@ -191,6 +169,7 @@ function nkms_get_dance_groups(){
 add_action( 'admin_menu', 'nkms_admin_menu' );
 function nkms_admin_actions() { ?>
   <h1>Soar Actions</h1>
+  <!-- <form method="post"><input type="submit" action="nkms_fix_user_meta()" value="Fix user meta" /></form>  -->
   <h2>Dance School</h2>
   <!-- Add Dancer to Dance School -->
   <div id="add_dancer_to_dance_school_toggle" class="nkms-toggle">Add dancer to Dance School</div>
@@ -240,44 +219,31 @@ function nkms_admin_actions() { ?>
       <p><label for="remove_dancer_from_dance_school_dancer">Select dancer</label></p>
       <p><select id="remove_dancer_from_dance_school_dancer" name="remove_dancer_from_dance_school_dancer" disabled>
         <option value="" selected disabled hidden>Select a dance school first</option>
-        <?php
-        // function to get Dance Schools only
-        // $dancers_list = nkms_get_all_dancers();
-        // foreach ( $dancers_list as $dancer ) {
-        //   echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
-        // }
-        ?>
       </select></p>
       <p><input type="submit" value="Submit"/></p>
       <div class="admin-ajax-response"></div>
     </form>
   </div>
+
   <h2>Dance Groups</h2>
   <!-- Add Dancer to Dance Group -->
   <div id="add_dancer_to_dance_group_toggle" class="nkms-toggle">Add dancer to Dance Group</div>
   <div id="add_dancer_to_dance_group" class="nkms-toggle-content">
     <form method="post">
-      <p><label for="remove_dancer_from_dance_school_ds">Select dance group</label></p>
-      <p><select id="remove_dancer_from_dance_school_ds" name="add_dancer_to_dance_school_ds">
+      <p><label for="add_dancer_to_dance_group_name">Select dance group</label></p>
+      <p><select id="add_dancer_to_dance_group_name" name="add_dancer_to_dance_group_name">
         <option value="" selected disabled hidden>Select a dance group</option>
         <?php
-        // function to get Dance Schools only
-        $dance_school_list = nkms_get_all_dance_schools();
-        foreach ( $dance_school_list as $dance_school ) {
-          echo '<option value="' . $dance_school->ID . '">' . $dance_school->ID . ': ' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</option>';
+        // function to get Dance groups only
+        $dance_groups_list = nkms_get_all_groups();
+        foreach ( $dance_groups_list as $group_id => $group ) {
+          echo '<option value="' . $group_id . '">' . $group_id . ': ' . $group->getGroupName() . '</option>';
         }
         ?>
       </select></p>
-      <p><label for="add_dancer_to_dance_school_dancer">Select dancer</label></p>
-      <p><select id="add_dancer_to_dance_school_dancer" name="add_dancer_to_dance_school_dancer">
-        <option value="" selected disabled hidden>Select a dancer</option>
-        <?php
-        // function to get Dance Schools only
-        $dancers_list = nkms_get_all_dancers();
-        foreach ( $dancers_list as $dancer ) {
-          echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
-        }
-        ?>
+      <p><label for="add_dancer_to_dance_group_dancer">Select dancer</label></p>
+      <p><select id="add_dancer_to_dance_group_dancer" name="add_dancer_to_dance_group_dancer" disabled>
+        <option value="" selected disabled hidden>Select a dance group first</option>
       </select></p>
       <p><input type="submit" value="Submit"/></p>
       <div class="admin-ajax-response"></div>
@@ -287,53 +253,45 @@ function nkms_admin_actions() { ?>
   <div id="remove_dancer_from_dance_group_toggle" class="nkms-toggle">Remove dancer from Dance Group</div>
   <div id="remove_dancer_from_dance_group" class="nkms-toggle-content">
     <form method="post">
-      <p><label for="remove_dancer_from_dance_school_ds">Select dance group</label></p>
-      <p><select id="remove_dancer_from_dance_school_ds" name="add_dancer_to_dance_school_ds">
+      <p><label for="remove_dancer_from_dance_group_name">Select dance group</label></p>
+      <p><select id="remove_dancer_from_dance_group_name" name="remove_dancer_from_dance_group_name">
         <option value="" selected disabled hidden>Select a dance group</option>
         <?php
-        // function to get Dance Schools only
-        $dance_school_list = nkms_get_all_dance_schools();
-        foreach ( $dance_school_list as $dance_school ) {
-          echo '<option value="' . $dance_school->ID . '">' . $dance_school->ID . ': ' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</option>';
+        // function to get Dance groups only
+        $dance_groups_list = nkms_get_all_groups();
+        foreach ( $dance_groups_list as $group_id => $group ) {
+          echo '<option value="' . $group_id . '">' . $group_id . ': ' . $group->getGroupName() . '</option>';
         }
         ?>
       </select></p>
-      <p><label for="add_dancer_to_dance_school_dancer">Select dancer</label></p>
-      <p><select id="add_dancer_to_dance_school_dancer" name="add_dancer_to_dance_school_dancer">
-        <option value="" selected disabled hidden>Select a dancer</option>
-        <?php
-        // function to get Dance Schools only
-        $dancers_list = nkms_get_all_dancers();
-        foreach ( $dancers_list as $dancer ) {
-          echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
-        }
-        ?>
+      <p><label for="remove_dancer_from_dance_group_dancer">Select dancer</label></p>
+      <p><select id="remove_dancer_from_dance_group_dancer" name="remove_dancer_from_dance_group_dancer">
+        <option value="" selected disabled hidden>Select a dance group first</option>
       </select></p>
       <p><input type="submit" value="Submit"/></p>
       <div class="admin-ajax-response"></div>
     </form>
   </div>
+
   <h2>Guardian</h2>
   <!-- Add Dancer to Guardian -->
   <div id="add_dancer_to_guardian_toggle" class="nkms-toggle">Add dancer to Guardian</div>
   <div id="add_dancer_to_guardian" class="nkms-toggle-content">
     <form method="post">
-      <p><label for="remove_dancer_from_dance_school_ds">Select guardian</label></p>
-      <p><select id="remove_dancer_from_dance_school_ds" name="add_dancer_to_dance_school_ds">
+      <p><label for="add_dancer_to_guardian_guardian">Select guardian</label></p>
+      <p><select id="add_dancer_to_guardian_guardian" name="add_dancer_to_guardian_guardian">
         <option value="" selected disabled hidden>Select a guardian</option>
         <?php
-        // function to get Dance Schools only
-        $dance_school_list = nkms_get_all_dance_schools();
-        foreach ( $dance_school_list as $dance_school ) {
-          echo '<option value="' . $dance_school->ID . '">' . $dance_school->ID . ': ' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</option>';
+        $guardians_list = nkms_get_all_guardians();
+        foreach ( $guardians_list as $guardian ) {
+          echo '<option value="' . $guardian->ID . '">' . $guardian->ID . ': ' . $guardian->first_name . ' ' . $guardian->last_name . '</option>';
         }
         ?>
       </select></p>
-      <p><label for="add_dancer_to_dance_school_dancer">Select dancer</label></p>
-      <p><select id="add_dancer_to_dance_school_dancer" name="add_dancer_to_dance_school_dancer">
+      <p><label for="add_dancer_to_guardian_dancer">Select dancer</label></p>
+      <p><select id="add_dancer_to_guardian_dancer" name="add_dancer_to_guardian_dancer">
         <option value="" selected disabled hidden>Select a dancer</option>
         <?php
-        // function to get Dance Schools only
         $dancers_list = nkms_get_all_dancers();
         foreach ( $dancers_list as $dancer ) {
           echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
@@ -348,30 +306,27 @@ function nkms_admin_actions() { ?>
   <div id="remove_dancer_from_guardian_toggle" class="nkms-toggle">Remove dancer from Guardian</div>
   <div id="remove_dancer_from_guardian" class="nkms-toggle-content">
     <form method="post">
-      <p><label for="remove_dancer_from_dance_school_ds">Select guardian</label></p>
-      <p><select id="remove_dancer_from_dance_school_ds" name="add_dancer_to_dance_school_ds">
+      <p><label for="remove_dancer_from_guardian_guardian">Select guardian</label></p>
+      <p><select id="remove_dancer_from_guardian_guardian" name="remove_dancer_from_guardian_guardian">
         <option value="" selected disabled hidden>Select a guardian</option>
         <?php
-        // function to get Dance Schools only
-        $dance_school_list = nkms_get_all_dance_schools();
-        foreach ( $dance_school_list as $dance_school ) {
-          echo '<option value="' . $dance_school->ID . '">' . $dance_school->ID . ': ' . $dance_school->nkms_dance_school_fields['dance_school_name'] . '</option>';
+        $guardians_list = nkms_get_all_guardians();
+        foreach ( $guardians_list as $guardian ) {
+          echo '<option value="' . $guardian->ID . '">' . $guardian->ID . ': ' . $guardian->first_name . ' ' . $guardian->last_name . '</option>';
         }
         ?>
       </select></p>
-      <p><label for="add_dancer_to_dance_school_dancer">Select dancer</label></p>
-      <p><select id="add_dancer_to_dance_school_dancer" name="add_dancer_to_dance_school_dancer">
-        <option value="" selected disabled hidden>Select a dancer</option>
-        <?php
-        // function to get Dance Schools only
-        $dancers_list = nkms_get_all_dancers();
-        foreach ( $dancers_list as $dancer ) {
-          echo '<option value="' . $dancer->ID . '">' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '</option>';
-        }
-        ?>
+      <p><label for="remove_dancer_from_guardian_dancer">Select dancer</label></p>
+      <p><select id="remove_dancer_from_guardian_dancer" name="remove_dancer_from_guardian_dancer">
+        <option value="" selected disabled hidden>Select a guardian first</option>
       </select></p>
       <p><input type="submit" value="Submit"/></p>
       <div class="admin-ajax-response"></div>
+    </form>
+  </div>
+  <div>
+    <form method="post">
+      <input type="submit" name="admin_update_user_fields" value="Fix user fields" />
     </form>
   </div>
 <?php
@@ -386,6 +341,7 @@ function nkms_user_results() {
 
   if ( $user_id ) {
     $user = get_userdata( $user_id );
+    // $fix_data = nkms_fix_user_meta();
     $userdata = nkms_get_all_user_meta( $user );
     wp_send_json_success( '<p class="text-danger">' . $userdata . '</p>' );
   }
@@ -413,7 +369,7 @@ function nkms_groups_results() {
 
 /* Fix user meta
 function nkms_fix_user_meta() {
-  if ( isset( $_POST['admin_update_user_fields'] ) ) {
+  // if ( isset( $_POST['admin_update_user_fields'] ) ) {
     $users_list = get_users();
     foreach ( $users_list as $user ) {
       if ( $user->ID > 0 ) {
@@ -453,6 +409,7 @@ function nkms_fix_user_meta() {
           if ( empty ( $dancer_fields['dancer_guardian_phone_number'] ) ) { $dancer_fields['dancer_guardian_phone_number'] = ''; }
           if ( ! is_array ( $dancer_fields['dancer_teacher_of'] ) ) { $dancer_fields['dancer_teacher_of'] = array(); }
           if ( ! is_array ( $dancer_fields['dancer_part_of'] ) ) { $dancer_fields['dancer_part_of'] = array(); }
+          if ( ! is_array ( $dancer_fields['dancer_registered_to'] ) ) { $dancer_fields['dancer_registered_to'] = array(); }
           // save fields
           update_user_meta( $user->ID, 'nkms_dancer_fields', $dancer_fields );
         }
@@ -489,11 +446,10 @@ function nkms_fix_user_meta() {
         }
       }
     }
-    echo 'Process completed.<br>';
-    nkms_display_all_user_meta();
-  }
+    return 'Process completed.<br>';
+  // }
 }
-*/
+/**/
 
 // Display all user meta
 function nkms_get_all_user_meta( $user ) {
@@ -555,7 +511,7 @@ function nkms_get_all_user_meta( $user ) {
       // Teacher of Dance School
       if ( is_array( $dancer_fields['dancer_teacher_of'] ) && ! empty( $dancer_fields['dancer_teacher_of'] ) ) {
         $teacher_part_of = array();
-        foreach ( $dancer_fields['dancer_teacher_of'] as $ds_id) {
+        foreach ( $dancer_fields['dancer_teacher_of'] as $ds_id ) {
           $part_of_ds_user = get_userdata( $ds_id );
           $part_of_ds_name = $part_of_ds_user->nkms_dance_school_fields['dance_school_name'];
           array_push( $teacher_part_of, $part_of_ds_name );
@@ -567,13 +523,25 @@ function nkms_get_all_user_meta( $user ) {
       // Dancer part of Dance School
       if ( is_array( $dancer_fields['dancer_part_of'] ) && ! empty( $dancer_fields['dancer_part_of'] ) ) {
         $dancer_part_of = array();
-        foreach ( $dancer_fields['dancer_part_of'] as $ds_id) {
+        foreach ( $dancer_fields['dancer_part_of'] as $ds_id ) {
           $part_of_ds_user = get_userdata( $ds_id );
           $part_of_ds_name = $part_of_ds_user->nkms_dance_school_fields['dance_school_name'];
           array_push( $dancer_part_of, $part_of_ds_name );
         }
         if ( ! empty( $dancer_part_of ) ) {
           $return .= '<span class="dancer-fields">Part of</span>' . implode( ', ', $dancer_part_of ) . '<br>';
+        }
+      }
+      // Dancer registered to Events
+      if ( is_array( $dancer_fields['dancer_registered_to'] ) && ! empty( $dancer_fields['dancer_registered_to'] ) ) {
+        $registered_to = array();
+        foreach ( $dancer_fields['dancer_registered_to'] as $product_id ) {
+          $product = wc_get_product( $product_id );
+          $product_name = '<a href="' . get_permalink( $product->get_id() ) . '" target="_blank">' . $product->get_name() . '</a>';
+          array_push( $registered_to, $product_name );
+        }
+        if ( ! empty( $registered_to ) ) {
+          $return .= '<span class="dancer-fields">Registered to</span>' . implode( ', ', $registered_to ) . '<br>';
         }
       }
 

@@ -664,25 +664,20 @@ function ds_add_dancer() {
    $dance_school_fields = $dance_school->nkms_dance_school_fields;
    $group_id = $dance_school_fields['dance_school_currently_viewing']['group'];
    $group = $dance_school_fields['dance_school_groups_list'][$group_id];
-   // if ( ! empty( $dancer_id ) ) {
-     $success = $group->removeDancer( $dancer_id );
-     if ( $success ) {
-       $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
-       $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
-       if ( $db_result ) {
-         wp_send_json_success( '<p class="text-info">Dancer was removed.</p>' );
-       }
-       else {
-         wp_send_json_success( '<p class="text-danger">Dancer was not saved in database.</p>' );
-       }
+   $success = $group->removeDancer( $dancer_id );
+   if ( $success ) {
+     $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+     $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+     if ( $db_result ) {
+       wp_send_json_success( '<p class="text-info">Dancer was removed.</p>' );
      }
      else {
-       wp_send_json_success( '<p class="text-danger">Dancer is not part of ' . $group->getGroupName() . '.</p>' );
+       wp_send_json_success( '<p class="text-danger">Dancer was not saved in database.</p>' );
      }
-   // }
-   // else {
-   //   wp_send_json_success( '<p class="text-danger">Invalid dancer.</p>' );
-   // }
+   }
+   else {
+     wp_send_json_success( '<p class="text-danger">Dancer is not part of ' . $group->getGroupName() . '.</p>' );
+   }
  }
 
  // TEACHER - add to dance school

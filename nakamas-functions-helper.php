@@ -22,11 +22,10 @@ function nkms_get_all_guardians() {
 function nkms_get_all_groups() {
   $dance_schools_list = nkms_get_all_dance_schools();
   $groups_list = array();
-  foreach ( $dance_schools_list as $dance_school_id ) {
-    $dance_school = get_userdata( $dance_school_id );
+  foreach ( $dance_schools_list as $dance_school ) {
     $groups_list_of_dance_school = $dance_school->nkms_dance_school_fields['dance_school_groups_list'];
     foreach ( $groups_list_of_dance_school as $group_id => $group ) {
-      $groups_list[$dance_school_id . '-' . $group_id] = $group;
+      $groups_list[$dance_school->ID . '-' . $group_id] = $group;
     }
   }
   if ( ! empty( $groups_list ) ) {
@@ -73,7 +72,48 @@ function nkms_add_dancer_to_dance_school( $dance_school_id, $dancer_id ) {
   }
 }
 
+// Add Dancer to Guardian
+function nkms_add_dancer_to_guardian( $dancer_id, $guardian_id ) {
+  $invite = nkms_guardian_invite_to_manage_dancer( $dancer_id, $guardian_id );
+  $accept_inv = nkms_dancer_accepts_guardian_invite( $dancer_id, $guardian_id );
+  if ( $invite && $accept_inv ) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
 // Remove dancer from Dance School
+function nkms_remove_dancer_from_dance_school( $dance_school_id, $dancer_id ) {
+  if ( $dance_school_id && $dancer_id ) {
+    $dance_school = get_userdata( $dance_school_id );
+    $dance_school_fields = $dance_school->nkms_dance_school_fields;
+    $dancers_list = $dance_school_fields['dance_school_dancers_list'];
+    if ( in_array( $dancer_id, $dancers_list) ) {
+      $new_dancers_list = array_diff( $dancers_list, [$dancer_id] );
+      $dance_school_fields['dance_school_dancers_list'] = $new_dancers_list;
+      $dancer = get_userdata( $dancer_id );
+      $dancer_fields = $dancer->nkms_dancer_fields;
+      $part_of_ds = $dancer_fields['dancer_part_of'];
+      if ( in_array( $dance_school_id, $part_of_ds ) ) {
+        $part_of_ds = array_diff( $part_of_ds, [$dance_school_id] );
+        $dancer_fields['dancer_part_of'] = $part_of_ds;
+        $update_dancer = update_user_meta( $dancer_id, 'nkms_dancer_fields', $dancer_fields );
+      }
+      $update_ds = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+      if ( $update_dancer && $update_ds ) {
+        return $dance_school_id;
+      }
+      else {
+        return false;
+      }
+    }
+  }
+  else {
+    return false;
+  }
+}
 
 // Dancer request to join Dance School
 function nkms_dancer_requests_to_join_dance_school( $dance_school_id, $dancer_id ) {
@@ -165,6 +205,56 @@ function nkms_dance_school_accepts_dancer_invite( $dance_school_id, $dancer_id )
   }
 }
 
+// Add dancer to group
+function nkms_add_dancer_to_group( $dance_school_id, $group_id, $dancer_id ) {
+  $dancer = get_userdata( $dancer_id );
+  $dance_school = get_userdata( $dance_school_id );
+  $dance_school_fields = $dance_school->nkms_dance_school_fields;
+  $group = $dance_school_fields['dance_school_groups_list'][$group_id];
+  if ( ! empty( $dancer_id ) ) {
+    $success = $group->addDancer( $dancer_id );
+    $age_cat = $group->changeAgeCategory();
+    if ( $success ) {
+      $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+      $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+      if ( $db_result ) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+// Remove dancer from group
+function nkms_remove_dancer_from_group( $dance_school_id, $group_id, $dancer_id ) {
+  $dancer = get_userdata( $dancer_id );
+  $dance_school = get_userdata( $dance_school_id );
+  $dance_school_fields = $dance_school->nkms_dance_school_fields;
+  $group = $dance_school_fields['dance_school_groups_list'][$group_id];
+  $success = $group->removeDancer( $dancer_id );
+  if ( $success ) {
+    $dance_school_fields['dance_school_groups_list'][$group_id] = $group;
+    $db_result = update_user_meta( $dance_school_id, 'nkms_dance_school_fields', $dance_school_fields );
+    if ( $db_result ) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
 // Guardian - Request to manage dancer
 function nkms_guardian_invite_to_manage_dancer( $dancer_id, $guardian_id ) {
   $dancer = get_userdata( $dancer_id );
@@ -225,6 +315,30 @@ function nkms_dancer_accepts_guardian_invite( $dancer_id, $guardian_id ) {
     $update2 = update_user_meta( $guardian_id, 'nkms_guardian_fields', $guardian_fields );
     if ( $update1 && $update2 ) {
       return $dancer_id;
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+// Remove dancer from guardian
+function nkms_remove_dancer_from_guardian( $guardian_id, $dancer_id ) {
+  $guardian = get_userdata( $guardian_id );
+  $dancer = get_userdata( $dancer_id );
+  $guardian_fields = $guardian->nkms_guardian_fields;
+  $guardian_dancers_list = $guardian_fields['guardian_dancers_list'];
+
+  if ( in_array( $dancer_id, $guardian_dancers_list ) ) {
+    $new_guardian_dancers_list = array_diff( $guardian_dancers_list, [$dancer_id] );
+    $guardian_fields['guardian_dancers_list'] = $new_guardian_dancers_list;
+    $update = update_user_meta( $guardian_id, 'nkms_guardian_fields', $guardian_fields );
+
+    if ( $update ) {
+      return true;
     }
     else {
       return false;

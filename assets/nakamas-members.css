@@ -71,6 +71,10 @@ a.nkms-btn:hover {
 input[type="text"]:disabled {opacity: 0.5; cursor: not-allowed;}
 
 /* Profile picture */
+.avatar-default {
+	background-color: #222;
+	padding-top: 15px;
+}
 .wpua-edit-container h3, #wpua-images-existing, #profile-picture .submit, #profile-picture .updated {display: none;}
 #profile-picture .avatar {margin: 0;}
 #wpua-images-existing {display: none !important;}
@@ -124,6 +128,7 @@ input[type="text"]:disabled {opacity: 0.5; cursor: not-allowed;}
 	width: 50px;
 	height: 2.65em;
 	background: url(../assets/images/invisible.png) no-repeat center center;
+	top: -17px;
 }
 .show-password-input.display-password {background: url(../assets/images/visibility.png) no-repeat center center;}
 #nkms-login input[type="submit"] {
@@ -287,6 +292,62 @@ a {cursor: pointer;}
 	font-weight: 600;
 }
 
+/* TABLES */
+@media screen and (max-width: 768px) {
+	/* Force table to not be like tables anymore */
+	#nkms-account table, #nkms-account thead, #nkms-account tbody, #nkms-account th, #nkms-account td, #nkms-account tr {
+		display: block;
+	}
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#nkms-account thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	#nkms-account td {
+		/* Behave  like a "row" */
+		border: none;
+		position: relative;
+	}
+
+	#nkms-account td:before {
+		/* Now like a table header */
+		position: relative;
+		width: 100%;
+		display: block;
+		color: #777;
+	}
+
+	.my_account_orders {color: #aaa;}
+
+	/*
+	 * Label the data
+	**/
+	/* recent orders */
+	.my_account_orders td:nth-of-type(1):before { content: "ID"; }
+	.my_account_orders td:nth-of-type(2):before { content: "Date"; }
+	.my_account_orders td:nth-of-type(3):before { content: "Price"; }
+	.my_account_orders td:nth-of-type(4):before { content: "Status"; }
+
+	/* dancers list */
+	.dancers-list td:nth-of-type(1):before { content: "Soar ID"; }
+	.dancers-list td:nth-of-type(2):before { content: "Name"; }
+	.dancers-list td:nth-of-type(3):before { content: "Age category"; }
+	.dancers-list td:nth-of-type(4):before { content: "Level category"; }
+	.dancers-list td:nth-of-type(5):before { content: "Status"; }
+
+	/* groups list */
+	.groups-list td:nth-of-type(1):before { content: "Type"; }
+	.groups-list td:nth-of-type(2):before { content: "Group name"; }
+	.groups-list td:nth-of-type(3):before { content: "Age category"; }
+	.groups-list td:nth-of-type(4):before { content: "Level category"; }
+	.groups-list td:nth-of-type(5):before { content: "Status"; }
+
+}
+
+
 /* loader */
 .ds-tab > div {position: relative;}
 .loader {
@@ -299,6 +360,7 @@ a {cursor: pointer;}
 	justify-content: center;
 	z-index: 2;
 	display: none;
+	background: #333e;
 }
 
 .lds-dual-ring {
@@ -313,8 +375,8 @@ a {cursor: pointer;}
   height: 64px;
   margin: 8px;
   border-radius: 50%;
-  border: 6px solid #333;
-  border-color: #333 transparent #333 transparent;
+  border: 6px solid #ccc;
+  border-color: #ccc transparent #ccc transparent;
   animation: lds-dual-ring 1.2s linear infinite;
 }
 @keyframes lds-dual-ring {

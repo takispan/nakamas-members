@@ -3,11 +3,11 @@
 /*
  *
 **/
-table {width: 100%; text-align: left; font-size: 1.2em; line-height: 1.5em; max-height: 100px; scroll-behavior: auto;}
-table tr:nth-child(2n) {background: #e5e5e5;}
-table th {background-color: #333; color: #ccc; border: 1px solid #333; padding: 5px;}
-table td {padding: 5px;}
-table .role {text-transform: capitalize;}
+.nkms-admin table {width: 100%; text-align: left; font-size: 1.2em; line-height: 1.5em; max-height: 100px; scroll-behavior: auto;}
+.nkms-admin table tr:nth-child(2n) {background: #e5e5e5;}
+.nkms-admin table th {background-color: #333; color: #ccc; border: 1px solid #333; padding: 5px;}
+.nkms-admin table td {padding: 5px;}
+.nkms-admin table .role {text-transform: capitalize;}
 
 h3 {font-size: 1.7em;}
 h4 {font-size: 1.3em;}
@@ -60,5 +60,5 @@ h4 {font-size: 1.3em;}
 
 @media only screen and (max-width: 782px) {
 	#all_groups {width: calc(100% - 25px);}
-	table, tbody, tr, th, td {display: block; width: 100%}
+	.nkms-admin table, .nkms-admin tbody, .nkms-admin tr, .nkms-admin th, .nkms-admin td {display: block; width: 100%}
 }
