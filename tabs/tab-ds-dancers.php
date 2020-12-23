@@ -9,19 +9,22 @@
   <?php
   if ( ! empty( $dance_school_dancers_list ) ) { ?>
     <table>
-      <tr>
-        <th>Soar ID</th>
-        <th>Name</th>
-        <th>Age category</th>
-        <th>Level category</th>
-        <th>Status</th>
-      </tr>
-    <?php
-  	foreach ($dance_school_dancers_list as $dancer_id) {
-  		$dancer = get_userdata( $dancer_id );
-      echo '<tr><td>' . $dancer_id . '</td><td><a class="single-dancer" data-ds-id="' . $dance_school->ID . '" data-dancer-id="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</a></td><td>' . $dancer->nkms_dancer_fields['dancer_age_category'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_level'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_status'] . '</td></tr>';
-  	 }
-    echo '</table>';
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Group name</th>
+          <th>Age category</th>
+          <th>Level category</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php
+    	foreach ($dance_school_dancers_list as $dancer_id) {
+    		$dancer = get_userdata( $dancer_id );
+        echo '<tr><td>' . $dancer_id . '</td><td><a class="single-dancer" data-ds-id="' . $dance_school->ID . '" data-dancer-id="' . $dancer_id . '">' . $dancer->first_name . ' ' . $dancer->last_name . '</a></td><td>' . $dancer->nkms_dancer_fields['dancer_age_category'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_level'] . '</td><td>' . $dancer->nkms_dancer_fields['dancer_status'] . '</td></tr>';
+    	 }
+      echo '</tbody></table>';
   } else {
   	echo "<p>" . $dance_school->nkms_dance_school_fields['dance_school_name'] . " does not have any registered dancers.";
     echo "<br>Add one by clicking the button below.</p>";

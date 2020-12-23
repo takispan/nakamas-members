@@ -29,7 +29,6 @@ function nkms_woo_required_fields( $fields ) {
 
     // $fields['billing']['billing_first_name'] = $user->first_name;
   }
-
 	return $fields;
 }
 
@@ -53,55 +52,15 @@ function nkms_custom_woo_field() {
       'description' => 'Enter the date of the event.',
     )
   );
-
-	// $days = array( '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31' );
-	// $months = array( 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' );
-	// $year_curr = date("Y");
-	// $years = array( $year_curr, $year_curr+1, $year_curr+2, $year_curr+3, $year_curr+4 );
-	//
-	// $days_option = "";
-	// foreach ( $days as $day ) {
-	// 	$days_option .= '<option value="' . $day . '">' . $day . '</option>';
-	// }
-	// $months_option = "";
-	// foreach ( $months as $month ) {
-	// 	$months_option .= '<option value="' . $month . '">' . $month . '</option>';
-	// }
-	// $years_option = "";
-	// foreach ( $years as $year ) {
-	// 	$years_option .= '<option value="' . $year . '">' . $year . '</option>';
-	// }
-	//
-	// echo '
-	// <p class="form-field event_date_field ">
- 	// 	<label for="event_date">Event date</label>
-	// 	<select id="event_date_day" name="event_date_day" style="margin: 0 2px; min-width: 150px;">
-	// 		<option selected disabled hidden>Select day</option>
-	// 		' . $days_option . '
-	// 	</select>
-	// 	<select id="event_date_month" name="event_date_month" style="margin: 0 2px; min-width: 150px;">
-	// 		<option selected disabled hidden>Select month</option>
-	// 		' . $months_option . '
-	// 	</select>
-	// 	<select id="event_date_year" name="event_date_year" style="margin: 0 2px; min-width: 150px;">
-	// 		<option selected disabled hidden>Select year</option>
-	// 		' . $years_option . '
-	// 	</select>
-	// </p>';
 }
 // Save the custom text field on product
 add_action( 'woocommerce_process_product_meta', 'nkms_save_event_date' );
 function nkms_save_event_date( $post_id ) {
 	$product = wc_get_product( $post_id );
-	// $event_date_day = isset( $_POST['event_date_day'] ) ? $_POST['event_date_day'] : '';
-	// $event_date_month = isset( $_POST['event_date_month'] ) ? $_POST['event_date_month'] : '';
-	// $event_date_year = isset( $_POST['event_date_year'] ) ? $_POST['event_date_year'] : '';
-	// $event_date = $event_date_day . ' ' . $event_date_month . ' ' . $event_date_year;
 	$event_date = isset( $_POST['event_date'] ) ? $_POST['event_date'] : '';
 	$product->update_meta_data( 'event_date', $event_date );
 	$product->save();
 }
-
 
 /**
  * Display custom field on the front end
@@ -163,12 +122,12 @@ add_action('woocommerce_before_add_to_cart_button', 'nkms_register_dancers_to_ev
 function nkms_register_dancers_to_events() {
   // if teacher
   $dance_school_id = nkms_is_teacher( get_current_user_id() );
+	// Get woo product categories
+	global $product;
+	$product_id = $product->get_id();
+	$product_categories = wc_get_product_category_list( $product_id );
   if ( is_user_logged_in() && nkms_can_manage_dance_school( $dance_school_id, get_current_user_id() ) ) {
     $dance_school = get_userdata( $dance_school_id );
-    // Get woo product categories
-    global $product;
-    $product_id = $product->get_id();
-    $product_categories = wc_get_product_category_list( $product_id );
     // Check if event is for dancers so they can register
     if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
 			echo '<div class="x-accordion"><div class="x-accordion-group"><div class="x-accordion-heading"><a id="tab-nkms_registration" class="x-accordion-toggle collapsed" role="tab" data-x-toggle="collapse-b" data-x-toggleable="nkms_registration" aria-selected="false" aria-expanded="false" aria-controls="panel-nkms_registration">REGISTER DANCERS & GROUPS</a></div><div id="panel-nkms_registration" class="x-accordion-body x-collapsed" role="tabpanel" data-x-toggle-collapse="1" data-x-toggleable="nkms_registration" aria-hidden="true" aria-labelledby="tab-nkms_registration" style=""><div class="x-accordion-inner"><div class="et_pb_toggle_content clearfix">';
@@ -234,10 +193,11 @@ function nkms_register_dancers_to_events() {
       echo '<input type="hidden" name="register_groups_array" value="' . $possible_groups . '"/>';
     }
   }
-  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'guardian' ) ) {
+  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'guardian' && strpos( $product_categories, 'Dancer Registration' ) !== false ) ) {
 		$guardian_dancers_list = wp_get_current_user()->nkms_guardian_fields['guardian_dancers_list'];
 		if ( ! empty( $guardian_dancers_list ) ) {
-			echo '<h3>Registreting for</h3>';
+			echo '<div class="x-accordion"><div class="x-accordion-group"><div class="x-accordion-heading"><a id="tab-nkms_registration" class="x-accordion-toggle collapsed" role="tab" data-x-toggle="collapse-b" data-x-toggleable="nkms_registration" aria-selected="false" aria-expanded="false" aria-controls="panel-nkms_registration">CATEGORIES</a></div><div id="panel-nkms_registration" class="x-accordion-body x-collapsed" role="tabpanel" data-x-toggle-collapse="1" data-x-toggleable="nkms_registration" aria-hidden="true" aria-labelledby="tab-nkms_registration" style=""><div class="x-accordion-inner"><div class="et_pb_toggle_content clearfix">';
+			echo '<h3>Registering for</h3>';
 			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Solo">Solo</label></p>';
 			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Duo">Duo</label></p>';
 			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent-Child">Parent / Child</label></p>';
@@ -246,13 +206,15 @@ function nkms_register_dancers_to_events() {
 			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent Team">Parent Team</label></p>';
 			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Mega Crew">Mega Crew</label></p>';
 			echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Battle">Battle</label></p>';
+			echo '</div></div></div></div></div>';
 			$dancer_id = $guardian_dancers_list[0];
 			echo '<p style="display:none;"><label><input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
 			echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
 		}
   }
-  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'dancer' ) ) {
-		echo '<h3>Registreting for</h3>';
+  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'dancer' ) && strpos( $product_categories, 'Dancer Registration' ) !== false ) {
+		echo '<div class="x-accordion"><div class="x-accordion-group"><div class="x-accordion-heading"><a id="tab-nkms_registration" class="x-accordion-toggle collapsed" role="tab" data-x-toggle="collapse-b" data-x-toggleable="nkms_registration" aria-selected="false" aria-expanded="false" aria-controls="panel-nkms_registration">CATEGORIES</a></div><div id="panel-nkms_registration" class="x-accordion-body x-collapsed" role="tabpanel" data-x-toggle-collapse="1" data-x-toggleable="nkms_registration" aria-hidden="true" aria-labelledby="tab-nkms_registration" style=""><div class="x-accordion-inner"><div class="et_pb_toggle_content clearfix">';
+		echo '<h3>Registering for</h3>';
 		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Solo">Solo</label></p>';
 		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Duo">Duo</label></p>';
 		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent-Child">Parent / Child</label></p>';
@@ -261,7 +223,8 @@ function nkms_register_dancers_to_events() {
 		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Parent Team">Parent Team</label></p>';
 		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Mega Crew">Mega Crew</label></p>';
 		echo '<p class="register-group-dancers"><label><input type="checkbox" name="registered_types[]" value="Battle">Battle</label></p>';
-    $dancer_id = get_current_user_id();
+		echo '</div></div></div></div></div>';
+		$dancer_id = get_current_user_id();
     echo '<input type="hidden" name="register_dancer_dancer_id" value="' . $dancer_id . '"/>';
     echo '<p style="display:none;"><label><input type="checkbox" name="registered_dancers[]" value="' . $dancer_id . '" checked="true">' . $dancer_id . '</label></p>';
 

@@ -8,18 +8,20 @@
 <div>
   <h3>Events to register for</h3>
   <table>
-    <tr>
-      <th>Title</th>
-    </tr>
+    <thead>
+      <tr>
+        <th>Event</th>
+      </tr>
+    </thead>
+    <tbody>
     <?php
       $products = wc_get_products( array( 'status' => 'publish' ) );
       foreach ( $products as $product ) {
-        $cats = $product->get_category_ids();
-        $category = get_term_by( 'id', $cats[0], 'product_cat' );
-        if ( $category->name === 'Dancer Registration' ) {
-          $category = get_term_by( 'id', $cats[1], 'product_cat' );
+        $product_categories = wc_get_product_category_list( $product->get_id() );
+        if ( strpos( $product_categories, 'Dancer Registration' ) !== false ) {
           echo '<tr><td><a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_name() . '</a></td></tr>';
         }
       }
     ?>
+    </tbody>
   </table>

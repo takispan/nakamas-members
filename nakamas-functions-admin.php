@@ -324,11 +324,6 @@ function nkms_admin_actions() { ?>
       <div class="admin-ajax-response"></div>
     </form>
   </div>
-  <div>
-    <form method="post">
-      <input type="submit" name="admin_update_user_fields" value="Fix user fields" />
-    </form>
-  </div>
 <?php
 }
 
