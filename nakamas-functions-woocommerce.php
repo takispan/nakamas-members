@@ -62,13 +62,6 @@ function nkms_save_event_date( $post_id ) {
 	$product->save();
 }
 
-// Rename WoocCommerce tabs
-add_filter( 'woocommerce_product_tabs', 'nkms_rename_additional_info_tab' );
-function nkms_rename_additional_info_tab( $tabs ) {
-	$tabs['additional_information']['title'] = 'DATE & VENUE';
-	return $tabs;
-}
-
 /**
  * Display custom field on the front end
  */
