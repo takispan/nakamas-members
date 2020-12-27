@@ -62,6 +62,13 @@ function nkms_save_event_date( $post_id ) {
 	$product->save();
 }
 
+// Rename WoocCommerce tabs
+add_filter( 'woocommerce_product_tabs', 'nkms_rename_additional_info_tab' );
+function nkms_rename_additional_info_tab( $tabs ) {
+	$tabs['additional_information']['title'] = 'DATE & VENUE';
+	return $tabs;
+}
+
 /**
  * Display custom field on the front end
  */
@@ -193,7 +200,7 @@ function nkms_register_dancers_to_events() {
       echo '<input type="hidden" name="register_groups_array" value="' . $possible_groups . '"/>';
     }
   }
-  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'guardian' && strpos( $product_categories, 'Dancer Registration' ) !== false ) ) {
+  elseif ( is_user_logged_in() && nkms_has_role( wp_get_current_user(), 'guardian' ) && strpos( $product_categories, 'Dancer Registration' ) !== false ) {
 		$guardian_dancers_list = wp_get_current_user()->nkms_guardian_fields['guardian_dancers_list'];
 		if ( ! empty( $guardian_dancers_list ) ) {
 			echo '<div class="x-accordion"><div class="x-accordion-group"><div class="x-accordion-heading"><a id="tab-nkms_registration" class="x-accordion-toggle collapsed" role="tab" data-x-toggle="collapse-b" data-x-toggleable="nkms_registration" aria-selected="false" aria-expanded="false" aria-controls="panel-nkms_registration">CATEGORIES</a></div><div id="panel-nkms_registration" class="x-accordion-body x-collapsed" role="tabpanel" data-x-toggle-collapse="1" data-x-toggleable="nkms_registration" aria-hidden="true" aria-labelledby="tab-nkms_registration" style=""><div class="x-accordion-inner"><div class="et_pb_toggle_content clearfix">';
