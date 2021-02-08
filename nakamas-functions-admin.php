@@ -37,11 +37,12 @@ function nkms_admin_menu() {
   add_menu_page( 'Nakamas Members', 'Soar Members', 'manage_options', 'nkms-members', 'nkms_admin_contents', 'dashicons-admin-users', 3 );
   add_submenu_page( 'nkms-members', 'Groups', 'Groups', 'manage_options', 'nkms-groups', 'nkms_admin_groups' );
   add_submenu_page( 'nkms-members', 'Actions', 'Actions', 'manage_options', 'nkms-actions', 'nkms_admin_actions' );
+  add_submenu_page( 'nkms-members', 'Registrations', 'Registrations', 'manage_options', 'nkms-registrations', 'nkms_admin_registrations' );
 }
 
 add_action( 'admin_menu', 'nkms_admin_menu' );
 function nkms_admin_contents() { ?>
-  <h1>Welcome to Soar Members</h1>
+  <h1>Soar Members</h1>
   <form method="post">
     <p><label for="nkms_select2_users">Search for Users:</label><br>
     <select id="nkms_select2_users" name="nkms_select2_users[]" style="width: 100%;">
@@ -325,6 +326,85 @@ function nkms_admin_actions() { ?>
     </form>
   </div>
 <?php
+}
+
+/*
+ * REGISTRATIONS
+**/
+add_action( 'admin_menu', 'nkms_admin_menu' );
+function nkms_admin_registrations() { ?>
+  <h1>Soar Registrations</h1>
+  <div id="nkms_groups_results"></div>
+  <div id="all_groups" class="nkms-admin">
+    <?php
+    $args = array(
+      'category' => array( 'dancer-registration' ),
+      // 'orderby'  => 'name',
+    );
+    $products = wc_get_products( $args );
+    $reg_orders = array();
+    $product_ids = array();
+
+    foreach ( $products as $product ) {
+      echo '<a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_id() . ': ' . $product->get_name() . '</a>';
+      echo '<br>';
+      $product_id = $product->get_id();
+      $reg_orders_single = get_orders_ids_by_product_id( $product_id );
+      array_push( $reg_orders, $reg_orders_single );
+    }
+    $reg_orders = array_filter( $reg_orders );
+
+    foreach ( $reg_orders as $order_id_array ) {
+      foreach ($order_id_array as $order_id ) {
+        if ( $order_id ) {
+          $order = wc_get_order( $order_id );
+          $member = get_userdata( $order->get_customer_id() );
+          if ( in_array( 'dance-school', (array) $member->roles ) ) {
+            echo '<h4>' . $member->ID . ': ' . $member->nkms_dance_school_fields['dance_school_name'] . '</h4>';
+          }
+          else {
+            echo '<h4>' . $member->ID . ': ' . $member->first_name . ' ' . $member->last_name . '</h4>';            
+          }
+          $order_items = $order->get_items();
+          foreach ( $order_items as $item ) {
+            $formatted_meta_data = $item->get_formatted_meta_data( '_', true );
+            foreach ( $formatted_meta_data as $meta_values ) {
+              echo '<span style="font-size:1.3em">' . $meta_values->key . '</span>';
+              echo '<p>' . $meta_values->value . '</p>';
+            }
+          }
+        }
+      }
+    }
+    ?>
+  </div>
+  <?php
+}
+
+/**
+ * Get All orders IDs for a given product ID.
+ *
+ * @param  integer  $product_id (required)
+ * @param  array    $order_status (optional) Default is 'wc-completed'
+ *
+ * @return array
+ */
+function get_orders_ids_by_product_id( $product_id, $order_status = array( 'wc-completed' ) ){
+    global $wpdb;
+
+    $results = $wpdb->get_col("
+        SELECT order_items.order_id
+        FROM {$wpdb->prefix}woocommerce_order_items as order_items
+        LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta ON order_items.order_item_id = order_item_meta.order_item_id
+        LEFT JOIN {$wpdb->posts} AS posts ON order_items.order_id = posts.ID
+        WHERE posts.post_type = 'shop_order'
+        AND posts.post_status IN ( '" . implode( "','", $order_status ) . "' )
+        AND order_items.order_item_type = 'line_item'
+        AND order_item_meta.meta_key = '_product_id'
+        AND order_item_meta.meta_value = '$product_id'
+    ");
+
+    return $results;
 }
 
 /*
