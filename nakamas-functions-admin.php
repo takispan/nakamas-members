@@ -334,47 +334,61 @@ function nkms_admin_actions() { ?>
 add_action( 'admin_menu', 'nkms_admin_menu' );
 function nkms_admin_registrations() { ?>
   <h1>Soar Registrations</h1>
-  <div id="nkms_groups_results"></div>
-  <div id="all_groups" class="nkms-admin">
+  <!-- <div id="nkms_groups_results"></div> -->
+  <div id="all_registrations" class="nkms-admin">
     <?php
+    // Get products
     $args = array(
       'category' => array( 'dancer-registration' ),
       // 'orderby'  => 'name',
     );
     $products = wc_get_products( $args );
-    $reg_orders = array();
-    $product_ids = array();
 
+    // Get orders of each product
     foreach ( $products as $product ) {
-      echo '<a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_id() . ': ' . $product->get_name() . '</a>';
-      echo '<br>';
+      $reg_orders = array();
+      $product_ids = array();
+      echo '<div id="nkms_product_' . $product->get_id() . '_toggle" class="nkms-toggle">' . $product->get_name() . '</div>';
+      echo '<div id="nkms_product_' . $product->get_id() . '" class="nkms-toggle-content">';
+      // echo '<a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_id() . ': ' . $product->get_name() . '</a>';
+      // echo '<br>';
+      echo '<table><thead><tr><th>Member</th><th>Dancers</th><th>Groups</th></tr></thead><tbody>';
       $product_id = $product->get_id();
       $reg_orders_single = get_orders_ids_by_product_id( $product_id );
       array_push( $reg_orders, $reg_orders_single );
-    }
-    $reg_orders = array_filter( $reg_orders );
+      $reg_orders = array_filter( $reg_orders );
 
-    foreach ( $reg_orders as $order_id_array ) {
-      foreach ($order_id_array as $order_id ) {
-        if ( $order_id ) {
-          $order = wc_get_order( $order_id );
-          $member = get_userdata( $order->get_customer_id() );
-          if ( in_array( 'dance-school', (array) $member->roles ) ) {
-            echo '<h4>' . $member->ID . ': ' . $member->nkms_dance_school_fields['dance_school_name'] . '</h4>';
-          }
-          else {
-            echo '<h4>' . $member->ID . ': ' . $member->first_name . ' ' . $member->last_name . '</h4>';            
-          }
-          $order_items = $order->get_items();
-          foreach ( $order_items as $item ) {
-            $formatted_meta_data = $item->get_formatted_meta_data( '_', true );
-            foreach ( $formatted_meta_data as $meta_values ) {
-              echo '<span style="font-size:1.3em">' . $meta_values->key . '</span>';
-              echo '<p>' . $meta_values->value . '</p>';
+      // Display meta data of dancers for each order
+      if( $reg_orders ) {
+        foreach ( $reg_orders as $order_id_array ) {
+          foreach ( $order_id_array as $order_id ) {
+            if ( $order_id ) {
+              echo '<tr>';
+              $order = wc_get_order( $order_id );
+              $member = get_userdata( $order->get_customer_id() );
+              echo '<td>';
+              if ( in_array( 'dance-school', (array) $member->roles ) )
+                echo '<h4>' . $member->ID . ': ' . $member->nkms_dance_school_fields['dance_school_name'] . '</h4>';
+              else
+                echo '<h4>' . $member->ID . ': ' . $member->first_name . ' ' . $member->last_name . '</h4>';
+              echo '</td>';
+              $order_items = $order->get_items();
+              foreach ( $order_items as $item ) {
+                $formatted_meta_data = $item->get_formatted_meta_data( '_', true );
+                foreach ( $formatted_meta_data as $meta_values ) {
+                  // echo '<span style="font-size:1.3em">' . $meta_values->key . '</span>';
+                  echo '<td>' . $meta_values->value . '</td>';
+                }
+              }
+              echo '</tr>';
             }
           }
         }
       }
+      else
+        echo '<tr><td>No orders for this event.</td></tr>';
+    echo '</tbody></table>';
+    echo '</div>';
     }
     ?>
   </div>
@@ -604,7 +618,7 @@ function nkms_get_all_user_meta( $user ) {
           array_push( $dancer_part_of, $part_of_ds_name );
         }
         if ( ! empty( $dancer_part_of ) ) {
-          $return .= '<span class="dancer-fields">Part of</span>' . implode( ', ', $dancer_part_of ) . '<br>';
+          $return .= '<span class="dancer-fields">Member of</span>' . implode( ', ', $dancer_part_of ) . '<br>';
         }
       }
       // Dancer registered to Events
@@ -697,7 +711,7 @@ function nkms_get_all_group_data( $user_id, $group_id ) {
     $return .= '<span class="group-fields">Type</span>' . $group->getType() . '<br>';
     $return .= '<span class="group-fields">Level category</span>' . $group->getLevelCategory() . '<br>';
     $return .= '<span class="group-fields">Age category</span>' . $group->getAgeCategory() . '<br>';
-    $return .= '<span class="group-fields">Part of</span>' . $dance_school_fields['dance_school_name'] . '<br>';
+    $return .= '<span class="group-fields">Member of</span>' . $dance_school_fields['dance_school_name'] . '<br>';
     $return .= '<h4>Dancers list</h4>';
     // . implode( ', ', $dance_school_fields['dance_school_dancers_list'] ) . '<br>';
     $dancers_list = $group->getDancers();

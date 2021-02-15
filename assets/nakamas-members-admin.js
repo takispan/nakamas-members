@@ -118,24 +118,13 @@ jQuery(document).ready(function($) {
 
 
 	// Toggle behavior
-	$('#add_dancer_to_dance_school_toggle').on('click', function() {
-    $('#add_dancer_to_dance_school').toggle(250);
+	$('.nkms-toggle').on('click', function() {
+		var toggle_id = $(this).attr('id');
+    $( '#' + toggle_id + ' + .nkms-toggle-content').toggle(250);
   });
-	$('#remove_dancer_from_dance_school_toggle').on('click', function() {
-    $('#remove_dancer_from_dance_school').toggle(250);
-  });
-	$('#add_dancer_to_dance_group_toggle').on('click', function() {
-    $('#add_dancer_to_dance_group').toggle(250);
-  });
-	$('#remove_dancer_from_dance_group_toggle').on('click', function() {
-    $('#remove_dancer_from_dance_group').toggle(250);
-  });
-	$('#add_dancer_to_guardian_toggle').on('click', function() {
-    $('#add_dancer_to_guardian').toggle(250);
-  });
-	$('#remove_dancer_from_guardian_toggle').on('click', function() {
-    $('#remove_dancer_from_guardian').toggle(250);
-  });
+	// $('#add_dancer_to_dance_school_toggle').on('click', function() {
+  //   $('#add_dancer_to_dance_school').toggle(250);
+  // });
 
 
 	/*

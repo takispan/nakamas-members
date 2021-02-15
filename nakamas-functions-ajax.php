@@ -364,7 +364,7 @@ function ds_add_dancer() {
       }
     }
     else {
-      wp_send_json_success("<p class='text-danger'>Dancer is already part of the School.</p>");
+      wp_send_json_success("<p class='text-danger'>Dancer is already member of the School.</p>");
     }
   }
   else {
@@ -646,7 +646,7 @@ function ds_add_dancer() {
         }
    		}
       else {
-        wp_send_json_success( '<p class="text-danger">' . $dancer->first_name . ' ' . $dancer->last_name . ' is already part of ' . $group->getGroupName() . '.</p>' );
+        wp_send_json_success( '<p class="text-danger">' . $dancer->first_name . ' ' . $dancer->last_name . ' is already member of ' . $group->getGroupName() . '.</p>' );
       }
    	}
    	else {
@@ -676,7 +676,7 @@ function ds_add_dancer() {
      }
    }
    else {
-     wp_send_json_success( '<p class="text-danger">Dancer is not part of ' . $group->getGroupName() . '.</p>' );
+     wp_send_json_success( '<p class="text-danger">Dancer is not member of ' . $group->getGroupName() . '.</p>' );
    }
  }
 
