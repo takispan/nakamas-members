@@ -3,34 +3,7 @@
 /*
  * Admin Pages
  *
- * To get permalinks to work when you activate the plugin use the following example,
- * paying attention to how my_cpt_init() is called in the register_activation_hook callback:
- *
- * Also register custom post types
- *
-add_action( 'init', 'nkms_dance_groups_init' );
-function nkms_dance_groups_init() {
-  register_post_type( 'dance-group', array(
-    'label' => 'Dance Group',
-    'labels' => array(
-      'add_new' => 'New Dance Group',
-      'add_new_item' => 'Add New Dance Group',
-      'edit_item' => 'Edit Dance Group',
-      'new_item' => 'New Dance Group',
-      'view_item' => 'View Dance Groups',
-      'search_items' => 'Search Dance Groups',
-      'not_found' => 'No Dance Groups found',
-      'singular_name' => 'Dance Group',
-    ),
-    'description' => 'Soar Dance Groups',
-    'show_ui' => true,
-    'support' => array( 'custom-fields' ),
-    'taxonomies' => array( 'category' ),
-    'rewrite' => array( 'slug' => 'dance-group' ),
-    // 'show_in_rest' => true
-  ) );
-}
-*/
+ */
 
 // Add admin pages
 function nkms_admin_menu() {
@@ -171,6 +144,29 @@ add_action( 'admin_menu', 'nkms_admin_menu' );
 function nkms_admin_actions() { ?>
   <h1>Soar Actions</h1>
   <!-- <form method="post"><input type="submit" action="nkms_fix_user_meta()" value="Fix user meta" /></form>  -->
+  <h2>Members</h2>
+  <!-- Update Member Profile fields -->
+  <div id="update_member_profile_fields_toggle" class="nkms-toggle">Update Member Profile fields</div>
+  <div id="update_member_profile_fields" class="nkms-toggle-content"> -->
+    <form method="post">
+      <p><label for="add_dancer_to_dance_school_ds">Select a member</label></p>
+      <p><select id="add_dancer_to_dance_school_ds" name="add_dancer_to_dance_school_ds">
+        <option value="" selected disabled hidden>Select a member</option>
+        <?php
+        // function to get Dance Schools only
+        // $members_list = get_users();
+        // foreach ( $members_list as $user ) {
+        //   if ( in_array( 'dance-school', ( array ) $user->roles ) )
+        //       echo '<option value="' . $user->ID . '">' . $user->ID . ': ' . $user->nkms_dance_school_fields['dance_school_name'] . ' (' . $user->roles[0] . ')</option>';
+        //   else
+        //     echo '<option value="' . $user->ID . '">' . $user->ID . ': ' . $user->first_name . ' ' . $user->last_name . ' (' . $user->roles[0] . ')</option>';
+        // }
+        ?>
+      </select></p>
+      <div class="admin-ajax-response"></div>
+      <p><input type="submit" value="Submit"/></p>
+    </form>
+  </div>
   <h2>Dance School</h2>
   <!-- Add Dancer to Dance School -->
   <div id="add_dancer_to_dance_school_toggle" class="nkms-toggle">Add dancer to Dance School</div>
@@ -350,9 +346,9 @@ function nkms_admin_registrations() { ?>
       $product_ids = array();
       echo '<div id="nkms_product_' . $product->get_id() . '_toggle" class="nkms-toggle">' . $product->get_name() . '</div>';
       echo '<div id="nkms_product_' . $product->get_id() . '" class="nkms-toggle-content">';
-      // echo '<a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_id() . ': ' . $product->get_name() . '</a>';
+      echo '<h3>Event link: <a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_name() . '</a></h5>';
+      echo '<h3>Dancers registered: ' . $product->get_total_sales() . '</h5>';
       // echo '<br>';
-      echo '<table><thead><tr><th>Member</th><th>Dancers</th><th>Groups</th></tr></thead><tbody>';
       $product_id = $product->get_id();
       $reg_orders_single = get_orders_ids_by_product_id( $product_id );
       array_push( $reg_orders, $reg_orders_single );
@@ -360,6 +356,7 @@ function nkms_admin_registrations() { ?>
 
       // Display meta data of dancers for each order
       if( $reg_orders ) {
+        echo '<table><thead><tr><th>Member</th><th>Dancers</th><th>Groups</th></tr></thead><tbody>';
         foreach ( $reg_orders as $order_id_array ) {
           foreach ( $order_id_array as $order_id ) {
             if ( $order_id ) {
@@ -384,10 +381,10 @@ function nkms_admin_registrations() { ?>
             }
           }
         }
+        echo '</tbody></table>';
       }
       else
-        echo '<tr><td>No orders for this event.</td></tr>';
-    echo '</tbody></table>';
+        echo '<tr><td><h4>No orders for this event.</h4></td></tr>';
     echo '</div>';
     }
     ?>
@@ -649,6 +646,7 @@ function nkms_get_all_user_meta( $user ) {
       $return .= '<span class="dance-school-fields">Address</span>' . $dance_school_fields['dance_school_address'] . '<br>';
       $return .= '<span class="dance-school-fields">Phone number</span>' . $dance_school_fields['dance_school_phone_number'] . '<br>';
       $return .= '<span class="dance-school-fields">Description</span>' . $dance_school_fields['dance_school_description'] . '<br>';
+      $return .= '<br><button>Edit fields</button>';
       $return .= '<h4>Dancers list</h4>';
       // . implode( ', ', $dance_school_fields['dance_school_dancers_list'] ) . '<br>';
       $dancers_list = $dance_school_fields['dance_school_dancers_list'];

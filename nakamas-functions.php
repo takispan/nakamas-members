@@ -365,11 +365,11 @@ $dance_school_name, $dance_school_address, $dance_school_phone_number, $dance_sc
   }
   // WP function. Checks if username exists.
   if ( username_exists( $username ) ) {
-    $reg_errors->add('user_name', 'Sorry, that username already exists!');
+    $reg_errors->add('user_name', 'The username already exists!');
   }
   // WP function. Checks if username is valid
   if ( ! validate_username( $username ) ) {
-    $reg_errors->add( 'username_invalid', 'Sorry, the username you entered is not valid.' );
+    $reg_errors->add( 'username_invalid', 'The username you entered is not valid.' );
   }
   // Password more than 6 chars
   if ( 5 > strlen( $password ) ) {
@@ -483,6 +483,14 @@ function nkms_custom_registration() {
       $dancer_guardian_name = ( isset( $_POST['reg_dancer_guardian_name'] ) ? sanitize_text_field( $_POST['reg_dancer_guardian_name'] ) : '' );
       $dancer_guardian_phone_number = ( isset( $_POST['reg_dancer_guardian_phone_number'] ) ? sanitize_text_field( $_POST['reg_dancer_guardian_phone_number'] ) : '' );
       $dancer_guardian_email = ( isset( $_POST['reg_dancer_guardian_email'] ) ? sanitize_email( $_POST['reg_dancer_guardian_email'] ) : '' );
+    }
+
+    // teacher fields
+    if ( $role === 'teacher' ) {
+      $role = 'dancer';
+      $dancer_ds_name = sanitize_text_field( $_POST['reg_dancer_ds_name'] );
+      $dancer_ds_teacher_name = $first_name . ' ' . $last_name;
+      $dancer_ds_teacher_email = $email;
     }
 
     // dance school fields

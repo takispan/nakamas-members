@@ -810,6 +810,7 @@ jQuery(document).ready(function($) {
      });
    });
 
+  $("#select_role").val("").change();
   // REGISTRATION
   $("#select_role").change(function() {
     // e.preventDefault();
@@ -821,6 +822,14 @@ jQuery(document).ready(function($) {
     }
     else if ( selRole === 'dancer') {
       $('#ds-reg-fields-dance-school').hide();
+      $('#ds-reg-fields-dancer > .dancer').show();
+      $('#ds-reg-fields-dancer > h6').html( 'Dancer & Teacher Details' );
+      $('#ds-reg-fields-dancer').show();
+    }
+    else if ( selRole === 'teacher') {
+      $('#ds-reg-fields-dance-school').hide();
+      $('#ds-reg-fields-dancer > .dancer').hide();
+      $('#ds-reg-fields-dancer > h6').html( 'Teacher Details' );
       $('#ds-reg-fields-dancer').show();
     }
     else {

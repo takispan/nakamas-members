@@ -92,12 +92,13 @@ get_header(); ?>
           <option value="customer">Spectator</option>
           <option value="dancer">Dancer</option>
           <option value="guardian">Guardian/Parent</option>
+          <option value="teacher">Teacher</option>
           <option value="dance-school">Dance School</option>
         </select>
       </p>
       <!-- Dancer fields -->
-      <div id="ds-reg-fields-dancer" style="display:none;">
-        <h6>Dancer Details</h6>
+      <div id="ds-reg-fields-dancer"style="display:none;">
+        <h6>Dancer & Teacher Details</h6>
         <p>
           <label for="reg_dancer_level">Level category</label>
           <select id="dancer-level" name="reg_dancer_level">
@@ -112,11 +113,11 @@ get_header(); ?>
           <label for="reg_dancer_ds_name">Name of Dance School</label>
           <input type="text" name="reg_dancer_ds_name" placeholder="Name of dance school" value="<?php echo ( isset( $_POST['reg_dancer_ds_name'] ) ?  $_POST['reg_dancer_ds_name'] : ''  ); ?>">
         </p>
-        <p>
+        <p class="dancer">
           <label for="reg_dancer_ds_teacher_name">Name of Dance Teacher</label>
           <input type="text" name="reg_dancer_ds_teacher_name" placeholder="Name of dance teacher" value="<?php echo ( isset( $_POST['reg_dancer_ds_teacher_name'] ) ?  $_POST['reg_dancer_ds_teacher_name'] : ''  ); ?>">
         </p>
-        <p>
+        <p class="dancer">
           <label for="reg_dancer_ds_teacher_email">Teacher Email</label>
           <input type="text" name="reg_dancer_ds_teacher_email" placeholder="Teacher email" value="<?php echo ( isset( $_POST['reg_dancer_ds_teacher_email'] ) ?  $_POST['reg_dancer_ds_teacher_email'] : ''  ); ?>">
         </p>
