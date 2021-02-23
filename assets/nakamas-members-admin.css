@@ -57,6 +57,9 @@ h4 {font-size: 1.3em;}
 	cursor: pointer;
 }
 
+/* Event Registrations */
+td > table thead th {display: none;}
+
 
 @media only screen and (max-width: 782px) {
 	#all_groups {width: calc(100% - 25px);}

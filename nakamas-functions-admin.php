@@ -144,29 +144,21 @@ add_action( 'admin_menu', 'nkms_admin_menu' );
 function nkms_admin_actions() { ?>
   <h1>Soar Actions</h1>
   <!-- <form method="post"><input type="submit" action="nkms_fix_user_meta()" value="Fix user meta" /></form>  -->
+
+  <!-- Update Member Profile fields --
   <h2>Members</h2>
-  <!-- Update Member Profile fields -->
   <div id="update_member_profile_fields_toggle" class="nkms-toggle">Update Member Profile fields</div>
-  <div id="update_member_profile_fields" class="nkms-toggle-content"> -->
+  <div id="update_member_profile_fields" class="nkms-toggle-content">
     <form method="post">
-      <p><label for="add_dancer_to_dance_school_ds">Select a member</label></p>
-      <p><select id="add_dancer_to_dance_school_ds" name="add_dancer_to_dance_school_ds">
+      <p><label for="update_member_profile_fields">Select a member</label></p>
+      <p><select id="update_member_profile_fields" name="update_member_profile_fields">
         <option value="" selected disabled hidden>Select a member</option>
-        <?php
-        // function to get Dance Schools only
-        // $members_list = get_users();
-        // foreach ( $members_list as $user ) {
-        //   if ( in_array( 'dance-school', ( array ) $user->roles ) )
-        //       echo '<option value="' . $user->ID . '">' . $user->ID . ': ' . $user->nkms_dance_school_fields['dance_school_name'] . ' (' . $user->roles[0] . ')</option>';
-        //   else
-        //     echo '<option value="' . $user->ID . '">' . $user->ID . ': ' . $user->first_name . ' ' . $user->last_name . ' (' . $user->roles[0] . ')</option>';
-        // }
-        ?>
       </select></p>
       <div class="admin-ajax-response"></div>
       <p><input type="submit" value="Submit"/></p>
     </form>
-  </div>
+  </div> -->
+
   <h2>Dance School</h2>
   <!-- Add Dancer to Dance School -->
   <div id="add_dancer_to_dance_school_toggle" class="nkms-toggle">Add dancer to Dance School</div>
@@ -203,7 +195,7 @@ function nkms_admin_actions() { ?>
   <div id="remove_dancer_from_dance_school" class="nkms-toggle-content">
     <form method="post">
       <p><label for="remove_dancer_from_dance_school_ds">Select dance school</label></p>
-      <p><select id="remove_dancer_from_dance_school_ds" name="add_dancer_to_dance_school_ds">
+      <p><select id="remove_dancer_from_dance_school_ds" name="remove_dancer_from_dance_school_ds">
         <option value="" selected disabled hidden>Select a dance school</option>
         <?php
         // function to get Dance Schools only
@@ -347,12 +339,33 @@ function nkms_admin_registrations() { ?>
       echo '<div id="nkms_product_' . $product->get_id() . '_toggle" class="nkms-toggle">' . $product->get_name() . '</div>';
       echo '<div id="nkms_product_' . $product->get_id() . '" class="nkms-toggle-content">';
       echo '<h3>Event link: <a href="' . get_permalink( $product->get_id() ) . '">' . $product->get_name() . '</a></h5>';
-      echo '<h3>Dancers registered: ' . $product->get_total_sales() . '</h5>';
-      // echo '<br>';
+      $registered_dancers_num = 0;
+
       $product_id = $product->get_id();
       $reg_orders_single = get_orders_ids_by_product_id( $product_id );
       array_push( $reg_orders, $reg_orders_single );
       $reg_orders = array_filter( $reg_orders );
+
+      if( $reg_orders ) {
+        foreach ( $reg_orders as $order_id_array ) {
+          foreach ( $order_id_array as $order_id ) {
+            if ( $order_id ) {
+              $order = wc_get_order( $order_id );
+              // count registered dancers
+              $order_items = $order->get_items();
+              foreach ( $order_items as $item ) {
+                $formatted_meta_data = $item->get_formatted_meta_data( '_', true );
+                foreach ( $formatted_meta_data as $meta_values ) {
+                  if ( $meta_values->key === 'Number of Dancers' )
+                    $registered_dancers_num += intval( $meta_values->value );
+                }
+              }
+            }
+          }
+        }
+      }
+      echo '<h3>Dancers registered: ' . $registered_dancers_num . '</h5>';
+      // echo '<br>';
 
       // Display meta data of dancers for each order
       if( $reg_orders ) {
@@ -373,8 +386,8 @@ function nkms_admin_registrations() { ?>
               foreach ( $order_items as $item ) {
                 $formatted_meta_data = $item->get_formatted_meta_data( '_', true );
                 foreach ( $formatted_meta_data as $meta_values ) {
-                  // echo '<span style="font-size:1.3em">' . $meta_values->key . '</span>';
-                  echo '<td>' . $meta_values->value . '</td>';
+                  if ( $meta_values->key === 'Dancers' || $meta_values->key === 'Groups' )
+                    echo '<td>' . $meta_values->value . '</td>';
                 }
               }
               echo '</tr>';
@@ -400,7 +413,7 @@ function nkms_admin_registrations() { ?>
  *
  * @return array
  */
-function get_orders_ids_by_product_id( $product_id, $order_status = array( 'wc-completed' ) ){
+function get_orders_ids_by_product_id( $product_id, $order_status = array( 'wc-on-hold', 'wc-processing', 'wc-pending', 'wc-completed' ) ){
     global $wpdb;
 
     $results = $wpdb->get_col("

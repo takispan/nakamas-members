@@ -3,11 +3,8 @@
  * WOOCOMMERCE!
 **/
 /* Woo Account links & content */
-add_filter ( 'woocommerce_account_menu_items', 'misha_remove_my_account_links' );
-function misha_remove_my_account_links( $menu_links ){
-  // $menu_links['TAB ID HERE'] = 'NEW TAB NAME HERE';
-	$menu_links['downloads'] = 'My Files';
-
+add_filter ( 'woocommerce_account_menu_items', 'nkms_remove_my_account_links' );
+function nkms_remove_my_account_links( $menu_links ){
 	unset( $menu_links['dashboard'] ); // Remove Dashboard
 	//unset( $menu_links['orders'] ); // Remove Orders
 	//unset( $menu_links['edit-address'] ); // Addresses
@@ -40,43 +37,48 @@ function nkms_woo_required_fields( $fields ) {
 //
 // };
 
+
+/**
+ * Display banner on product pages
+ */
 // Display a custom text field on product
 add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
 function nkms_custom_woo_field() {
 	woocommerce_wp_text_input(
     array(
-      'id' => 'event_date',
-      'label' => 'Event date',
-      'class' => 'nkms-event-date',
+      'id' => 'nkms_banner',
+      'label' => 'Banner URL',
+      'class' => 'nkms-banner',
       'desc_tip' => true,
-      'description' => 'Enter the date of the event.',
+      'description' => 'Enter the URL of the banner found on Media library.',
     )
   );
 }
 // Save the custom text field on product
-add_action( 'woocommerce_process_product_meta', 'nkms_save_event_date' );
-function nkms_save_event_date( $post_id ) {
+add_action( 'woocommerce_process_product_meta', 'nkms_save_banner' );
+function nkms_save_banner( $post_id ) {
 	$product = wc_get_product( $post_id );
-	$event_date = isset( $_POST['event_date'] ) ? $_POST['event_date'] : '';
-	$product->update_meta_data( 'event_date', $event_date );
+	$nkms_banner = isset( $_POST['nkms_banner'] ) ? $_POST['nkms_banner'] : '';
+	$product->update_meta_data( 'nkms_banner', $nkms_banner );
 	$product->save();
 }
 
-/**
- * Display custom field on the front end
- */
-add_action( 'woocommerce_single_product_summary', 'cfwc_display_custom_field' );
-function cfwc_display_custom_field() {
+// Display banner on the front end
+add_action( 'woocommerce_before_single_product', 'nkms_product_banner' );
+function nkms_product_banner() {
 	global $post;
 	// Check for the custom field value
 	$product = wc_get_product( $post->ID );
-	$event_date = $product->get_meta( 'event_date' );
-	if( $event_date ) {
+	$nkms_banner = $product->get_meta( 'nkms_banner' );
+	if( $nkms_banner ) {
 		// Only display our field if we've got a value for the field title
-		echo '<div class="nkms-event-date"><p>' . $event_date . '</p></div>';
+		echo '<div class="nkms-product-banner"><img src="' . $nkms_banner . '"/></div>';
 	}
 }
 
+/**
+ * MISC
+ */
 // Hide Dancer Registration category if not needed
 add_filter( 'woocommerce_product_query_tax_query', 'nkms_hide_dancer_registration');
 function nkms_hide_dancer_registration ( $tquery ) {
@@ -104,7 +106,6 @@ function woo_custom_product_add_to_cart_text() {
 	}
 	return __('Book', 'woocommerce');
 }
-
 add_filter('woocommerce_product_single_add_to_cart_text', 'woo_custom_cart_button_text');
 function woo_custom_cart_button_text() {
 	global $product;
@@ -117,6 +118,9 @@ function woo_custom_cart_button_text() {
 	return __('Book', 'woocommerce');
 }
 
+/**
+ * Register Dancers & Groups!
+ */
 // List active dancers (if solo) or active groups to register to events
 add_action('woocommerce_before_add_to_cart_button', 'nkms_register_dancers_to_events');
 function nkms_register_dancers_to_events() {
@@ -251,7 +255,6 @@ function nkms_add_to_cart_validation( $passed, $product_id, $quantity, $variatio
 				wc_add_notice( 'You must select at least one type to register for.', 'error' );
 	    }
 		}
-
   }
   return $passed;
 }
@@ -267,7 +270,7 @@ function nkms_add_group_cart( $cart_item_data, $product_id, $variation_id ) {
         $dancer = get_userdata( $dancer_id );
         $registered_dancers[$key] = $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name;
       }
-      $cart_item_data['registered_dancers'] = $registered_dancers;
+      $cart_item_data['registered_dancers'] = array_map( 'intval', $_POST['registered_dancers'] );
 			$total_dancers = sizeof( $_POST['registered_dancers'] );
     }
     // get groups
@@ -322,12 +325,7 @@ function nkms_add_custom_price( $cart ) {
     if ( is_admin() && ! defined( 'DOING_AJAX' ) )
         return;
 
-    // // Avoiding hook repetition (when using price calculations for example)
-    // if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 )
-    //     return;
-
     // Loop through cart items
-		// echo '<pre>'; print_r($cart->get_cart()); echo '</pre>';
     foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
       $reg_dancers = 1;
       if ( isset( $cart_item['registered_dancers_num'] ) ) {
@@ -353,35 +351,43 @@ function nkms_display_dancers_in_cart( $item_data, $cart_item ) {
   if ( ! empty( $cart_item['registered_dancers'] ) ) {
 		// echo '<pre>'; var_dump( $cart_item['registered_dancers'] ); echo '</pre>';
 
-    $dancers_str_tmp = implode( "<br>", $cart_item['registered_dancers'] );
-    $dancers_str = '<p class="registered-dancers">' . $dancers_str_tmp . '</p>';
-    $registered_dancers_value_to_save = maybe_serialize( $cart_item['registered_dancers'] );
+		// create HTML table to display dancers (ID & Full Name)
+    $dancers_display_value = '<table><thead><tr><th>Soar ID</th><th>Full Name</th></tr></thead><tbody>';
+		foreach ( $cart_item['registered_dancers'] as $dancer_id ) {
+			$dancer = get_userdata( $dancer_id );
+			$dancers_display_value .= '<tr><td>' . $dancer->ID . '</td><td>' . $dancer->first_name . ' ' . $dancer->last_name . '</td></tr>';
+		}
+		$dancers_display_value .= '</tbody></table>';
+    $registered_dancers_db = maybe_serialize( $cart_item['registered_dancers'] );
 
     $item_data[] = array(
       'key'     => 'Dancers',
-      'value'   => $registered_dancers_value_to_save,
-      'display' => $dancers_str,
+      'value'   => $registered_dancers_db,
+      'display' => $dancers_display_value,
     );
 	}
   // Groups
   if ( ! empty( $cart_item['registered_groups'] ) ) {
-    $groups_str_tmp = '';
-    $registered_groups = $cart_item['registered_groups'];
-    foreach ( $registered_groups as $group_name => $group_members ) {
+		// echo '<pre>'; var_dump( $cart_item['registered_groups'] ); echo '</pre>';
+
+		// create HTML table to display groups (ID & Full Name of Dancers)
+    $groups_display_value = '<table><thead><tr><th>Soar ID</th><th>Full Name</th></tr></thead><tbody>';
+    foreach ( $cart_item['registered_groups'] as $group_name => $group_members ) {
       if ( ! empty ( $group_members ) ) {
-        $groups_str_tmp .= '<br><span class="group-title">' . $group_name . '</span><br>';
+        $groups_display_value .= '<tr><th>' . $group_name . '</th><tr>';
         foreach ( $group_members as $dancer_id ) {
           $dancer = get_userdata( $dancer_id );
-          $groups_str_tmp .= '' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<br>';
+          $groups_display_value .= '<tr><td>' . $dancer->ID . '</td><td>' . $dancer->first_name . ' ' . $dancer->last_name . '</td><tr>';
         }
       }
     }
-    $groups_str = '<div class="registered-groups">' . $groups_str_tmp . '</div>';
+		$groups_display_value .= '</tbody></table>';
+		$registered_groups_db = maybe_serialize( $cart_item['registered_groups'] );
 
     $item_data[] = array(
       'key'     => 'Groups',
-      'value'   => $groups_str,
-      'display' => '',
+      'value'   => $registered_groups_db,
+      'display' => $groups_display_value,
     );
 	}
   return $item_data;
@@ -400,15 +406,19 @@ function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) 
 			$item->add_meta_data( 'Type', $types, true );
 		}
     if ( isset( $values['registered_dancers'] ) ) {
-      $dancers_str_tmp = '<br>';
-      $dancers_str_tmp .= implode( "<br>", $values['registered_dancers'] );
-      $item->add_meta_data( 'Dancers (' . $values['registered_dancers_num'] . ')', $dancers_str_tmp, true );
+			// create HTML table to display dancers (ID & Full Name)
+	    $registered_dancers = '<table><thead><tr><th>Soar ID</th><th>Full Name</th></tr></thead><tbody>';
+			foreach ( $values['registered_dancers'] as $dancer_id ) {
+				$dancer = get_userdata( $dancer_id );
+				$registered_dancers .= '<tr><td>' . $dancer->ID . '</td><td>' . $dancer->first_name . ' ' . $dancer->last_name . '</td></tr>';
+			}
+			$registered_dancers .= '</tbody></table>';
+      $item->add_meta_data( 'Number of Dancers', $values['registered_dancers_num'], true );
+			$item->add_meta_data( 'Dancers', $registered_dancers, true );
 
 		  $product_id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
 
-			foreach( $values['registered_dancers'] as $dancer_string ) {
-				$dancer_id_string = explode( ':', $dancer_string );
-				$dancer_id = intval( $dancer_id_string[0] );
+			foreach( $values['registered_dancers'] as $dancer_id ) {
 				$dancer = get_userdata( $dancer_id );
 				$dancer_fields = $dancer->nkms_dancer_fields;
 				$registered_to = $dancer_fields['dancer_registered_to'];
@@ -418,17 +428,19 @@ function nkms_save_registered_dancers( $item, $cart_item_key, $values, $order ) 
 			}
     }
     if ( isset( $values['registered_groups'] ) ) {
-      $groups_str_tmp = '<br>';
+			$registered_groups = '<table><thead><tr><th>Soar ID</th><th>Full Name</th></tr></thead><tbody>';
       foreach ( $values['registered_groups'] as $group_name => $group_members ) {
-        if ( ! empty ( $group_members ) ) {
-          $groups_str_tmp .= '<br><span class="group-title">' . $group_name . '</span><br>';
-          foreach ( $group_members as $dancer_id ) {
-            $dancer = get_userdata( $dancer_id );
-            $groups_str_tmp .= '' . $dancer->ID . ': ' . $dancer->first_name . ' ' . $dancer->last_name . '<br>';
-          }
-        }
+				if ( ! empty ( $group_members ) ) {
+	        $registered_groups .= '<tr><th>' . $group_name . '</th><tr>';
+	        foreach ( $group_members as $dancer_id ) {
+	          $dancer = get_userdata( $dancer_id );
+	          $registered_groups .= '<tr><td>' . $dancer->ID . '</td><td>' . $dancer->first_name . ' ' . $dancer->last_name . '</td><tr>';
+	        }
+	      }
       }
-      $item->add_meta_data( 'Groups (' . sizeof( $values['registered_groups'] ) . ')', $groups_str_tmp, true );
+			$registered_groups .= '</tbody></table>';
+			$item->add_meta_data( 'Number of Groups', sizeof( $values['registered_groups'] ), true );
+			$item->add_meta_data( 'Groups', $registered_groups, true );
     }
   }
 }
