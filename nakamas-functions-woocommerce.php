@@ -42,7 +42,7 @@ function nkms_woo_required_fields( $fields ) {
  * Display banner on product pages
  */
 // Display a custom text field on product
-add_action( 'woocommerce_product_options_general_product_data', 'nkms_custom_woo_field' );
+add_action( 'woocommerce_product_options_advanced', 'nkms_custom_woo_field' );
 function nkms_custom_woo_field() {
 	woocommerce_wp_text_input(
     array(

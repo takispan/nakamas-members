@@ -57,6 +57,9 @@ h4 {font-size: 1.3em;}
 	cursor: pointer;
 }
 
+/* User fields Backend */
+#your-profile h2:first-of-type, #your-profile table:first-of-type {display: none;}
+
 /* Event Registrations */
 td > table thead th {display: none;}
 

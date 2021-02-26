@@ -5,6 +5,50 @@
  *
  */
 
+// Edit user fields (on default user page)
+add_action( 'show_user_profile', 'nkms_user_profile_fields' );
+add_action( 'edit_user_profile', 'nkms_user_profile_fields' );
+function nkms_user_profile_fields( $user ) { ?>
+  <h2>Soar Member Fields</h2>
+
+  <table class="form-table">
+  <tr>
+    <th><label for="dob">Date of Birth</label></th>
+    <td><input type="text" name="dob" id="dob" placeholder="DD/MM/YYYY" value="<?php echo $user->nkms_fields['dob']; ?>" class="regular-text" /></td>
+  </tr>
+  <?php if ( $user->roles[0] === 'dance-school' ) : ?>
+  <tr>
+    <th><label for="dsname">Dance School name</label></th>
+    <td><input type="text" name="dsname" id="dsname" value="<?php echo $user->nkms_dance_school_fields['dance_school_name']; ?>" class="regular-text" /></td>
+  </tr>
+  <?php endif; ?>
+  </table>
+<?php }
+// and save the fields
+add_action( 'personal_options_update', 'nkms_save_user_profile_fields' );
+add_action( 'edit_user_profile_update', 'nkms_save_user_profile_fields' );
+function nkms_save_user_profile_fields( $user_id ) {
+    if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update-user_' . $user_id ) ) {
+        return;
+    }
+    // if ( ! current_user_can( 'edit_user', $user_id ) ) {
+    //     return false;
+    // }
+
+    $user = get_userdata( $user_id );
+    $nkms_fields = $user->nkms_fields;
+    $nkms_fields[dob] = $_POST['dob'];
+
+    update_user_meta( $user_id, 'nkms_fields', $nkms_fields );
+
+    // also update dance school name if account is dance school
+    // if ( $user->roles[0] === 'dance-school' ) {
+      $nkms_dance_school_fields = $user->nkms_dance_school_fields;
+      $nkms_dance_school_fields[dance_school_name] = $_POST['dsname'];
+      update_user_meta( $user_id, 'nkms_dance_school_fields', $nkms_dance_school_fields );
+    // }
+}
+
 // Add admin pages
 function nkms_admin_menu() {
   add_menu_page( 'Nakamas Members', 'Soar Members', 'manage_options', 'nkms-members', 'nkms_admin_contents', 'dashicons-admin-users', 3 );
@@ -144,20 +188,6 @@ add_action( 'admin_menu', 'nkms_admin_menu' );
 function nkms_admin_actions() { ?>
   <h1>Soar Actions</h1>
   <!-- <form method="post"><input type="submit" action="nkms_fix_user_meta()" value="Fix user meta" /></form>  -->
-
-  <!-- Update Member Profile fields --
-  <h2>Members</h2>
-  <div id="update_member_profile_fields_toggle" class="nkms-toggle">Update Member Profile fields</div>
-  <div id="update_member_profile_fields" class="nkms-toggle-content">
-    <form method="post">
-      <p><label for="update_member_profile_fields">Select a member</label></p>
-      <p><select id="update_member_profile_fields" name="update_member_profile_fields">
-        <option value="" selected disabled hidden>Select a member</option>
-      </select></p>
-      <div class="admin-ajax-response"></div>
-      <p><input type="submit" value="Submit"/></p>
-    </form>
-  </div> -->
 
   <h2>Dance School</h2>
   <!-- Add Dancer to Dance School -->
@@ -659,7 +689,6 @@ function nkms_get_all_user_meta( $user ) {
       $return .= '<span class="dance-school-fields">Address</span>' . $dance_school_fields['dance_school_address'] . '<br>';
       $return .= '<span class="dance-school-fields">Phone number</span>' . $dance_school_fields['dance_school_phone_number'] . '<br>';
       $return .= '<span class="dance-school-fields">Description</span>' . $dance_school_fields['dance_school_description'] . '<br>';
-      $return .= '<br><button>Edit fields</button>';
       $return .= '<h4>Dancers list</h4>';
       // . implode( ', ', $dance_school_fields['dance_school_dancers_list'] ) . '<br>';
       $dancers_list = $dance_school_fields['dance_school_dancers_list'];
