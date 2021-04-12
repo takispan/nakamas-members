@@ -118,6 +118,9 @@ input[type="text"]:disabled {opacity: 0.5; cursor: not-allowed;}
 #nkms-login h2 {
 	margin: 0.2em 0 0.5em 0;
 }
+#nkms-login > h4 > a {
+	text-decoration: underline;
+}
 #nkms-login label {display: none;}
 #nkms_registration p {position: relative;}
 .show-password-input {
@@ -172,6 +175,8 @@ input[type="text"]:disabled {opacity: 0.5; cursor: not-allowed;}
 	margin-top: 5px;
 	display: inline-block;
 }
+/* Checkout tables */
+dd.variation-Dancers th:first-of-type, dd.variation-Groups th:first-of-type {width: 20%;}
 
 .register-group-dancers input[type="checkbox"]:checked::before {margin: -0.3rem 0 0 -0.3rem;}
 #register-dancers {margin-bottom: 35px;}

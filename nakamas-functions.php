@@ -525,7 +525,8 @@ function complete_registration() {
     if ( $user_id ) {
       //initialize custom fields
       user_initialization( $user_id );
-      echo '<h4>Registration complete. You may login <a href="' . get_site_url() . '/login">here</a>.</h4>';
+      echo '<h3>Registration complete! You will be automatically redirected to the <a href="' . get_site_url() . '/login">login page</a> soon.</h3>';
+      header('Refresh: 5; URL=https://soardance.com/login/');
     }
     else {
       echo '<h4>Something went wrong. Please try again later!</h4>';
